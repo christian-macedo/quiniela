@@ -129,7 +129,7 @@ Participants can view a leaderboard showing all participants in their tournament
 - **Match**: Represents a scheduled 1v1 game between two teams; has scheduled date/time, two teams, optional actual scores, status (upcoming/in-progress/completed); belongs to one tournament
 - **Forecast**: Represents a participant's prediction; has predicted scores for both teams, submission timestamp; linked to one participant, one match
 - **ScoringRule**: Represents point calculation logic; has point values for exact score match, correct winner prediction, incorrect prediction; belongs to one tournament; may have version/effective date
-- **ParticipantScore**: Represents calculated points for a participant; has total points, points per match; linked to one participant, one tournament
+- **ParticipantScore**: Represents calculated points for a participant; has total points; linked to one participant, one tournament. Per-match point breakdowns are available via linked forecasts.
 - **TournamentParticipant**: Represents the relationship between users and tournaments; indicates which participants have access to which tournaments
 
 ## Success Criteria *(mandatory)*
