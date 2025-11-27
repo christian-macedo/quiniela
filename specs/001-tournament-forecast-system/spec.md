@@ -3,34 +3,69 @@
 **Feature Branch**: `001-tournament-forecast-system`  
 **Created**: 2025-11-21  
 **Status**: Draft  
-**Input**: User description: "Build an application that will be used for managing tournaments based on sport events. Events should have teams which participate in 1 vs 1 matches following predefined schedules (date/time). Users then will be able to submit forecasts for the score of these matches and they will obtain points based on sets of rules that compare their forecast with the event score. The application should support two main user personas administrators and participants. Administrators will be in charge of defining the events, participating teams, the matches, updating the match score and define the scoring rules and which participants are allowed to submit forecasts. Participants are allowed to view the events that they are part of, submit forecasts for the matches and see what score they have received based on the match result."
+**Input**: User description: "Build an application that will be used for managing tournaments based on sport events. Events should have teams which participate on 1 vs 1 matches following predefined schedules (date/time). Users then will be able to submit forecasts for the score of these matches and they will obtain points based on sets of rules that compare their forecast with the event score. The application should support two main user personas administrators and participants. Administrators will be in charge of defining the events, participating teams, the matches, updating the match score and define the scoring rules and which participants are allowed to submit forecasts. Participants are allowed to view the events that they are part of, submit forecasts for the matches and see what score they have received based on the match result."
+
+## Clarifications
+
+### Session 2025-11-26
+
+- Q: What authentication method should the system use? → A: Email magic links (passwordless authentication), with OAuth/SSO as a secondary option for future expansion
+- Q: What should the default scoring rules be? → A: Graduated scale - 5 points for exact score, 3 points for correct winner with goal difference within 1, 1 point for correct winner, 0 points for incorrect prediction
+- Q: How should match date/time information be stored and displayed? → A: All match date/time information must be stored in UTC format in the database and converted to users' local timezone for display purposes
+- Q: What are the possible match statuses? → A: Matches can have the following statuses: **upcoming** (scheduled but not started, forecasts allowed), **in-progress** (match has started, forecasts locked), **completed** (final score entered, points calculated), **postponed** (rescheduled to future date, forecasts locked), **cancelled** (will not be played, excluded from scoring)
+- Q: How are postponed matches handled? → A: When a match is marked as postponed, the administrator must provide a new date/time (replacing the original schedule). The match status changes back to "upcoming" once rescheduled, and participants can submit forecasts again if they haven't already, or edit existing forecasts until the new start time. If no new date/time is set, the match remains in "postponed" status and forecasts stay locked.
+- Q: How are scoring rule versions handled and how do changes impact existing matches? → A: Each match is associated with the scoring rule version active at the time the match was created. When an administrator modifies scoring rules, they can choose to: (1) apply changes only to future matches (default - preserves historical accuracy), or (2) recalculate all historical points for completed matches using the new rules (requires explicit confirmation). Matches retain their original scoring rule version unless manually recalculated, ensuring consistent point calculations even after rule changes.
+- Q: What are the session timeout and rate limiting policies for authentication? → A: Security Baseline - 1-hour session timeout with "remember me" option (7 days), rate limit 5 magic link requests per email per hour
+- Q: What is the data retention policy for user data and tournament history? → A: Indefinite Retention - Keep all data forever
+- Q: What monitoring and alerting requirements should the system have? → A: Production-Ready Monitoring - Monitor uptime, error rates, forecast submission success rate, point calculation latency, concurrent users; alert on: downtime >1min, error rate >5%, calculation time >5s
+- Q: How should the system handle email magic link delivery failures? → A: Fail Fast - Display error immediately, no retry; user must request new link
+- Q: What database should the system use for persistent storage? → A: Deferred - Select database during technical planning based on deployment target
+- Q: How should matches be handled when participants are unable to submit forecasts due to system downtime? → A: Matches affected by system downtime (occurring within the forecast submission window before match start) should be automatically excluded from scoring for all participants to ensure fairness; administrators should be notified of affected matches and have the option to manually reinstate them if appropriate
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Participant Submit Match Forecast (Priority: P1)
+### User Story 1 - Participant Submit and Track Match Forecasts (Priority: P1)
 
-A participant views upcoming matches in their assigned tournament and submits score predictions before the match starts. After the match completes and the administrator enters the actual score, the participant sees their earned points based on how close their forecast was to the actual result.
+A participant views upcoming matches in their assigned tournament and submits score predictions before the match starts. After the match completes and the administrator enters the actual score, the participant sees their earned points for each match and can track their total points across all matches.
 
-**Why this priority**: This is the core value proposition - enabling participants to make predictions and see their performance. Without this, the application has no user-facing functionality.
+**Why this priority**: This is the core value proposition - enabling participants to make predictions and see their individual performance. Without this, the application has no user-facing functionality. This story focuses solely on individual forecast submission and point tracking, making it independently testable.
 
-**Independent Test**: Can be fully tested by creating a tournament with matches, inviting a participant, having them submit forecasts, updating match scores, and verifying point calculations. Delivers immediate value as a working prediction system.
+**Independent Test**: Can be fully tested by creating a tournament with matches, inviting a single participant, having them submit forecasts, updating match scores, and verifying point calculations are displayed correctly for that participant. Delivers immediate value as a working prediction system without requiring multiple participants or leaderboard features.
 
 **Acceptance Scenarios**:
 
 1. **Given** a participant is assigned to a tournament with scheduled matches, **When** they view the tournament, **Then** they see all upcoming matches with teams, dates, and times
 2. **Given** a participant views an upcoming match, **When** they submit a score forecast (e.g., Team A: 2, Team B: 1) before the match starts, **Then** the forecast is saved and confirmed
 3. **Given** a participant has submitted a forecast, **When** they view the match again, **Then** they see their previously submitted forecast
-4. **Given** a match has ended and the administrator entered the actual score, **When** the participant views the match, **Then** they see the actual score and the points they earned
+4. **Given** a match has ended and the administrator entered the actual score, **When** the participant views the match, **Then** they see the actual score and the points they earned for that specific match
 5. **Given** a match has already started, **When** a participant tries to submit a forecast, **Then** the system prevents submission with a clear message
-6. **Given** a participant has submitted forecasts for multiple matches, **When** they view their tournament dashboard, **Then** they see their total points and ranking among other participants
+6. **Given** a participant has submitted forecasts for multiple matches, **When** they view their tournament dashboard, **Then** they see their total accumulated points across all completed matches
 
 ---
 
-### User Story 2 - Administrator Manage Tournament Setup (Priority: P2)
+### User Story 2 - Participant Compare Performance with Others (Priority: P2)
+
+A participant can view their ranking compared to other participants in the tournament through a leaderboard that displays all participants sorted by total points. This enables competitive engagement and social comparison among participants.
+
+**Why this priority**: While important for engagement and competition, this story depends on having the basic forecasting and scoring functionality working (P1). A participant can still derive value from submitting forecasts and tracking their own points without seeing how they rank against others.
+
+**Independent Test**: Can be tested by creating a tournament with multiple participants who have submitted forecasts and received points, then verifying the leaderboard displays correctly sorted rankings with accurate point totals and the participant can see their position among others.
+
+**Acceptance Scenarios**:
+
+1. **Given** a participant is part of a tournament with other participants, **When** they view the leaderboard, **Then** they see all participants ranked by total points in descending order
+2. **Given** a participant views the leaderboard, **When** they locate their own ranking, **Then** their entry is visually highlighted or distinguished from others
+3. **Given** match results have been updated, **When** a participant refreshes the leaderboard, **Then** rankings reflect the latest point calculations
+4. **Given** multiple participants have the same point total, **When** they appear on the leaderboard, **Then** they are sorted by additional tie-breaking criteria (e.g., number of exact score predictions, alphabetically by name)
+5. **Given** a participant views the leaderboard, **When** they see another participant's ranking, **Then** they can view that participant's total points but not their individual forecasts
+
+---
+
+### User Story 3 - Administrator Manage Tournament Setup (Priority: P3)
 
 An administrator creates a new tournament, defines participating teams, schedules matches with dates and times, and assigns participants who are allowed to submit forecasts. This creates the foundation for participants to engage with the tournament.
 
-**Why this priority**: Essential for tournament creation and management, but the administrator workflow is secondary to proving the participant experience works. Can be built after core forecasting functionality.
+**Why this priority**: Essential for tournament creation and management, but the administrator workflow is secondary to proving the participant experience works. Can be built after core forecasting and comparison functionality.
 
 **Independent Test**: Can be tested by logging in as an administrator, creating a complete tournament from scratch including teams and matches, inviting participants, and verifying all data is properly saved and visible.
 
@@ -45,11 +80,11 @@ An administrator creates a new tournament, defines participating teams, schedule
 
 ---
 
-### User Story 3 - Administrator Update Match Results and Scoring Rules (Priority: P3)
+### User Story 4 - Administrator Update Match Results and Scoring Rules (Priority: P4)
 
 After a match completes, an administrator enters the actual score, triggering automatic point calculations for all participants who submitted forecasts. Administrators can also define and customize the scoring rules that determine how points are awarded based on forecast accuracy.
 
-**Why this priority**: Required for completing the prediction cycle, but depends on P1 and P2 being functional. Scoring rules can start with reasonable defaults (e.g., exact score = 5 points, correct winner = 2 points, wrong = 0 points).
+**Why this priority**: Required for completing the prediction cycle, but depends on P1, P2, and P3 being functional. Scoring rules can start with a reasonable default graduated scale (5 points for exact score, 3 points for correct winner with goal difference within 1, 1 point for correct winner, 0 points for incorrect).
 
 **Independent Test**: Can be tested by creating a tournament with matches and forecasts, entering match results, and verifying that points are calculated correctly according to defined rules. Can also test customizing scoring rules and recalculating points.
 
@@ -64,23 +99,6 @@ After a match completes, an administrator enters the actual score, triggering au
 
 ---
 
-### User Story 4 - Participant View Tournament Leaderboard (Priority: P4)
-
-Participants can view a leaderboard showing all participants in their tournament ranked by total points, including their own position, fostering competition and engagement.
-
-**Why this priority**: Enhances user engagement but not essential for core functionality. Can be added after the basic forecast-submit-score cycle works.
-
-**Independent Test**: Can be tested by creating a tournament with multiple participants who have submitted forecasts and received points, then verifying the leaderboard displays correctly sorted rankings with accurate point totals.
-
-**Acceptance Scenarios**:
-
-1. **Given** a participant is part of a tournament, **When** they view the leaderboard, **Then** they see all participants ranked by total points in descending order
-2. **Given** a participant views the leaderboard, **When** they locate their own ranking, **Then** their entry is visually highlighted
-3. **Given** match results have been updated, **When** a participant refreshes the leaderboard, **Then** rankings reflect the latest point calculations
-4. **Given** multiple participants have the same point total, **When** they appear on the leaderboard, **Then** they are sorted by additional tie-breaking criteria (e.g., number of exact score predictions, alphabetically by name)
-
----
-
 ### Edge Cases
 
 - What happens when a participant submits a forecast after the match start time but before the result is entered? System must reject the forecast.
@@ -88,9 +106,11 @@ Participants can view a leaderboard showing all participants in their tournament
 - What happens when an administrator removes a participant who has already submitted forecasts? Forecasts should remain for historical record but participant loses access to view new matches.
 - What happens when multiple administrators manage the same tournament? System must handle concurrent edits without data corruption (optimistic locking or last-write-wins with clear messaging).
 - What happens when a match is postponed or cancelled? Administrator should be able to update match status, preventing forecast submission and excluding it from point calculations.
-- What happens when scoring rules are changed mid-tournament? System should track rule versions per match or offer recalculation with administrator confirmation.
+- What happens when a postponed match is rescheduled? The match status returns to "upcoming" with the new date/time, and participants can submit or edit forecasts until the new start time.
+- What happens when scoring rules are changed mid-tournament? By default, existing matches retain their original scoring rule version and only future matches use the new rules. Administrators can optionally trigger a recalculation to apply new rules to all historical matches with explicit confirmation.
+- What happens to points when scoring rules are recalculated? All participant points for affected matches are recalculated using the new rule version, and leaderboard rankings are automatically updated to reflect the new point totals.
 - What happens when a participant tries to submit invalid forecast data (negative scores, non-numeric values)? System must validate input and show clear error messages.
-- What happens when the system experiences downtime just before a match starts? Participants who couldn't submit forecasts should not be penalized (match exclusion or grace period extension).
+- What happens when the system experiences downtime just before a match starts? System must automatically exclude affected matches from scoring for all participants to ensure fairness. Administrators must be notified of downtime-affected matches and can manually review and reinstate matches if appropriate (e.g., if downtime was brief and most participants had already submitted forecasts).
 
 ## Requirements *(mandatory)*
 
@@ -108,27 +128,37 @@ Participants can view a leaderboard showing all participants in their tournament
 - **FR-010**: System MUST allow participants to view and edit their submitted forecasts before the match starts
 - **FR-011**: System MUST allow administrators to enter actual match results (scores for both teams)
 - **FR-012**: System MUST automatically calculate participant points when match results are entered, based on defined scoring rules
-- **FR-013**: System MUST allow administrators to define scoring rules with point values for: exact score match, correct winner, and incorrect prediction
-- **FR-014**: System MUST persist forecasts, match results, scoring rules, and calculated points
-- **FR-015**: System MUST display participant's total points across all scored matches in a tournament
-- **FR-016**: System MUST display a leaderboard ranking participants by total points
-- **FR-017**: System MUST support multiple concurrent tournaments without data interference
-- **FR-018**: System MUST authenticate users and distinguish between administrator and participant roles
-- **FR-019**: System MUST validate forecast inputs (non-negative integers for scores)
-- **FR-020**: System MUST display clear error messages for invalid operations (late forecasts, invalid scores, unauthorized access)
-- **FR-021**: System MUST handle timezone conversions for match scheduling to ensure consistent start time enforcement
-- **FR-022**: System MUST prevent administrators from deleting tournaments that have active participants or completed matches without explicit confirmation
-- **FR-023**: System MUST allow administrators to edit match schedules before the match starts
-- **FR-024**: System MUST log all administrator actions (tournament creation, score updates, rule changes) for audit purposes
+- **FR-013**: System MUST allow administrators to define custom scoring rules (such as exact score prediction, correct winner, point multipliers, or other criteria), require at least one scoring rule to be defined for each match, and provide a default graduated scoring template (5 points for exact score, 3 points for correct winner with goal difference within 1, 1 point for correct winner, 0 points for incorrect prediction) that administrators can use or customize for their tournaments
+- **FR-014**: System MUST associate each match with the scoring rule version active at the time of match creation, ensuring matches retain their original scoring rule version unless explicitly recalculated
+- **FR-015**: System MUST allow administrators to modify scoring rules with options to either apply changes only to future matches (default behavior) or recalculate all historical points for completed matches using new rules (requiring explicit confirmation)
+- **FR-016**: System MUST persist forecasts, match results, scoring rules, and calculated points
+- **FR-017**: System MUST display participant's total points across all scored matches in a tournament
+- **FR-018**: System MUST display a leaderboard ranking participants by total points
+- **FR-019**: System MUST support multiple concurrent tournaments without data interference
+- **FR-018**: System MUST authenticate users via email magic links (passwordless authentication) and distinguish between administrator and participant roles
+- **FR-019**: System MUST enforce a 1-hour session timeout with optional "remember me" functionality (7-day extended session) and rate limit magic link requests to 5 per email address per hour to prevent abuse
+- **FR-020**: System MUST validate forecast inputs (non-negative integers for scores)
+- **FR-021**: System MUST display clear error messages for invalid operations (late forecasts, invalid scores, unauthorized access)
+- **FR-022**: System MUST store all match date/time information in UTC format and present times to users converted to their local timezone, ensuring consistent start time enforcement across different geographic locations
+- **FR-023**: System MUST prevent administrators from deleting tournaments that have active participants or completed matches without explicit confirmation
+- **FR-024**: System MUST allow administrators to edit match schedules before the match starts
+- **FR-025**: System MUST allow administrators to update match status to postponed or cancelled, preventing forecast submissions and excluding the match from point calculations
+- **FR-026**: System MUST allow administrators to reschedule postponed matches by setting a new date/time, which changes the match status back to upcoming and reopens forecast submission
+- **FR-027**: System MUST log all administrator actions (tournament creation, score updates, rule changes) for audit purposes
+- **FR-028**: System MUST retain all user data, forecasts, match results, and tournament history indefinitely for historical reference and analysis
+- **FR-029**: System MUST monitor and track uptime, error rates, forecast submission success rate, point calculation latency, and concurrent user counts
+- **FR-030**: System MUST alert administrators when: system downtime exceeds 1 minute, error rate exceeds 5%, or point calculation time exceeds 5 seconds
+- **FR-031**: System MUST display an error message immediately when email magic link delivery fails, allowing users to request a new link without automatic retry
+- **FR-032**: System MUST automatically identify and exclude matches from scoring when system downtime occurs during the forecast submission window (between tournament start and match start time), notify administrators of affected matches, and provide administrators the option to manually reinstate matches for scoring if deemed appropriate
 
 ### Key Entities
 
-- **User**: Represents a person using the system; has a role (Administrator or Participant); has authentication credentials; associated with zero or more tournaments
+- **User**: Represents a person using the system; has a role (Administrator or Participant); has email address for magic link authentication; associated with zero or more tournaments
 - **Tournament**: Represents a competition event; has a name, description, start/end dates; contains teams, matches, participants, and scoring rules; owned by one or more administrators
 - **Team**: Represents a competing entity within a tournament; has a name; participates in multiple matches
-- **Match**: Represents a scheduled 1v1 game between two teams; has scheduled date/time, two teams, optional actual scores, status (upcoming/in-progress/completed); belongs to one tournament
+- **Match**: Represents a scheduled 1v1 game between two teams; has scheduled date/time (stored in UTC), two teams, optional actual scores, status (upcoming/in-progress/completed/postponed/cancelled); belongs to one tournament
 - **Forecast**: Represents a participant's prediction; has predicted scores for both teams, submission timestamp; linked to one participant, one match
-- **ScoringRule**: Represents point calculation logic; has point values for exact score match, correct winner prediction, incorrect prediction; belongs to one tournament; may have version/effective date
+- **ScoringRule**: Represents point calculation logic; has point values for different prediction accuracy levels (exact score, correct winner with close goal difference, correct winner, incorrect); belongs to one tournament; may have version/effective date; default template provides graduated scale (5/3/1/0 points)
 - **ParticipantScore**: Represents calculated points for a participant; has total points, points per match; linked to one participant, one tournament
 - **TournamentParticipant**: Represents the relationship between users and tournaments; indicates which participants have access to which tournaments
 
