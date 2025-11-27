@@ -177,13 +177,13 @@ After a match completes, an administrator enters the actual score, triggering au
 
 ### Measurable Outcomes
 
-- **SC-001**: Participants can submit a match forecast in under 30 seconds from viewing the match list
-- **SC-002**: Administrators can create a complete tournament (with 4 teams, 6 matches, and 10 participants) in under 5 minutes
-- **SC-003**: Point calculations are completed within 2 seconds after an administrator enters match results
-- **SC-004**: System supports at least 100 concurrent participants submitting forecasts without performance degradation
-- **SC-005**: 95% of forecast submissions succeed on the first attempt without validation errors
-- **SC-006**: Leaderboard displays updated rankings within 5 seconds of match result entry
+- **SC-001**: Participants can submit a match forecast in under 30 seconds from viewing the match list.
+- **SC-002**: Administrators can create a complete tournament (with 4 teams, 6 matches, and 10 participants) in under 5 minutes.
+- **SC-003**: Point calculations are completed within 2 seconds after an administrator enters match results.
+- **SC-004**: System supports at least 100 concurrent participants submitting forecasts without performance degradation.
+- **SC-005**: 95% of forecast submissions succeed on the first attempt without validation errors.
+- **SC-006**: Leaderboard displays updated rankings within 5 seconds of match result entry.
 - **SC-007**: 99.99% of concurrent administrator edits to tournament settings complete successfully without data corruption or data loss.
-- **SC-008**: Participants can view their complete forecast history and earned points for all matches with 100% accuracy
-- **SC-009**: All forecast submission deadlines are enforced within 1-second accuracy of match start time
+- **SC-008**: Participants can view their complete forecast history and earned points for all matches with 100% accuracy.
+- **SC-009**: All forecast submission deadlines are enforced within 1-second accuracy of match start time.
 - **SC-010**: All authorization checks are enforced and tested for role-based access control (e.g., participants cannot view other tournaments or enter scores), with 99.99% of unauthorized access attempts prevented in security testing.
