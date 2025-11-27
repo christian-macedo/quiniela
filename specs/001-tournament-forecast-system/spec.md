@@ -164,7 +164,7 @@ After a match completes, an administrator enters the actual score, triggering au
 
 ### Key Entities
 
-- **User**: Represents a person using the system; has a unique username (displayed in tournaments and leaderboards), unique email address (used for magic link authentication and communication), and role (Administrator or Participant); associated with zero or more tournaments
+- **User**: Represents a person using the system; has a unique username (displayed in tournaments and leaderboards), unique email address (used for magic link authentication and communication), and role (Administrator or Participant); can participate in zero or more tournaments
 - **Tournament**: Represents a competition event; has a name, description, start/end dates; contains teams, matches, participants, and scoring rules; owned by one or more administrators
 - **Team**: Represents a competing entity within a tournament; has a name; participates in multiple matches
 - **Match**: Represents a scheduled 1v1 game between two teams; has scheduled date/time (stored in UTC), two teams, optional actual scores, status (upcoming/in-progress/completed/postponed/cancelled); belongs to one tournament
