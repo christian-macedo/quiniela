@@ -135,21 +135,21 @@ After a match completes, an administrator enters the actual score, triggering au
 - **FR-017**: System MUST display participant's total points across all scored matches in a tournament
 - **FR-018**: System MUST display a leaderboard ranking participants by total points
 - **FR-019**: System MUST support multiple concurrent tournaments without data interference
-- **FR-018**: System MUST authenticate users via email magic links (passwordless authentication) and distinguish between administrator and participant roles
-- **FR-019**: System MUST enforce a 1-hour session timeout with optional "remember me" functionality (7-day extended session) and rate limit magic link requests to 5 per email address per hour to prevent abuse
-- **FR-020**: System MUST validate forecast inputs (non-negative integers for scores)
-- **FR-021**: System MUST display clear error messages for invalid operations (late forecasts, invalid scores, unauthorized access)
-- **FR-022**: System MUST store all match date/time information in UTC format and present times to users converted to their local timezone, ensuring consistent start time enforcement across different geographic locations
-- **FR-023**: System MUST prevent administrators from deleting tournaments that have active participants or completed matches without explicit confirmation
-- **FR-024**: System MUST allow administrators to edit match schedules before the match starts
-- **FR-025**: System MUST allow administrators to update match status to postponed or cancelled, preventing forecast submissions and excluding the match from point calculations
-- **FR-026**: System MUST allow administrators to reschedule postponed matches by setting a new date/time, which changes the match status back to upcoming and reopens forecast submission
-- **FR-027**: System MUST log all administrator actions (tournament creation, score updates, rule changes) for audit purposes
-- **FR-028**: System MUST retain all user data, forecasts, match results, and tournament history indefinitely for historical reference and analysis
-- **FR-029**: System MUST monitor and track uptime, error rates, forecast submission success rate, point calculation latency, and concurrent user counts
-- **FR-030**: System MUST alert administrators when: system downtime exceeds 1 minute, error rate exceeds 5%, or point calculation time exceeds 5 seconds
-- **FR-031**: System MUST display an error message immediately when email magic link delivery fails, allowing users to request a new link without automatic retry
-- **FR-032**: System MUST automatically identify and exclude matches from scoring when system downtime occurs during the forecast submission window (between tournament start and match start time), notify administrators of affected matches, and provide administrators the option to manually reinstate matches for scoring if deemed appropriate
+- **FR-020**: System MUST authenticate users via email magic links (passwordless authentication) and distinguish between administrator and participant roles
+- **FR-021**: System MUST enforce a 1-hour session timeout with optional "remember me" functionality (7-day extended session) and rate limit magic link requests to 5 per email address per hour to prevent abuse
+- **FR-022**: System MUST validate forecast inputs (non-negative integers for scores)
+- **FR-023**: System MUST display clear error messages for invalid operations (late forecasts, invalid scores, unauthorized access)
+- **FR-024**: System MUST store all match date/time information in UTC format and present times to users converted to their local timezone, ensuring consistent start time enforcement across different geographic locations
+- **FR-025**: System MUST prevent administrators from deleting tournaments that have active participants or completed matches without explicit confirmation
+- **FR-026**: System MUST allow administrators to edit match schedules before the match starts
+- **FR-027**: System MUST allow administrators to update match status to postponed or cancelled, preventing forecast submissions and excluding the match from point calculations
+- **FR-028**: System MUST allow administrators to reschedule postponed matches by setting a new date/time, which changes the match status back to upcoming and reopens forecast submission
+- **FR-029**: System MUST log all administrator actions (tournament creation, score updates, rule changes) for audit purposes
+- **FR-030**: System MUST retain all user data, forecasts, match results, and tournament history indefinitely for historical reference and analysis
+- **FR-031**: System MUST monitor and track uptime, error rates, forecast submission success rate, point calculation latency, and concurrent user counts
+- **FR-032**: System MUST alert administrators when: system downtime exceeds 1 minute, error rate exceeds 5%, or point calculation time exceeds 5 seconds
+- **FR-033**: System MUST display an error message immediately when email magic link delivery fails, allowing users to request a new link without automatic retry
+- **FR-034**: System MUST automatically identify and exclude matches from scoring when system downtime occurs during the forecast submission window (between tournament start and match start time), notify administrators of affected matches, and provide administrators the option to manually reinstate matches for scoring if deemed appropriate
 
 ### Key Entities
 
