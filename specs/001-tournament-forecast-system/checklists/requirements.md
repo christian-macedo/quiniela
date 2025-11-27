@@ -62,7 +62,7 @@ Verified against Quiniela Constitution v1.0.0:
 - **Code Quality First**: Specification enables quality through clear, unambiguous requirements
 - **Test-Driven Development**: User stories structured for independent testing with clear acceptance criteria
 - **Reusability by Design**: Entity model supports clean separation of concerns
-- **UX Consistency**: User flows are well-defined with clear error handling requirements (FR-023)
+- **UX Consistency**: User flows are well-defined with clear error handling requirements (FR-025)
 - **Observability & Maintainability**: Audit logging requirement included (FR-029), monitoring (FR-031), and alerting (FR-032)
 
 ## Notes
