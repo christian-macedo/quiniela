@@ -142,7 +142,7 @@ Participants can view a leaderboard showing all participants in their tournament
 - **SC-004**: System supports at least 100 concurrent participants submitting forecasts without performance degradation
 - **SC-005**: 95% of forecast submissions succeed on the first attempt without validation errors
 - **SC-006**: Leaderboard displays updated rankings within 5 seconds of match result entry
-- **SC-007**: Zero data loss or corruption when multiple administrators edit tournament settings concurrently
+- **SC-007**: 99.99% of concurrent administrator edits to tournament settings complete successfully without data corruption; all concurrent edits are serialized or merged without data loss through conflict resolution
 - **SC-008**: Participants can view their complete forecast history and earned points for all matches with 100% accuracy
 - **SC-009**: All forecast submission deadlines are enforced within 1-second accuracy of match start time
 - **SC-010**: System prevents 100% of unauthorized access attempts (participants viewing other tournaments, participants entering scores)
