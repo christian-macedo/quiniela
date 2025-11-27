@@ -183,7 +183,7 @@ After a match completes, an administrator enters the actual score, triggering au
 - **SC-004**: System supports at least 100 concurrent participants submitting forecasts without performance degradation
 - **SC-005**: 95% of forecast submissions succeed on the first attempt without validation errors
 - **SC-006**: Leaderboard displays updated rankings within 5 seconds of match result entry
-- **SC-007**: 99.99% of concurrent administrator edits to tournament settings complete successfully without data corruption; all concurrent edits are serialized or merged without data loss through conflict resolution
+- **SC-007**: 99.99% of concurrent administrator edits to tournament settings complete successfully without data corruption or data loss.
 - **SC-008**: Participants can view their complete forecast history and earned points for all matches with 100% accuracy
 - **SC-009**: All forecast submission deadlines are enforced within 1-second accuracy of match start time
 - **SC-010**: All authorization checks are enforced and tested for role-based access control (e.g., participants cannot view other tournaments or enter scores), with 99.99% of unauthorized access attempts prevented in security testing.
