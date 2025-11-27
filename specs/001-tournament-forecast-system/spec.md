@@ -83,7 +83,7 @@ An administrator creates a new tournament, defines participating teams, schedule
 4. **Given** an administrator has scheduled matches, **When** they add participants by username, **Then** the participants are granted access to view the tournament and submit forecasts
 5. **Given** an administrator views a tournament that has not started, **When** they edit team names, match schedules, or participant lists, **Then** changes are saved and reflected immediately
 6. **Given** an administrator has created multiple tournaments, **When** they view their dashboard, **Then** they see all tournaments they manage with key statistics (number of matches, participants, completion status)
-7. **Given** a tournament has started, **When** an administrator attempts to add or delete teams or participants, **Then** the system prevents the operation with a clear message indicating that tournament composition cannot be changed after it has started
+7. **Given** a tournament has started, **When** an administrator attempts to add, delete, or modify teams or participants, **Then** the system prevents the operation with a clear message indicating that tournament composition and team-specific information cannot be changed after it has started
 
 ---
 
