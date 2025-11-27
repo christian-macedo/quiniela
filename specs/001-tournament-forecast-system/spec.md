@@ -104,7 +104,7 @@ After a match completes, an administrator enters the actual score, triggering au
 - What happens when a participant submits a forecast after the match start time but before the result is entered? System must reject the forecast.
 - What happens when an administrator deletes a team that is scheduled in future matches? System must prevent deletion or cascade update to remove affected matches with warnings.
 - What happens when an administrator removes a participant who has already submitted forecasts? Forecasts should remain for historical record but participant loses access to view new matches.
-- What happens when multiple administrators manage the same tournament? System must handle concurrent edits without data corruption (optimistic locking or last-write-wins with clear messaging).
+- What happens when multiple administrators manage the same tournament? System must prevent data corruption from concurrent edits and provide clear feedback to administrators when conflicts occur.
 - What happens when a match is postponed or cancelled? Administrator should be able to update match status, preventing forecast submission and excluding it from point calculations.
 - What happens when a postponed match is rescheduled? The match status returns to "upcoming" with the new date/time, and participants can submit or edit forecasts until the new start time.
 - What happens when scoring rules are changed mid-tournament? By default, existing matches retain their original scoring rule version and only future matches use the new rules. Administrators can optionally trigger a recalculation to apply new rules to all historical matches with explicit confirmation.
@@ -159,7 +159,7 @@ After a match completes, an administrator enters the actual score, triggering au
 - **Match**: Represents a scheduled 1v1 game between two teams; has scheduled date/time (stored in UTC), two teams, optional actual scores, status (upcoming/in-progress/completed/postponed/cancelled); belongs to one tournament
 - **Forecast**: Represents a participant's prediction; has predicted scores for both teams, submission timestamp; linked to one participant, one match
 - **ScoringRule**: Represents point calculation logic; has point values for different prediction accuracy levels (exact score, correct winner with close goal difference, correct winner, incorrect); belongs to one tournament; may have version/effective date; default template provides graduated scale (5/3/1/0 points)
-- **ParticipantScore**: Represents calculated points for a participant; has total points, points per match; linked to one participant, one tournament
+- **ParticipantScore**: Represents calculated points for a participant; has total points; linked to one participant, one tournament. Per-match point breakdowns are available via linked forecasts.
 - **TournamentParticipant**: Represents the relationship between users and tournaments; indicates which participants have access to which tournaments
 
 ## Success Criteria *(mandatory)*
