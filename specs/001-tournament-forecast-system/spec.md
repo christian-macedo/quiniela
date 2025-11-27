@@ -145,4 +145,4 @@ Participants can view a leaderboard showing all participants in their tournament
 - **SC-007**: 99.99% of concurrent administrator edits to tournament settings complete successfully without data corruption; all concurrent edits are serialized or merged without data loss through conflict resolution
 - **SC-008**: Participants can view their complete forecast history and earned points for all matches with 100% accuracy
 - **SC-009**: All forecast submission deadlines are enforced within 1-second accuracy of match start time
-- **SC-010**: System prevents 100% of unauthorized access attempts (participants viewing other tournaments, participants entering scores)
+- **SC-010**: All authorization checks are enforced and tested for role-based access control (e.g., participants cannot view other tournaments or enter scores), with 99.99% of unauthorized access attempts prevented in security testing.
