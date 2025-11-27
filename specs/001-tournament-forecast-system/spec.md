@@ -26,6 +26,9 @@
 - Q: Can teams and team information be edited after a tournament has started? → A: No - once a tournament has started, teams and team-specific information (such as team names) cannot be added, deleted, or modified to maintain data integrity and prevent confusion for participants who have already submitted forecasts
 - Q: How should the system handle concurrent match result submissions by multiple administrators? → A: The system must prevent data corruption by detecting concurrent edits. When a conflict occurs (e.g., two administrators attempt to update the same match result simultaneously), the system must reject the conflicting operation, display a clear error message indicating that another administrator has already updated the result, show the current state of the match result, and allow the administrator to review and resubmit if necessary.
 
+## Functional Requirements
+
+- **FR-010**: System MUST prevent modification of participant list (teams and team information) after tournament start. This includes prohibiting adding, deleting, or editing teams and team-specific information once the tournament has started.
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Participant Submit and Track Match Forecasts (Priority: P1)
