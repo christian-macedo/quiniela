@@ -63,6 +63,7 @@ A participant can view their ranking compared to other participants in the tourn
 4. **Given** multiple participants have the same point total, **When** they appear on the leaderboard, **Then** they share the same rank position with no tie-breaking applied
 5. **Given** a participant views the leaderboard, **When** they see another participant's ranking, **Then** they can view that participant's total points but cannot view their individual forecasts for upcoming or in-progress matches
 6. **Given** a match has been completed and scored, **When** a participant views match details, **Then** they can see all participants' forecasts for that specific match along with points earned
+7. **Given** a tournament has no completed matches, **When** a participant views the leaderboard, **Then** they see all participants with 0 points or a message indicating no scores are available yet
 
 ---
 
