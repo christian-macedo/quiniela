@@ -86,7 +86,7 @@ Participants can view a leaderboard showing all participants in their tournament
 - What happens when a participant submits a forecast after the match start time but before the result is entered? System must reject the forecast.
 - What happens when an administrator deletes a team that is scheduled in future matches? System must prevent deletion or cascade update to remove affected matches with warnings.
 - What happens when an administrator removes a participant who has already submitted forecasts? Forecasts should remain for historical record but participant loses access to view new matches.
-- What happens when multiple administrators manage the same tournament? System must handle concurrent edits without data corruption (optimistic locking or last-write-wins with clear messaging).
+- What happens when multiple administrators manage the same tournament? System must prevent data corruption from concurrent edits and provide clear feedback to administrators when conflicts occur.
 - What happens when a match is postponed or cancelled? Administrator should be able to update match status, preventing forecast submission and excluding it from point calculations.
 - What happens when scoring rules are changed mid-tournament? System should track rule versions per match or offer recalculation with administrator confirmation.
 - What happens when a participant tries to submit invalid forecast data (negative scores, non-numeric values)? System must validate input and show clear error messages.
