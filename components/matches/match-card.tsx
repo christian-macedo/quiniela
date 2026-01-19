@@ -35,15 +35,17 @@ export function MatchCard({ match }: MatchCardProps) {
               <TeamBadge team={match.home_team} size="md" showName={true} />
             </div>
 
-            <div className="flex items-center gap-3 text-2xl font-bold">
-              <span className={!isCompleted ? "text-muted-foreground" : ""}>
-                {match.home_score ?? "-"}
-              </span>
-              <span className="text-muted-foreground">:</span>
-              <span className={!isCompleted ? "text-muted-foreground" : ""}>
-                {match.away_score ?? "-"}
-              </span>
-            </div>
+            {isCompleted && match.home_score !== null && match.away_score !== null ? (
+              <div className="flex items-center gap-3 text-2xl font-bold">
+                <span>{match.home_score}</span>
+                <span className="text-muted-foreground">:</span>
+                <span>{match.away_score}</span>
+              </div>
+            ) : (
+              <div className="text-xl font-semibold text-muted-foreground">
+                vs
+              </div>
+            )}
 
             <div className="flex-1 flex justify-end">
               <TeamBadge team={match.away_team} size="md" showName={true} />

@@ -16,7 +16,7 @@ const statusColors = {
 
 export function TournamentCard({ tournament }: TournamentCardProps) {
   return (
-    <Link href={`/${tournament.id}/matches`}>
+    <Link href={`/${tournament.id}`}>
       <Card className="hover:shadow-lg transition-shadow cursor-pointer">
         <CardHeader>
           <div className="flex justify-between items-start">

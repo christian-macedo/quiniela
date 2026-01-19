@@ -1,0 +1,324 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Trash2 } from "lucide-react";
+import { Team, MatchStatus } from "@/types/database";
+import { ScoreMatchDialog } from "./score-match-dialog";
+
+interface MatchWithTeams {
+  id: string;
+  tournament_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  match_date: string;
+  home_score: number | null;
+  away_score: number | null;
+  status: MatchStatus;
+  round: string | null;
+  multiplier: number;
+  home_team: Team;
+  away_team: Team;
+}
+
+interface MatchEditFormProps {
+  match: MatchWithTeams;
+  teams: Team[];
+}
+
+export function MatchEditForm({ match, teams }: MatchEditFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    tournament_id: match.tournament_id,
+    home_team_id: match.home_team_id,
+    away_team_id: match.away_team_id,
+    match_date: match.match_date.split("T")[0] + "T" + match.match_date.split("T")[1]?.substring(0, 5) || "",
+    round: match.round || "",
+    status: match.status,
+    multiplier: match.multiplier || 1,
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/matches/${match.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update match");
+      }
+
+      router.push(`/tournaments/manage/${match.tournament_id}/matches`);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update match");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/matches/${match.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete match");
+      }
+
+      router.push(`/tournaments/manage/${match.tournament_id}/matches`);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete match");
+      setIsDeleting(false);
+    }
+  };
+
+  // Filter available teams based on selection
+  const availableHomeTeams = teams.filter(
+    (team) => team.id !== formData.away_team_id
+  );
+  const availableAwayTeams = teams.filter(
+    (team) => team.id !== formData.home_team_id
+  );
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Edit Match</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="home_team_id">Home Team *</Label>
+              <Select
+                value={formData.home_team_id}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, home_team_id: value })
+                }
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select home team" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableHomeTeams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name} ({team.short_name})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="away_team_id">Away Team *</Label>
+              <Select
+                value={formData.away_team_id}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, away_team_id: value })
+                }
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select away team" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableAwayTeams.map((team) => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name} ({team.short_name})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="match_date">Match Date & Time *</Label>
+              <Input
+                id="match_date"
+                type="datetime-local"
+                value={formData.match_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, match_date: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="round">Round/Stage</Label>
+              <Input
+                id="round"
+                value={formData.round}
+                onChange={(e) =>
+                  setFormData({ ...formData, round: e.target.value })
+                }
+                placeholder="e.g., Group A, Round of 16, Final"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value as MatchStatus })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="multiplier">Point Multiplier</Label>
+              <Input
+                id="multiplier"
+                type="number"
+                min="1"
+                max="3"
+                step="1"
+                value={formData.multiplier}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    multiplier: parseInt(e.target.value) || 1,
+                  })
+                }
+                placeholder="1"
+              />
+              <p className="text-xs text-muted-foreground">
+                Multiply points (1 = normal, 2 = double, 3 = triple)
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex gap-4">
+              <Button type="submit" disabled={isLoading || isDeleting}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+                disabled={isLoading || isDeleting}
+              >
+                Cancel
+              </Button>
+            </div>
+
+            <div className="flex gap-4 sm:ml-auto">
+              {/* Score Match Button */}
+              <ScoreMatchDialog
+                matchId={match.id}
+                homeTeam={match.home_team}
+                awayTeam={match.away_team}
+                currentHomeScore={match.home_score}
+                currentAwayScore={match.away_score}
+                multiplier={match.multiplier}
+              />
+
+              {/* Delete Button */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={isLoading || isDeleting}
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="mr-2 h-4 w-4" />
+                    )}
+                    Delete Match
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      the match between {match.home_team.name} and{" "}
+                      {match.away_team.name}.
+                      {match.status === "completed" && (
+                        <span className="block mt-2 text-destructive font-semibold">
+                          Warning: This match has been completed. Deleting it may
+                          affect user rankings and predictions.
+                        </span>
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}

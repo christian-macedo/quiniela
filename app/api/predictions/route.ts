@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUTC } from "@/lib/utils/date";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
         .update({
           predicted_home_score,
           predicted_away_score,
-          updated_at: new Date().toISOString(),
+          updated_at: getCurrentUTC(),
         })
         .eq("id", existing.id)
         .select()
