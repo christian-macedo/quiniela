@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+
+# Development files
+.env.local
+.env*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing
+coverage
+.jest
+
+# Supabase local development
+supabase/.branches
+supabase/.temp
+
+# Misc
+.DS_Store
+*.log
+.claude
