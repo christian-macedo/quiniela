@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import Link from "next/link";
 
 interface MatchCardProps {
   match: MatchWithTeams;
@@ -13,13 +14,21 @@ export function MatchCard({ match }: MatchCardProps) {
   const isLive = match.status === "in_progress";
 
   return (
-    <Card className={isLive ? "border-green-500 border-2" : ""}>
-      <CardContent className="p-6">
+    <Link href={`/${match.tournament_id}/matches/${match.id}`}>
+      <Card className={`transition-colors hover:bg-muted/50 cursor-pointer ${isLive ? "border-green-500 border-2" : ""}`}>
+        <CardContent className="p-6">
         <div className="space-y-4">
           {/* Match Info */}
           <div className="flex justify-between items-center">
-            <div className="text-sm text-muted-foreground">
-              {formatLocalDateTime(match.match_date)}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {formatLocalDateTime(match.match_date)}
+              </span>
+              {match.multiplier > 1 && (
+                <Badge variant="outline" className="text-orange-500 border-orange-500">
+                  {match.multiplier}x
+                </Badge>
+              )}
             </div>
             <Badge
               variant={isLive ? "default" : "outline"}
@@ -61,5 +70,6 @@ export function MatchCard({ match }: MatchCardProps) {
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }

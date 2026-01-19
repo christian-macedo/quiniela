@@ -41,15 +41,12 @@ export default async function RankingsPage({
           <p className="text-muted-foreground">Tournament Leaderboard</p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/${tournamentId}/matches`}>
-            <Button variant="outline">Matches</Button>
-          </Link>
-          <Link href={`/${tournamentId}/predictions`}>
-            <Button variant="outline">Predictions</Button>
-          </Link>
+        <Link href={`/${tournamentId}`}>
+          <Button variant="outline">Back to Tournament</Button>
+        </Link>
         </div>
       </div>
-      <RankingsTable rankings={rankings || []} currentUserId={user?.id} />
+      <RankingsTable rankings={rankings || []} currentUserId={user?.id} tournamentId={tournamentId} />
     </div>
   );
 }

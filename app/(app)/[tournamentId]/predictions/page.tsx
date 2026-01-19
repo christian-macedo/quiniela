@@ -114,8 +114,8 @@ export default function PredictionsPage() {
             Submit predictions for upcoming matches and view your results
           </p>
         </div>
-        <Link href={`/${tournamentId}/matches`}>
-          <Button variant="outline">Back to Matches</Button>
+        <Link href={`/${tournamentId}`}>
+          <Button variant="outline">Back to Tournament</Button>
         </Link>
       </div>
 

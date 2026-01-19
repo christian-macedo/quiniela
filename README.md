@@ -74,6 +74,26 @@ npm run dev
 
 See [CLAUDE.md](./CLAUDE.md) for detailed architecture documentation and development guidelines.
 
+## Deployment
+
+This application is optimized for deployment on Vercel's free tier.
+
+### Quick Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/quiniela-dev)
+
+### Manual Deployment
+
+For detailed deployment instructions, including environment variable configuration and Supabase setup, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+**Quick steps:**
+1. Push your code to GitHub/GitLab/Bitbucket
+2. Import the repository in [Vercel](https://vercel.com)
+3. Add environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Deploy and configure Supabase authentication URLs
+
 ## License
 
 MIT

@@ -42,12 +42,9 @@ export default async function MatchesPage({
           <p className="text-muted-foreground">Upcoming and completed matches</p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/${tournamentId}/predictions`}>
-            <Button variant="outline">My Predictions</Button>
-          </Link>
-          <Link href={`/${tournamentId}/rankings`}>
-            <Button>Rankings</Button>
-          </Link>
+        <Link href={`/${tournamentId}`}>
+          <Button variant="outline">Back to Tournament</Button>
+        </Link>
         </div>
       </div>
       <MatchList matches={matches || []} />
