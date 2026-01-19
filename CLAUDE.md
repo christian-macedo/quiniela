@@ -185,6 +185,39 @@ import { useState } from "react";
 // Component with form handling, state management
 ```
 
+## Theming & Color Scheme
+
+The application uses a flexible CSS variable-based theming system powered by the **Blue Lagoon** color palette.
+
+### Current Palette
+
+**Blue Lagoon** from [Coolors.co](https://coolors.co/palette/00a6fb-0582ca-006494-003554-051923):
+- `#00A6FB` - Vivid Cerulean (accents, highlights)
+- `#0582CA` - Honolulu Blue (primary brand color)
+- `#006494` - Sea Blue (muted elements)
+- `#003554` - Prussian Blue (dark mode cards)
+- `#051923` - Rich Black (text, dark backgrounds)
+
+### How to Change Colors
+
+All theme colors are defined in **one place**: `app/globals.css`
+
+To update the entire color scheme:
+1. Edit the CSS variables in the `:root` section (light mode)
+2. Edit the CSS variables in the `.dark` section (dark mode)
+3. Save - the entire app updates automatically!
+
+See **[THEMING.md](./THEMING.md)** for detailed instructions and color palette resources.
+
+### Using Theme Colors
+
+Colors automatically apply through Tailwind utility classes:
+```jsx
+<Button className="bg-primary text-primary-foreground">Primary</Button>
+<Card className="bg-card border-border">Card</Card>
+<Badge className="bg-accent">Accent</Badge>
+```
+
 ## Image Uploads
 
 Team logos and user avatars are stored in Supabase Storage buckets:

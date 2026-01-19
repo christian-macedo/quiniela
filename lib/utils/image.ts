@@ -49,9 +49,11 @@ export async function deleteImage(
 
 /**
  * Generate a unique filename for an uploaded image
+ * Uses folder structure: userId/timestamp.ext
+ * This matches the RLS policy that restricts users to their own folder
  */
 export function generateImageFilename(userId: string, file: File): string {
   const extension = file.name.split(".").pop();
   const timestamp = Date.now();
-  return `${userId}-${timestamp}.${extension}`;
+  return `${userId}/${timestamp}.${extension}`;
 }

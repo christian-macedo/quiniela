@@ -6,10 +6,16 @@ import { useRouter } from "next/navigation";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 import { User } from "@/types/database";
 import { uploadImage, generateImageFilename } from "@/lib/utils/image";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PasskeyRegisterButton } from "@/components/auth/passkey/passkey-register-button";
+import { PasskeyList } from "@/components/auth/passkey/passkey-list";
+import { Fingerprint } from "lucide-react";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasPasskey, setHasPasskey] = useState(false);
+  const [checkingPasskey, setCheckingPasskey] = useState(true);
   const router = useRouter();
   const supabase = createClient();
 
@@ -33,6 +39,21 @@ export default function ProfilePage() {
 
     setUser(data);
     setLoading(false);
+
+    // Check if user has passkeys
+    checkPasskeys(authUser.id);
+  }
+
+  async function checkPasskeys(userId: string) {
+    setCheckingPasskey(true);
+    const { data } = await supabase
+      .from("webauthn_credentials")
+      .select("id")
+      .eq("user_id", userId)
+      .limit(1);
+
+    setHasPasskey((data && data.length > 0) || false);
+    setCheckingPasskey(false);
   }
 
   async function handleUpdate(screenName: string, avatarFile?: File) {
@@ -83,7 +104,74 @@ export default function ProfilePage() {
           Manage your account settings and preferences
         </p>
       </div>
-      <ProfileEditor user={user} onUpdate={handleUpdate} />
+
+      <div className="space-y-6">
+        {/* Profile Editor */}
+        <ProfileEditor user={user} onUpdate={handleUpdate} />
+
+        {/* Passkey Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Fingerprint className="h-5 w-5" />
+              Passkey Authentication
+            </CardTitle>
+            <CardDescription>
+              Use biometric authentication or a security key for secure, password-free sign-in
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {checkingPasskey ? (
+              <p className="text-sm text-muted-foreground">Loading passkeys...</p>
+            ) : (
+              <div className="space-y-4">
+                {/* Benefits section - show if no passkeys */}
+                {!hasPasskey && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                      Why use passkeys?
+                    </h4>
+                    <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-disc list-inside">
+                      <li>More secure than passwords</li>
+                      <li>Faster sign-in with biometrics</li>
+                      <li>Works across all your devices</li>
+                      <li>No passwords to remember or type</li>
+                    </ul>
+                  </div>
+                )}
+
+                {/* Passkey List */}
+                {hasPasskey && (
+                  <div>
+                    <h4 className="font-medium mb-3">Your Passkeys</h4>
+                    <PasskeyList
+                      onPasskeysChange={() => {
+                        checkPasskeys(user!.id);
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Add Passkey Button */}
+                <div>
+                  <PasskeyRegisterButton
+                    onSuccess={() => {
+                      checkPasskeys(user!.id);
+                      router.refresh();
+                    }}
+                    variant={hasPasskey ? "outline" : "default"}
+                  />
+                  {hasPasskey && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Add another passkey for a different device or browser
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
