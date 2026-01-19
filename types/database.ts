@@ -47,6 +47,7 @@ export interface Match {
   away_score: number | null
   status: MatchStatus
   round: string | null
+  multiplier: number
   created_at: string
   updated_at: string
 }
@@ -76,9 +77,9 @@ export interface TournamentRanking {
   user_id: string
   tournament_id: string
   total_points: number
-  rank: number | null
-  created_at: string
-  updated_at: string
+  rank: number
+  // Note: This is now a computed view, not a table
+  // created_at and updated_at are not available
 }
 
 // Extended types with relations

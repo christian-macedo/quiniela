@@ -48,6 +48,12 @@ export default async function AppLayout({
             <Link href="/tournaments">
               <Button variant="ghost">Tournaments</Button>
             </Link>
+            <Link href="/tournaments/manage">
+              <Button variant="ghost">Manage Tournaments</Button>
+            </Link>
+            <Link href="/teams">
+              <Button variant="ghost">Teams</Button>
+            </Link>
             {userProfile && <UserNav user={userProfile} />}
           </div>
         </div>

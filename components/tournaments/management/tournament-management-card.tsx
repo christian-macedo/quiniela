@@ -1,0 +1,71 @@
+import Link from "next/link";
+import { Tournament } from "@/types/database";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { formatLocalDate } from "@/lib/utils/date";
+import { Pencil, Eye, Users, Calendar } from "lucide-react";
+
+interface TournamentManagementCardProps {
+  tournament: Tournament;
+  teamCount: number;
+  matchCount: number;
+}
+
+const statusColors = {
+  upcoming: "bg-blue-500",
+  active: "bg-green-500",
+  completed: "bg-gray-500",
+};
+
+export function TournamentManagementCard({ 
+  tournament, 
+  teamCount, 
+  matchCount 
+}: TournamentManagementCardProps) {
+  return (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardHeader className="pb-3">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <div className={`h-2 w-2 rounded-full ${statusColors[tournament.status]}`} />
+            <Badge variant="outline" className="capitalize">
+              {tournament.status}
+            </Badge>
+          </div>
+          <div className="flex gap-2">
+            <Link href={`/tournaments/manage/${tournament.id}`}>
+              <Button variant="outline" size="icon" title="View details">
+                <Eye className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href={`/tournaments/manage/${tournament.id}/edit`}>
+              <Button variant="outline" size="icon" title="Edit tournament">
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <CardTitle className="mb-2">{tournament.name}</CardTitle>
+        <CardDescription className="mb-4">
+          {formatLocalDate(tournament.start_date)} - {formatLocalDate(tournament.end_date)}
+        </CardDescription>
+        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Users className="h-4 w-4" />
+            <span>{teamCount} teams</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Calendar className="h-4 w-4" />
+            <span>{matchCount} matches</span>
+          </div>
+          <Badge variant="secondary" className="capitalize">
+            {tournament.sport}
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

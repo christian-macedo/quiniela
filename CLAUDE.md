@@ -46,7 +46,7 @@ The application is built around a **tournament-centric architecture** with these
 4. **matches**: Individual games within a tournament (references home/away teams, scores, status)
 5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url)
 6. **predictions**: User predictions for matches (predicted scores, points_earned)
-7. **tournament_rankings**: Leaderboard state per tournament (total_points, rank)
+7. **tournament_rankings**: Database VIEW that dynamically calculates rankings from predictions (total_points, rank)
 
 ### Key Relationships
 
@@ -107,15 +107,20 @@ The application is built around a **tournament-centric architecture** with these
 
 Points are calculated in `lib/utils/scoring.ts` based on prediction accuracy:
 
-- **Exact score**: 10 points
-- **Correct winner + goal difference**: 7 points
-- **Correct winner**: 5 points
+- **Exact score**: 3 points
+- **Correct winner + goal difference**: 2 points (1 + 1)
+- **Correct winner only**: 1 point
 - **Incorrect**: 0 points
 
+The final score is multiplied by the match's `multiplier` value (default: 1).
+
+### Match Scoring Process
+
 When a match is scored (via `/api/matches/[matchId]/score`):
-1. Match status updates to "completed"
-2. All predictions for that match are scored
-3. Tournament rankings are recalculated and updated
+1. Match status updates to the provided status (e.g., "completed")
+2. If status is "completed": All predictions for that match are scored
+3. If status changes FROM "completed" TO another status: All prediction scores are reset to 0
+4. Tournament rankings are automatically updated via the database view (no manual update needed)
 
 ## Supabase Configuration
 

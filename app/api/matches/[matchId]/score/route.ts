@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { calculatePoints } from "@/lib/utils/scoring";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { getCurrentUTC } from "@/lib/utils/date";
 
 export async function POST(
   request: NextRequest,
@@ -11,7 +11,20 @@ export async function POST(
     const supabase = await createClient();
     const { matchId } = await params;
     const body = await request.json();
-    const { home_score, away_score } = body;
+    const { home_score, away_score, status } = body;
+
+    // Get match details to retrieve multiplier and current status
+    const { data: matchData, error: matchFetchError } = await supabase
+      .from("matches")
+      .select("multiplier, tournament_id, status")
+      .eq("id", matchId)
+      .single();
+
+    if (matchFetchError) throw matchFetchError;
+
+    const multiplier = matchData?.multiplier || 1.0;
+    const currentStatus = matchData?.status;
+    const newStatus = status || "completed";
 
     // Update match score
     const { error: matchError } = await supabase
@@ -19,8 +32,8 @@ export async function POST(
       .update({
         home_score,
         away_score,
-        status: "completed",
-        updated_at: new Date().toISOString(),
+        status: newStatus,
+        updated_at: getCurrentUTC(),
       })
       .eq("id", matchId);
 
@@ -34,14 +47,26 @@ export async function POST(
 
     if (predictionsError) throw predictionsError;
 
+    // Check if we're changing from completed to non-completed status
+    const isUnscoring = currentStatus === "completed" && newStatus !== "completed";
+
     // Calculate and update points for each prediction
     for (const prediction of predictions || []) {
-      const points = calculatePoints(
-        prediction.predicted_home_score,
-        prediction.predicted_away_score,
-        home_score,
-        away_score
-      );
+      let points = 0;
+
+      if (isUnscoring) {
+        // Reset to 0 if changing from completed to another status
+        points = 0;
+      } else if (newStatus === "completed") {
+        // Calculate points if match is being completed
+        points = calculatePoints(
+          prediction.predicted_home_score,
+          prediction.predicted_away_score,
+          home_score,
+          away_score,
+          multiplier
+        );
+      }
 
       await supabase
         .from("predictions")
@@ -49,16 +74,7 @@ export async function POST(
         .eq("id", prediction.id);
     }
 
-    // Update tournament rankings
-    const { data: match } = await supabase
-      .from("matches")
-      .select("tournament_id")
-      .eq("id", matchId)
-      .single();
-
-    if (match) {
-      await updateTournamentRankings(supabase, match.tournament_id);
-    }
+    // No need to update tournament rankings - they are calculated dynamically via view
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -68,46 +84,4 @@ export async function POST(
       { status: 500 }
     );
   }
-}
-
-async function updateTournamentRankings(supabase: SupabaseClient, tournamentId: string) {
-  // Get all predictions for this tournament
-  const { data: predictions } = await supabase
-    .from("predictions")
-    .select("user_id, points_earned, match:matches!inner(tournament_id)")
-    .eq("match.tournament_id", tournamentId);
-
-  // Calculate total points per user
-  const userPoints = new Map<string, number>();
-  predictions?.forEach((p: { user_id: string; points_earned: number }) => {
-    const current = userPoints.get(p.user_id) || 0;
-    userPoints.set(p.user_id, current + p.points_earned);
-  });
-
-  // Update or insert rankings
-  for (const [userId, totalPoints] of userPoints.entries()) {
-    await supabase
-      .from("tournament_rankings")
-      .upsert({
-        user_id: userId,
-        tournament_id: tournamentId,
-        total_points: totalPoints,
-        updated_at: new Date().toISOString(),
-      });
-  }
-
-  // Update ranks
-  const { data: rankings } = await supabase
-    .from("tournament_rankings")
-    .select("*")
-    .eq("tournament_id", tournamentId)
-    .order("total_points", { ascending: false });
-
-  rankings?.forEach(async (ranking: { user_id: string }, index: number) => {
-    await supabase
-      .from("tournament_rankings")
-      .update({ rank: index + 1 })
-      .eq("user_id", ranking.user_id)
-      .eq("tournament_id", tournamentId);
-  });
 }
