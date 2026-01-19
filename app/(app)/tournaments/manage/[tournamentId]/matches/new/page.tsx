@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { MatchCreateForm } from "@/components/matches/management";
+import { Team } from "@/types/database";
 
 export default async function NewMatchPage({
   params,
@@ -41,7 +42,7 @@ export default async function NewMatchPage({
     `)
     .eq("tournament_id", tournamentId);
 
-  const teams = tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || [];
+  const teams = (tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || []) as unknown as Team[];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -57,7 +58,7 @@ export default async function NewMatchPage({
         </div>
       </div>
 
-      <MatchCreateForm tournamentId={tournamentId} teams={teams as any} />
+      <MatchCreateForm tournamentId={tournamentId} teams={teams} />
     </div>
   );
 }

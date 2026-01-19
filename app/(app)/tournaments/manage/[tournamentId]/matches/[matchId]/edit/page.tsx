@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { MatchEditForm } from "@/components/matches/management";
+import { Team } from "@/types/database";
 
 export default async function EditMatchPage({
   params,
@@ -45,7 +46,7 @@ export default async function EditMatchPage({
     `)
     .eq("tournament_id", tournamentId);
 
-  const teams = tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || [];
+  const teams = (tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || []) as unknown as Team[];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -63,7 +64,23 @@ export default async function EditMatchPage({
         </div>
       </div>
 
-      <MatchEditForm match={match as any} teams={teams as any} />
+      <MatchEditForm
+        match={match as {
+          id: string;
+          tournament_id: string;
+          home_team_id: string;
+          away_team_id: string;
+          match_date: string;
+          home_score: number | null;
+          away_score: number | null;
+          status: "scheduled" | "in_progress" | "completed" | "cancelled";
+          round: string | null;
+          multiplier: number;
+          home_team: Team;
+          away_team: Team;
+        }}
+        teams={teams}
+      />
     </div>
   );
 }

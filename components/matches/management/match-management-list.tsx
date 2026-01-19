@@ -25,6 +25,7 @@ interface MatchWithTeams {
   away_score: number | null;
   status: MatchStatus;
   round: string | null;
+  multiplier: number;
   home_team: Team;
   away_team: Team;
 }
