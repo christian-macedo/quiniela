@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import { requireAdmin } from "@/lib/utils/admin";
 import { TournamentDetailView } from "@/components/tournaments/management/tournament-detail-view";
 
 interface TournamentDetailPageProps {
@@ -14,6 +15,12 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
 
   if (!user) {
     redirect("/login");
+  }
+
+  try {
+    await requireAdmin();
+  } catch {
+    redirect("/unauthorized");
   }
 
   // Fetch tournament details
@@ -60,75 +67,60 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
     .eq("tournament_id", tournamentId)
     .order("match_date", { ascending: true });
 
-  // Fetch participants (users with predictions/rankings)
+  // Fetch participants from tournament_participants table
+  const { data: tournamentParticipants } = await supabase
+    .from("tournament_participants")
+    .select(`
+      user_id,
+      joined_at,
+      users (
+        id,
+        email,
+        screen_name,
+        avatar_url
+      )
+    `)
+    .eq("tournament_id", tournamentId)
+    .order("joined_at", { ascending: true });
+
+  type ParticipantUser = { id: string; email: string; screen_name: string | null; avatar_url: string | null };
+
+  const participantUsers = (tournamentParticipants?.map(tp => tp.users).filter(Boolean) || []) as unknown as ParticipantUser[];
+
+  // Fetch rankings for participants
   const { data: rankings } = await supabase
     .from("tournament_rankings")
     .select("user_id, total_points, rank")
     .eq("tournament_id", tournamentId)
     .order("rank", { ascending: true });
 
-  // Get all user IDs who have made predictions
-  const matchIds = matches?.map(m => m.id) || [];
-  const rankedUserIds = rankings?.map(r => r.user_id) || [];
-  const allParticipantUserIds = [...rankedUserIds];
-  
-  if (matchIds.length > 0) {
-    const { data: predictions } = await supabase
-      .from("predictions")
-      .select("user_id")
-      .in("match_id", matchIds);
+  const rankingsMap: Record<string, { total_points: number; rank: number }> = {};
+  (rankings || []).forEach(r => {
+    rankingsMap[r.user_id] = { total_points: r.total_points, rank: r.rank };
+  });
 
-    const predictionUserIds = [...new Set(
-      (predictions || []).map(p => p.user_id)
-    )];
-    
-    // Add prediction users not already in rankings
-    predictionUserIds.forEach(id => {
-      if (!allParticipantUserIds.includes(id)) {
-        allParticipantUserIds.push(id);
-      }
-    });
-  }
+  // Build participants list with rankings
+  const participants = participantUsers.map(user => ({
+    user,
+    total_points: rankingsMap[user.id]?.total_points || 0,
+    rank: rankingsMap[user.id]?.rank || null,
+  }));
 
-  // Fetch user details for all participants
-  type ParticipantUser = { id: string; email: string; screen_name: string | null; avatar_url: string | null };
-  const usersMap: Record<string, ParticipantUser> = {};
-  
-  if (allParticipantUserIds.length > 0) {
-    const { data: users } = await supabase
-      .from("users")
-      .select("id, email, screen_name, avatar_url")
-      .in("id", allParticipantUserIds);
-    
-    (users || []).forEach(u => {
-      usersMap[u.id] = u as ParticipantUser;
-    });
-  }
-
-  // Build participants list
-  const participants = [
-    ...(rankings?.map(r => ({
-      user: usersMap[r.user_id] || null,
-      total_points: r.total_points,
-      rank: r.rank,
-    })) || []),
-    ...allParticipantUserIds
-      .filter(id => !rankedUserIds.includes(id))
-      .map(id => ({
-        user: usersMap[id] || null,
-        total_points: 0,
-        rank: null as number | null,
-      }))
-  ];
+  // Fetch all users for the dropdown
+  const { data: allUsers } = await supabase
+    .from("users")
+    .select("id, email, screen_name, avatar_url")
+    .order("screen_name");
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <TournamentDetailView 
+      <TournamentDetailView
         tournament={tournament}
         teams={teams || []}
         allTeams={allTeams || []}
         matches={matches || []}
         participants={participants}
+        allUsers={(allUsers as unknown as ParticipantUser[]) || []}
       />
     </div>
   );

@@ -71,6 +71,16 @@ export default async function TournamentPage({
     rank: userRanking?.rank || null,
   };
 
+  // Count participants from tournament_participants table
+  const { count: participantCount } = await supabase
+    .from("tournament_participants")
+    .select("*", { count: "exact", head: true })
+    .eq("tournament_id", tournamentId);
+
+  const tournamentStats = {
+    participantCount: participantCount || 0,
+  };
+
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       <TournamentDashboard
@@ -79,6 +89,7 @@ export default async function TournamentPage({
         rankings={rankings || []}
         currentUserId={user.id}
         userStats={userStats}
+        tournamentStats={tournamentStats}
       />
     </div>
   );

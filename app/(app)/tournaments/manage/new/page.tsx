@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/utils/admin";
 import { TournamentCreateForm } from "@/components/tournaments/management/tournament-create-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,12 @@ export default async function NewTournamentPage() {
 
   if (!user) {
     redirect("/login");
+  }
+
+  try {
+    await requireAdmin();
+  } catch {
+    redirect("/unauthorized");
   }
 
   return (

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/utils/admin";
 import { TournamentManagementList } from "@/components/tournaments/management/tournament-management-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,6 +13,13 @@ export default async function TournamentManagementPage() {
 
   if (!user) {
     redirect("/login");
+  }
+
+  // Require admin permissions
+  try {
+    await requireAdmin();
+  } catch {
+    redirect("/unauthorized");
   }
 
   const { data: tournaments } = await supabase

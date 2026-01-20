@@ -14,6 +14,32 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { match_id, predicted_home_score, predicted_away_score } = body;
 
+    // Get the match to find the tournament_id
+    const { data: match, error: matchError } = await supabase
+      .from("matches")
+      .select("tournament_id")
+      .eq("id", match_id)
+      .single();
+
+    if (matchError || !match) {
+      return NextResponse.json({ error: "Match not found" }, { status: 404 });
+    }
+
+    // Check if user is a participant in this tournament
+    const { data: participant } = await supabase
+      .from("tournament_participants")
+      .select("user_id")
+      .eq("tournament_id", match.tournament_id)
+      .eq("user_id", user.id)
+      .single();
+
+    if (!participant) {
+      return NextResponse.json(
+        { error: "You must be a tournament participant to submit predictions" },
+        { status: 403 }
+      );
+    }
+
     // Check if prediction already exists
     const { data: existing } = await supabase
       .from("predictions")

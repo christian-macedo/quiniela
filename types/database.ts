@@ -37,6 +37,12 @@ export interface TournamentTeam {
   created_at: string
 }
 
+export interface TournamentParticipant {
+  tournament_id: string
+  user_id: string
+  joined_at: string
+}
+
 export interface Match {
   id: string
   tournament_id: string
@@ -57,6 +63,7 @@ export interface User {
   email: string
   screen_name: string | null
   avatar_url: string | null
+  is_admin: boolean
   last_login: string | null
   created_at: string
   updated_at: string

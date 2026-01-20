@@ -49,6 +49,7 @@ interface TournamentDetailViewProps {
   allTeams: Team[];
   matches: MatchWithTeams[];
   participants: Participant[];
+  allUsers: ParticipantUser[];
 }
 
 const statusColors = {
@@ -57,21 +58,30 @@ const statusColors = {
   completed: "bg-gray-500",
 };
 
-export function TournamentDetailView({ 
-  tournament, 
-  teams, 
+export function TournamentDetailView({
+  tournament,
+  teams,
   allTeams,
   matches,
-  participants 
+  participants,
+  allUsers
 }: TournamentDetailViewProps) {
   const router = useRouter();
   const [isAddingTeam, setIsAddingTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const [removingTeamId, setRemovingTeamId] = useState<string | null>(null);
+  const [isAddingParticipant, setIsAddingParticipant] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const availableTeams = allTeams.filter(
     t => !teams.some(existing => existing.id === t.id)
+  );
+
+  const participantUserIds = participants.map(p => p.user?.id).filter(Boolean);
+  const availableUsers = allUsers.filter(
+    u => !participantUserIds.includes(u.id)
   );
 
   const handleAddTeam = async () => {
@@ -121,6 +131,56 @@ export function TournamentDetailView({
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setRemovingTeamId(null);
+    }
+  };
+
+  const handleAddParticipant = async () => {
+    if (!selectedUserId) return;
+
+    setIsAddingParticipant(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/tournaments/${tournament.id}/participants`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: selectedUserId }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to add participant");
+      }
+
+      setSelectedUserId("");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsAddingParticipant(false);
+    }
+  };
+
+  const handleRemoveParticipant = async (userId: string) => {
+    setRemovingUserId(userId);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/tournaments/${tournament.id}/participants?userId=${userId}`,
+        { method: "DELETE" }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to remove participant");
+      }
+
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setRemovingUserId(null);
     }
   };
 
@@ -284,19 +344,52 @@ export function TournamentDetailView({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserCircle className="h-5 w-5" />
-            Participants (Users with Predictions)
+            Participating Users
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Add Participant */}
+          <div className="flex gap-2">
+            <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Select a user to add..." />
+              </SelectTrigger>
+              <SelectContent>
+                {availableUsers.length === 0 ? (
+                  <SelectItem value="none" disabled>
+                    No users available
+                  </SelectItem>
+                ) : (
+                  availableUsers.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.screen_name || user.email}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleAddParticipant}
+              disabled={!selectedUserId || isAddingParticipant}
+            >
+              {isAddingParticipant ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+
+          {/* Participant List */}
           {participants.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              No users have made predictions for this tournament yet.
+              No participants added to this tournament yet.
             </p>
           ) : (
             <div className="space-y-2">
               {participants.map((participant) => (
                 participant.user && (
-                  <div 
+                  <div
                     key={participant.user.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
@@ -322,10 +415,23 @@ export function TournamentDetailView({
                           </p>
                         )}
                       </div>
+                      <Badge variant="secondary">
+                        {participant.total_points} pts
+                      </Badge>
                     </div>
-                    <Badge variant="secondary">
-                      {participant.total_points} pts
-                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveParticipant(participant.user!.id)}
+                      disabled={removingUserId === participant.user.id}
+                      title="Remove from tournament"
+                    >
+                      {removingUserId === participant.user.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <X className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
                 )
               ))}

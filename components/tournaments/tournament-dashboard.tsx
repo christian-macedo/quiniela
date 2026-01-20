@@ -26,6 +26,9 @@ interface TournamentDashboardProps {
     pointsEarned: number;
     rank: number | null;
   };
+  tournamentStats?: {
+    participantCount: number;
+  };
 }
 
 const statusColors = {
@@ -45,7 +48,8 @@ export function TournamentDashboard({
   matches,
   rankings,
   currentUserId,
-  userStats
+  userStats,
+  tournamentStats
 }: TournamentDashboardProps) {
   const upcomingMatches = matches.filter(m => m.status === "scheduled").slice(0, 5);
   const recentMatches = matches.filter(m => m.status === "completed").slice(-5).reverse();
@@ -220,7 +224,7 @@ export function TournamentDashboard({
                   <UserCircle className="h-5 w-5 text-muted-foreground" />
                   <span className="font-medium">Participants</span>
                 </div>
-                <Badge variant="secondary">{rankings.length}</Badge>
+                <Badge variant="secondary">{tournamentStats?.participantCount || 0}</Badge>
               </div>
             </div>
           </CardContent>
