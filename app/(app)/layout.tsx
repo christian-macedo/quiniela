@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
-import { UserNav } from "@/components/profile/user-nav";
+import { AppNav } from "@/components/layout/app-nav";
 
 export default async function AppLayout({
   children,
@@ -39,25 +37,7 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/tournaments" className="text-2xl font-bold">
-            Quiniela
-          </Link>
-          <div className="flex gap-4 items-center">
-            <Link href="/tournaments">
-              <Button variant="ghost">Tournaments</Button>
-            </Link>
-            <Link href="/tournaments/manage">
-              <Button variant="ghost">Manage Tournaments</Button>
-            </Link>
-            <Link href="/teams">
-              <Button variant="ghost">Teams</Button>
-            </Link>
-            {userProfile && <UserNav user={userProfile} />}
-          </div>
-        </div>
-      </nav>
+      <AppNav user={userProfile} />
       {children}
     </div>
   );

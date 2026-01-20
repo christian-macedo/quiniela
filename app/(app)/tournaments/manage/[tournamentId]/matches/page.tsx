@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/utils/admin";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -19,6 +20,12 @@ export default async function MatchesManagementPage({
 
   if (!user) {
     redirect("/login");
+  }
+
+  try {
+    await requireAdmin();
+  } catch {
+    redirect("/unauthorized");
   }
 
   // Fetch tournament details

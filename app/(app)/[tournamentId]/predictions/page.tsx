@@ -17,6 +17,7 @@ export default function PredictionsPage() {
   const [completedMatches, setCompletedMatches] = useState<MatchWithTeams[]>([]);
   const [predictions, setPredictions] = useState<Record<string, Prediction>>({});
   const [loading, setLoading] = useState(true);
+  const [isParticipant, setIsParticipant] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
@@ -30,6 +31,16 @@ export default function PredictionsPage() {
       router.push("/login");
       return;
     }
+
+    // Check if user is a participant
+    const { data: participant } = await supabase
+      .from("tournament_participants")
+      .select("user_id")
+      .eq("tournament_id", tournamentId)
+      .eq("user_id", user.id)
+      .single();
+
+    setIsParticipant(!!participant);
 
     // Load scheduled matches
     const { data: scheduledMatchesData } = await supabase
@@ -79,6 +90,11 @@ export default function PredictionsPage() {
   }
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
+    if (!isParticipant) {
+      alert("You must be a tournament participant to submit predictions.");
+      return;
+    }
+
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -91,6 +107,10 @@ export default function PredictionsPage() {
 
     if (response.ok) {
       loadData();
+    } else if (response.status === 403) {
+      const data = await response.json();
+      alert(data.error || "You are not authorized to submit predictions for this tournament.");
+      setIsParticipant(false);
     }
   }
 
@@ -119,6 +139,16 @@ export default function PredictionsPage() {
         </Link>
       </div>
 
+      {!isParticipant && (
+        <div className="mb-8 p-6 bg-muted/50 border rounded-lg text-center">
+          <h3 className="text-lg font-semibold mb-2">Not a Participant</h3>
+          <p className="text-muted-foreground">
+            You are not currently registered as a participant in this tournament.
+            Contact an administrator to be added to the participant list.
+          </p>
+        </div>
+      )}
+
       <div className="space-y-12">
         {/* Completed Matches Section */}
         {completedWithPredictions.length > 0 && (
@@ -142,30 +172,32 @@ export default function PredictionsPage() {
         )}
 
         {/* Upcoming Matches Section */}
-        <div>
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold">Upcoming Matches</h2>
-            <p className="text-sm text-muted-foreground">
-              Submit your score predictions before matches start
-            </p>
+        {isParticipant && (
+          <div>
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold">Upcoming Matches</h2>
+              <p className="text-sm text-muted-foreground">
+                Submit your score predictions before matches start
+              </p>
+            </div>
+            {scheduledMatches.length === 0 ? (
+              <div className="text-center py-12 border rounded-lg bg-muted/50">
+                <p className="text-muted-foreground">No upcoming matches available for predictions.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {scheduledMatches.map((match) => (
+                  <PredictionForm
+                    key={match.id}
+                    match={match}
+                    existingPrediction={predictions[match.id]}
+                    onSubmit={(home, away) => handleSubmitPrediction(match.id, home, away)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-          {scheduledMatches.length === 0 ? (
-            <div className="text-center py-12 border rounded-lg bg-muted/50">
-              <p className="text-muted-foreground">No upcoming matches available for predictions.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {scheduledMatches.map((match) => (
-                <PredictionForm
-                  key={match.id}
-                  match={match}
-                  existingPrediction={predictions[match.id]}
-                  onSubmit={(home, away) => handleSubmitPrediction(match.id, home, away)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
