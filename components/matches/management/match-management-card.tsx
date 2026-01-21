@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,14 +36,10 @@ const statusColors: Record<MatchStatus, string> = {
   cancelled: "bg-gray-500",
 };
 
-const statusLabels: Record<MatchStatus, string> = {
-  scheduled: "Scheduled",
-  in_progress: "In Progress",
-  completed: "Completed",
-  cancelled: "Cancelled",
-};
-
 export function MatchManagementCard({ match }: MatchManagementCardProps) {
+  const t = useTranslations('matches');
+  const tCommon = useTranslations('common');
+  
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="pb-3">
@@ -51,7 +48,7 @@ export function MatchManagementCard({ match }: MatchManagementCardProps) {
             <div
               className={`h-2 w-2 rounded-full ${statusColors[match.status]}`}
             />
-            <Badge variant="outline">{statusLabels[match.status]}</Badge>
+            <Badge variant="outline">{t(`status.${match.status}`)}</Badge>
             {match.round && (
               <Badge variant="secondary" className="text-xs">
                 {match.round}
@@ -74,7 +71,7 @@ export function MatchManagementCard({ match }: MatchManagementCardProps) {
                 currentAwayScore={match.away_score}
                 multiplier={match.multiplier}
               >
-                <Button variant="ghost" size="icon" title="Score Match">
+                <Button variant="ghost" size="icon" title={t('management.scoreMatch')}>
                   <Trophy className="h-4 w-4" />
                 </Button>
               </ScoreMatchDialog>
@@ -84,7 +81,7 @@ export function MatchManagementCard({ match }: MatchManagementCardProps) {
             <Link
               href={`/tournaments/manage/${match.tournament_id}/matches/${match.id}/edit`}
             >
-              <Button variant="ghost" size="icon" title="Edit Match">
+              <Button variant="ghost" size="icon" title={t('management.editMatch')}>
                 <Edit className="h-4 w-4" />
               </Button>
             </Link>
@@ -107,7 +104,7 @@ export function MatchManagementCard({ match }: MatchManagementCardProps) {
               </div>
             ) : (
               <div className="text-xl font-semibold text-muted-foreground">
-                vs
+                {tCommon('vs')}
               </div>
             )}
           </div>

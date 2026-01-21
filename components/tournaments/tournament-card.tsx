@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 import { Tournament } from "@/types/database";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +18,7 @@ const statusColors = {
 };
 
 export function TournamentCard({ tournament }: TournamentCardProps) {
+  const t = useTranslations('tournaments.status');
   return (
     <Link href={`/${tournament.id}`}>
       <Card className="hover:shadow-lg transition-shadow cursor-pointer">
@@ -22,7 +26,7 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="flex justify-between items-start">
             <CardTitle>{tournament.name}</CardTitle>
             <Badge variant="outline" className="capitalize">
-              {tournament.status}
+              {t(tournament.status as 'upcoming' | 'active' | 'completed')}
             </Badge>
           </div>
           <CardDescription>

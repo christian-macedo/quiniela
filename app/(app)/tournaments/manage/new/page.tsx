@@ -5,8 +5,10 @@ import { TournamentCreateForm } from "@/components/tournaments/management/tourna
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
 export default async function NewTournamentPage() {
+  const t = await getTranslations('tournaments.management');
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,14 +29,14 @@ export default async function NewTournamentPage() {
         <Link href="/tournaments/manage">
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Tournaments
+            {t('backToTournaments')}
           </Button>
         </Link>
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Create Tournament</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('create.title')}</h1>
           <p className="text-muted-foreground">
-            Set up a new tournament
+            {t('create.subtitle')}
           </p>
         </div>
         

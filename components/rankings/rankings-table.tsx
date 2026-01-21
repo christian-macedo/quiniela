@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from 'next-intl';
 import { RankingWithUser } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,10 +14,13 @@ interface RankingsTableProps {
 }
 
 export function RankingsTable({ rankings, currentUserId, tournamentId }: RankingsTableProps) {
+  const t = useTranslations('rankings');
+  const tCommon = useTranslations('common');
+
   if (rankings.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">No rankings available yet.</p>
+        <p className="text-muted-foreground">{t('noRankings')}</p>
       </div>
     );
   }
@@ -22,7 +28,7 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Leaderboard</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -74,10 +80,10 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                   {/* Points */}
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">
-                      {ranking.total_points} pts
+                      {ranking.total_points} {tCommon('labels.pts')}
                     </Badge>
                     {isCurrentUser && (
-                      <Badge variant="outline">You</Badge>
+                      <Badge variant="outline">{t('you')}</Badge>
                     )}
                   </div>
                 </div>

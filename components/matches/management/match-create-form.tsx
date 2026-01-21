@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,9 @@ interface MatchCreateFormProps {
 
 export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   const router = useRouter();
+  const t = useTranslations("matches.form");
+  const tCommon = useTranslations("common");
+  const tStatus = useTranslations("matches.status");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -74,7 +78,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create Match</CardTitle>
+        <CardTitle>{t("createMatch")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,7 +90,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="home_team_id">Home Team *</Label>
+              <Label htmlFor="home_team_id">{t("homeTeam")} *</Label>
               <Select
                 value={formData.home_team_id}
                 onValueChange={(value) =>
@@ -95,7 +99,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select home team" />
+                  <SelectValue placeholder={t("selectHomeTeam")} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableHomeTeams.map((team) => (
@@ -108,7 +112,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="away_team_id">Away Team *</Label>
+              <Label htmlFor="away_team_id">{t("awayTeam")} *</Label>
               <Select
                 value={formData.away_team_id}
                 onValueChange={(value) =>
@@ -117,7 +121,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select away team" />
+                  <SelectValue placeholder={t("selectAwayTeam")} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableAwayTeams.map((team) => (
@@ -132,7 +136,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="match_date">Match Date & Time *</Label>
+              <Label htmlFor="match_date">{t("matchDateTime")} *</Label>
               <Input
                 id="match_date"
                 type="datetime-local"
@@ -145,21 +149,21 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="round">Round/Stage</Label>
+              <Label htmlFor="round">{t("roundStage")}</Label>
               <Input
                 id="round"
                 value={formData.round}
                 onChange={(e) =>
                   setFormData({ ...formData, round: e.target.value })
                 }
-                placeholder="e.g., Group A, Round of 16, Final"
+                placeholder={t("roundPlaceholder")}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t("status")}</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) =>
@@ -170,16 +174,16 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="scheduled">{tStatus("scheduled")}</SelectItem>
+                  <SelectItem value="in_progress">{tStatus("inProgress")}</SelectItem>
+                  <SelectItem value="completed">{tStatus("completed")}</SelectItem>
+                  <SelectItem value="cancelled">{tStatus("cancelled")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="multiplier">Point Multiplier</Label>
+              <Label htmlFor="multiplier">{t("pointMultiplier")}</Label>
               <Input
                 id="multiplier"
                 type="number"
@@ -196,7 +200,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                 placeholder="1"
               />
               <p className="text-xs text-muted-foreground">
-                Multiply points (1 = normal, 2 = double, 3 = triple)
+                {t("multiplierHelp")}
               </p>
             </div>
           </div>
@@ -204,7 +208,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
           <div className="flex gap-4">
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Match
+              {t("createMatch")}
             </Button>
             <Button
               type="button"
@@ -212,7 +216,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
               onClick={() => router.back()}
               disabled={isLoading}
             >
-              Cancel
+              {tCommon("cancel")}
             </Button>
           </div>
         </form>

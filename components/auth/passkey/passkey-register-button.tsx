@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Fingerprint, Loader2 } from "lucide-react";
 import { registerPasskey, isPasskeySupported } from "@/lib/webauthn/client";
+import { useTranslations } from 'next-intl';
 
 interface PasskeyRegisterButtonProps {
   onSuccess?: () => void;
@@ -31,6 +32,7 @@ export function PasskeyRegisterButton({
   size = "default",
   className,
 }: PasskeyRegisterButtonProps) {
+  const t = useTranslations('auth.passkeys');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -55,14 +57,14 @@ export function PasskeyRegisterButton({
         }
       } else {
         // Handle error
-        const errorMessage = result.error || "Failed to register passkey";
+        const errorMessage = result.error || t('registerFailed');
         setError(errorMessage);
         if (onError) {
           onError(errorMessage);
         }
       }
     } catch (err) {
-      const errorMessage = "An unexpected error occurred";
+      const errorMessage = t('unexpectedError');
       setError(errorMessage);
       if (onError) {
         onError(errorMessage);
@@ -76,7 +78,7 @@ export function PasskeyRegisterButton({
     return (
       <Button variant="outline" size={size} disabled className={className}>
         <Fingerprint className="mr-2 h-4 w-4" />
-        Passkeys Not Supported
+        {t('notSupportedShort')}
       </Button>
     );
   }
@@ -93,12 +95,12 @@ export function PasskeyRegisterButton({
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Setting Up Passkey...
+            {t('settingUp')}
           </>
         ) : (
           <>
             <Fingerprint className="mr-2 h-4 w-4" />
-            Set Up Passkey
+            {t('setUpPasskey')}
           </>
         )}
       </Button>

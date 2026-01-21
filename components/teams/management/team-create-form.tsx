@@ -9,8 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { Loader2, Save } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 export function TeamCreateForm() {
+  const t = useTranslations('teams.form');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,8 +27,8 @@ export function TeamCreateForm() {
 
   const previewTeam: Team = {
     id: "preview",
-    name: formData.name || "Team Name",
-    short_name: formData.short_name || "TEAM",
+    name: formData.name || t('defaultName'),
+    short_name: formData.short_name || t('defaultShortName'),
     country_code: formData.country_code || null,
     logo_url: formData.logo_url || null,
     created_at: new Date().toISOString(),
@@ -51,14 +54,14 @@ export function TeamCreateForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to create team");
+        throw new Error(data.error || t('createFailed'));
       }
 
       const team = await response.json();
       router.push(`/teams/${team.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : t('errorOccurred'));
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +78,7 @@ export function TeamCreateForm() {
       {/* Preview */}
       <Card>
         <CardHeader>
-          <CardTitle>Preview</CardTitle>
+          <CardTitle>{tCommon('labels.preview')}</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-6">
           <TeamBadge team={previewTeam} size="lg" showName={true} />
@@ -85,57 +88,57 @@ export function TeamCreateForm() {
       {/* Form Fields */}
       <Card>
         <CardHeader>
-          <CardTitle>Team Information</CardTitle>
+          <CardTitle>{t('teamInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Team Name</Label>
+            <Label htmlFor="name">{t('teamName')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="e.g., Manchester United"
+              placeholder={t('teamNamePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="short_name">Short Name</Label>
+            <Label htmlFor="short_name">{t('shortName')}</Label>
             <Input
               id="short_name"
               value={formData.short_name}
               onChange={(e) =>
                 setFormData({ ...formData, short_name: e.target.value })
               }
-              placeholder="e.g., MAN UTD"
+              placeholder={t('shortNamePlaceholder')}
               maxLength={10}
               required
             />
             <p className="text-xs text-muted-foreground">
-              Used for display in compact views (max 10 characters)
+              {t('shortNameHint')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country_code">Country Code</Label>
+            <Label htmlFor="country_code">{t('countryCode')}</Label>
             <Input
               id="country_code"
               value={formData.country_code}
               onChange={(e) =>
                 setFormData({ ...formData, country_code: e.target.value.toUpperCase() })
               }
-              placeholder="e.g., GB"
+              placeholder={t('countryCodePlaceholder')}
               maxLength={3}
             />
             <p className="text-xs text-muted-foreground">
-              ISO country code (optional)
+              {t('countryCodeHint')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo_url">Logo URL</Label>
+            <Label htmlFor="logo_url">{t('logoUrl')}</Label>
             <Input
               id="logo_url"
               type="url"
@@ -146,7 +149,7 @@ export function TeamCreateForm() {
               placeholder="https://example.com/logo.png"
             />
             <p className="text-xs text-muted-foreground">
-              URL to the team logo image (optional)
+              {t('logoUrlHint')}
             </p>
           </div>
         </CardContent>
@@ -160,7 +163,7 @@ export function TeamCreateForm() {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          Create Team
+          {t('createTeam')}
         </Button>
         <Button
           type="button"
@@ -168,7 +171,7 @@ export function TeamCreateForm() {
           onClick={() => router.back()}
           disabled={isLoading}
         >
-          Cancel
+          {tCommon('actions.cancel')}
         </Button>
       </div>
     </form>

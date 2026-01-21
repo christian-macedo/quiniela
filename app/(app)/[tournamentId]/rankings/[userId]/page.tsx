@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserPredictionsView } from "@/components/rankings/user-predictions-view";
+import { getTranslations } from 'next-intl/server';
 
 export default async function UserRankingDetailPage({
   params,
 }: {
   params: Promise<{ tournamentId: string; userId: string }>;
 }) {
+  const t = await getTranslations('rankings');
   const { tournamentId, userId } = await params;
   const supabase = await createClient();
 
@@ -76,15 +78,15 @@ export default async function UserRankingDetailPage({
           <h1 className="text-4xl font-bold mb-2">
             {viewedUser.screen_name || viewedUser.email}
             {isCurrentUser && (
-              <span className="ml-2 text-lg text-muted-foreground">(You)</span>
+              <span className="ml-2 text-lg text-muted-foreground">({t('userPredictions.you')})</span>
             )}
           </h1>
           <p className="text-muted-foreground">
-            Predictions for {tournament.name}
+            {t('userPredictions.predictionsFor', { tournament: tournament.name })}
           </p>
         </div>
         <Link href={`/${tournamentId}/rankings`}>
-          <Button variant="outline">Back to Rankings</Button>
+          <Button variant="outline">{t('backToRankings')}</Button>
         </Link>
       </div>
       <UserPredictionsView

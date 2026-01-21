@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -39,6 +39,8 @@ export function ScoreMatchDialog({
   children,
 }: ScoreMatchDialogProps) {
   const router = useRouter();
+  const t = useTranslations("matches.score");
+  const tCommon = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,13 +59,13 @@ export function ScoreMatchDialog({
     const awayScoreNum = parseInt(awayScore);
 
     if (isNaN(homeScoreNum) || isNaN(awayScoreNum)) {
-      setError("Please enter valid scores");
+      setError(t("errorInvalidScores"));
       setIsLoading(false);
       return;
     }
 
     if (homeScoreNum < 0 || awayScoreNum < 0) {
-      setError("Scores cannot be negative");
+      setError(t("errorNegativeScores"));
       setIsLoading(false);
       return;
     }
@@ -98,16 +100,15 @@ export function ScoreMatchDialog({
         {children || (
           <Button variant="default">
             <Trophy className="mr-2 h-4 w-4" />
-            Score Match
+            {t("title")}
           </Button>
         )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Score Match</AlertDialogTitle>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Enter the final score for this match. This will calculate points for
-            all predictions and update tournament rankings.
+            {t("description")}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -150,29 +151,29 @@ export function ScoreMatchDialog({
           {multiplier > 1 && (
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-md p-3 text-sm">
               <p className="font-medium text-amber-700 dark:text-amber-500">
-                Point Multiplier: ×{multiplier}
+                {t("pointMultiplier", { multiplier })}
               </p>
               <p className="text-muted-foreground mt-1">
-                Points will be multiplied by {multiplier} for this match
+                {t("multiplierNote", { multiplier })}
               </p>
             </div>
           )}
 
           <div className="bg-muted/50 rounded-md p-3 text-sm space-y-1">
-            <p className="font-medium">Scoring Rules:</p>
+            <p className="font-medium">{t("scoringRules")}</p>
             <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
-              <li>Exact score: 3 points {multiplier > 1 && `(${3 * multiplier} pts with ×${multiplier})`}</li>
-              <li>Correct score difference: 2 points {multiplier > 1 && `(${2 * multiplier} pts with ×${multiplier})`}</li>
-              <li>Correct winner: 1 point {multiplier > 1 && `(${1 * multiplier} pts with ×${multiplier})`}</li>
+              <li>{t("exactScore")} {multiplier > 1 && `(${3 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}</li>
+              <li>{t("correctDifference")} {multiplier > 1 && `(${2 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}</li>
+              <li>{t("correctWinner")} {multiplier > 1 && `(${1 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}</li>
             </ul>
           </div>
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>{tCommon("cancel")}</AlertDialogCancel>
           <Button onClick={handleSubmit} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Score Match & Calculate Points
+            {t("submitButton")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

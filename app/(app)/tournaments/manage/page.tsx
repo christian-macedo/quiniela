@@ -5,8 +5,10 @@ import { TournamentManagementList } from "@/components/tournaments/management/to
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
 export default async function TournamentManagementPage() {
+  const t = await getTranslations('tournaments.management');
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -51,15 +53,15 @@ export default async function TournamentManagementPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Tournament Management</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Create, edit, and manage tournaments
+            {t('subtitle')}
           </p>
         </div>
         <Link href="/tournaments/manage/new">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Create Tournament
+            {t('createTournament')}
           </Button>
         </Link>
       </div>

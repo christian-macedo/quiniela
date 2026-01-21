@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { formatLocalDateTime } from "@/lib/utils/date";
 import { Trophy, Target, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface PredictionResultCardProps {
   match: MatchWithTeams;
@@ -13,6 +14,7 @@ interface PredictionResultCardProps {
 }
 
 export function PredictionResultCard({ match, prediction }: PredictionResultCardProps) {
+  const t = useTranslations("predictions.results");
   const pointsEarned = prediction.points_earned;
   const multiplier = match.multiplier;
 
@@ -84,7 +86,7 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
             </div>
           </div>
           <div className="text-center text-xs font-medium text-muted-foreground">
-            Final Score
+            {t("finalScore")}
           </div>
         </div>
 
@@ -92,7 +94,7 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
         <div className="space-y-2 pt-2 border-t">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1 text-right text-sm text-muted-foreground">
-              Your Prediction
+              {t("yourPrediction")}
             </div>
 
             <div className="flex items-center gap-2">
@@ -121,9 +123,9 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
         {/* Points explanation */}
         {pointsEarned > 0 && (
           <div className="text-center text-xs text-muted-foreground pt-2 border-t">
-            {pointsEarned === 3 * multiplier && "Exact score match!"}
-            {pointsEarned === 2 * multiplier && "Correct score difference!"}
-            {pointsEarned === 1 * multiplier && "Correct winner!"}
+            {pointsEarned === 3 * multiplier && t("exactMatch")}
+            {pointsEarned === 2 * multiplier && t("correctDifference")}
+            {pointsEarned === 1 * multiplier && t("correctWinner")}
           </div>
         )}
       </CardContent>

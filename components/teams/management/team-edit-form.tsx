@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Team } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,9 @@ interface TeamEditFormProps {
 
 export function TeamEditForm({ team }: TeamEditFormProps) {
   const router = useRouter();
+  const t = useTranslations('teams');
+  const tCommon = useTranslations('common');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +113,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       {/* Preview */}
       <Card>
         <CardHeader>
-          <CardTitle>Preview</CardTitle>
+          <CardTitle>{t('form.preview')}</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-6">
           <TeamBadge team={previewTeam} size="lg" showName={true} />
@@ -119,57 +123,57 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       {/* Form Fields */}
       <Card>
         <CardHeader>
-          <CardTitle>Team Information</CardTitle>
+          <CardTitle>{t('form.teamInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Team Name</Label>
+            <Label htmlFor="name">{t('form.teamName')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="e.g., Manchester United"
+              placeholder={t('form.teamNamePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="short_name">Short Name</Label>
+            <Label htmlFor="short_name">{t('form.shortName')}</Label>
             <Input
               id="short_name"
               value={formData.short_name}
               onChange={(e) =>
                 setFormData({ ...formData, short_name: e.target.value })
               }
-              placeholder="e.g., MAN UTD"
+              placeholder={t('form.shortNamePlaceholder')}
               maxLength={10}
               required
             />
             <p className="text-xs text-muted-foreground">
-              Used for display in compact views (max 10 characters)
+              {t('form.shortNameHelp')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country_code">Country Code</Label>
+            <Label htmlFor="country_code">{t('form.countryCode')}</Label>
             <Input
               id="country_code"
               value={formData.country_code}
               onChange={(e) =>
                 setFormData({ ...formData, country_code: e.target.value.toUpperCase() })
               }
-              placeholder="e.g., GB"
+              placeholder={t('form.countryCodePlaceholder')}
               maxLength={3}
             />
             <p className="text-xs text-muted-foreground">
-              ISO country code (optional)
+              {t('form.countryCodeHelp')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo_url">Logo URL</Label>
+            <Label htmlFor="logo_url">{t('form.logoUrl')}</Label>
             <Input
               id="logo_url"
               type="url"
@@ -177,10 +181,10 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
               onChange={(e) =>
                 setFormData({ ...formData, logo_url: e.target.value })
               }
-              placeholder="https://example.com/logo.png"
+              placeholder={t('form.logoUrlPlaceholder')}
             />
             <p className="text-xs text-muted-foreground">
-              URL to the team logo image (optional)
+              {t('form.logoUrlHelp')}
             </p>
           </div>
         </CardContent>
@@ -196,22 +200,20 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
-              Delete Team
+              {t('edit.deleteTeam')}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>{t('edit.deleteConfirmTitle')}</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                team &quot;{team.name}&quot; and remove it from all tournaments and
-                matches.
+                {t('edit.deleteConfirmDescription', { name: team.name })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{tCommon('actions.cancel')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>
-                Delete
+                {tCommon('actions.delete')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -223,7 +225,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          Save Changes
+          {t('edit.saveChanges')}
         </Button>
       </div>
     </form>

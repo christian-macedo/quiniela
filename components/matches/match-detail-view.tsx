@@ -6,6 +6,7 @@ import { TeamBadge } from "@/components/teams/team-badge";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import { useTranslations } from 'next-intl';
 
 interface PredictionWithUser extends Prediction {
   user: Pick<User, "id" | "screen_name" | "avatar_url">;
@@ -22,6 +23,8 @@ export function MatchDetailView({
   predictions,
   currentUserId,
 }: MatchDetailViewProps) {
+  const t = useTranslations('matches');
+  const tCommon = useTranslations('common');
   const isCompleted = match.status === "completed";
   const isLive = match.status === "in_progress";
   const isCancelled = match.status === "cancelled";
@@ -66,7 +69,7 @@ export function MatchDetailView({
               variant={isLive || isCompleted ? "default" : "outline"}
               className={getStatusColor()}
             >
-              {match.status.replace("_", " ").toUpperCase()}
+              {t(`status.${match.status}`)}
             </Badge>
           </div>
         </CardHeader>
@@ -87,7 +90,7 @@ export function MatchDetailView({
               </div>
             ) : (
               <div className="text-2xl font-semibold text-muted-foreground">
-                vs
+                {tCommon('vs')}
               </div>
             )}
 
@@ -99,19 +102,19 @@ export function MatchDetailView({
           {/* Match Info Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">Date & Time</p>
+              <p className="text-sm text-muted-foreground">{t('details.dateTime')}</p>
               <p className="font-medium">
                 {formatLocalDateTime(match.match_date)}
               </p>
             </div>
             {match.round && (
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">Round</p>
+                <p className="text-sm text-muted-foreground">{t('details.round')}</p>
                 <p className="font-medium">{match.round}</p>
               </div>
             )}
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">Multiplier</p>
+              <p className="text-sm text-muted-foreground">{t('details.multiplier')}</p>
               <p className="font-medium text-lg">
                 {match.multiplier > 1 ? (
                   <span className="text-orange-500">{match.multiplier}x</span>
@@ -121,7 +124,7 @@ export function MatchDetailView({
               </p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">Total Predictions</p>
+              <p className="text-sm text-muted-foreground">{t('details.totalPredictions')}</p>
               <p className="font-medium">{predictions.length}</p>
             </div>
           </div>
@@ -131,12 +134,12 @@ export function MatchDetailView({
       {/* Predictions Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Predictions</CardTitle>
+          <CardTitle>{t('details.predictions')}</CardTitle>
         </CardHeader>
         <CardContent>
           {predictions.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              No predictions have been submitted for this match yet.
+              {t('details.noPredictions')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -162,8 +165,7 @@ export function MatchDetailView({
             <div className="flex items-center gap-2 text-orange-700 dark:text-orange-400">
               <span className="text-lg">⚡</span>
               <p className="text-sm">
-                This match has a <strong>{match.multiplier}x</strong> scoring
-                multiplier! Points earned will be multiplied accordingly.
+                {t('details.multiplierNote', { multiplier: match.multiplier })}
               </p>
             </div>
           </CardContent>
@@ -188,6 +190,8 @@ function PredictionRow({
   isCurrentUser,
   match,
 }: PredictionRowProps) {
+  const t = useTranslations('matches.details');
+  const tCommon = useTranslations('common');
   const getInitials = (name: string | null) => {
     if (!name) return "U";
     return name
@@ -221,9 +225,9 @@ function PredictionRow({
         </Avatar>
         <div>
           <p className="font-medium">
-            {prediction.user.screen_name || "Anonymous"}
+            {prediction.user.screen_name || t('anonymous')}
             {isCurrentUser && (
-              <span className="ml-2 text-xs text-primary">(You)</span>
+              <span className="ml-2 text-xs text-primary">{t('you')}</span>
             )}
           </p>
         </div>
@@ -251,7 +255,7 @@ function PredictionRow({
                       : ""
                   }
                 >
-                  {prediction.points_earned} pts
+                  {prediction.points_earned} {tCommon('labels.pts')}
                 </Badge>
               </div>
             )}
@@ -259,7 +263,7 @@ function PredictionRow({
         ) : (
           <div className="text-center">
             <span className="text-muted-foreground italic text-sm">
-              Hidden until match ends
+              {t('hiddenUntilEnd')}
             </span>
           </div>
         )}

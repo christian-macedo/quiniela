@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { User, TournamentRanking, Prediction, MatchWithTeams } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +26,10 @@ export function UserPredictionsView({
   ranking,
   isCurrentUser,
 }: UserPredictionsViewProps) {
+  const t = useTranslations('rankings');
+  const tPredictions = useTranslations('predictions');
+  const tCommon = useTranslations('common');
+  
   const getInitials = (name: string | null, email: string) => {
     if (name) {
       return name
@@ -72,10 +77,10 @@ export function UserPredictionsView({
               {ranking && (
                 <div className="flex items-center gap-3 mt-2">
                   <Badge variant="secondary" className="text-lg px-3 py-1">
-                    {ranking.total_points} points
+                    {ranking.total_points} {tCommon('labels.points')}
                   </Badge>
                   <Badge variant="outline" className="text-lg px-3 py-1">
-                    Rank #{ranking.rank}
+                    {t('rank')} #{ranking.rank}
                   </Badge>
                 </div>
               )}
@@ -89,19 +94,19 @@ export function UserPredictionsView({
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold">{predictions.length}</p>
-            <p className="text-sm text-muted-foreground">Total Predictions</p>
+            <p className="text-sm text-muted-foreground">{t('userPredictions.totalPredictions')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold">{completedPredictions.length}</p>
-            <p className="text-sm text-muted-foreground">Completed</p>
+            <p className="text-sm text-muted-foreground">{t('userPredictions.completed')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-3xl font-bold">{upcomingPredictions.length}</p>
-            <p className="text-sm text-muted-foreground">Pending</p>
+            <p className="text-sm text-muted-foreground">{t('userPredictions.pending')}</p>
           </CardContent>
         </Card>
         <Card>
@@ -113,7 +118,7 @@ export function UserPredictionsView({
                   ).toFixed(1)
                 : "0"}
             </p>
-            <p className="text-sm text-muted-foreground">Avg Points/Match</p>
+            <p className="text-sm text-muted-foreground">{t('userPredictions.avgPointsPerMatch')}</p>
           </CardContent>
         </Card>
       </div>
@@ -122,7 +127,7 @@ export function UserPredictionsView({
       {completedPredictions.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Completed Matches</CardTitle>
+            <CardTitle>{tPredictions('completed.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -142,7 +147,7 @@ export function UserPredictionsView({
       {upcomingPredictions.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Upcoming Matches</CardTitle>
+            <CardTitle>{tPredictions('upcoming.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -163,7 +168,7 @@ export function UserPredictionsView({
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">
-              No predictions have been submitted yet.
+              {t('userPredictions.noPredictions')}
             </p>
           </CardContent>
         </Card>
@@ -178,6 +183,10 @@ interface PredictionRowProps {
 }
 
 function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
+  const tMatches = useTranslations('matches');
+  const tPredictions = useTranslations('predictions');
+  const tCommon = useTranslations('common');
+  
   const match = prediction.match;
   const isCompleted = match.status === "completed";
   const isLive = match.status === "in_progress";
@@ -185,15 +194,15 @@ function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
 
   const getStatusBadge = () => {
     if (isCompleted) {
-      return <Badge className="bg-blue-500">Completed</Badge>;
+      return <Badge className="bg-blue-500">{tMatches('status.completed')}</Badge>;
     }
     if (isLive) {
-      return <Badge className="bg-green-500">Live</Badge>;
+      return <Badge className="bg-green-500">{tMatches('status.in_progress')}</Badge>;
     }
     if (isCancelled) {
-      return <Badge className="bg-red-500">Cancelled</Badge>;
+      return <Badge className="bg-red-500">{tMatches('status.cancelled')}</Badge>;
     }
-    return <Badge variant="outline">Scheduled</Badge>;
+    return <Badge variant="outline">{tMatches('status.scheduled')}</Badge>;
   };
 
   return (
@@ -232,13 +241,13 @@ function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
                 {match.home_score} : {match.away_score}
               </div>
             ) : (
-              <div className="text-lg text-muted-foreground">vs</div>
+              <div className="text-lg text-muted-foreground">{tCommon('vs')}</div>
             )}
 
             {/* Prediction */}
             {showDetails ? (
               <div className="text-sm text-muted-foreground">
-                Predicted:{" "}
+                {tPredictions('results.yourPrediction').replace(':', '')}:{" "}
                 <span className="font-medium text-foreground">
                   {prediction.predicted_home_score} :{" "}
                   {prediction.predicted_away_score}
@@ -246,7 +255,7 @@ function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
               </div>
             ) : (
               <div className="text-sm text-muted-foreground italic">
-                Prediction hidden
+                {tPredictions('results.predictionHidden')}
               </div>
             )}
           </div>
@@ -269,7 +278,7 @@ function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
                   : ""
               }
             >
-              {prediction.points_earned} points earned
+              {tPredictions('results.pointsEarned', { points: prediction.points_earned })}
             </Badge>
           </div>
         )}

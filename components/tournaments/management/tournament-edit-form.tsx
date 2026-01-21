@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Tournament, TournamentStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,9 @@ interface TournamentEditFormProps {
 
 export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const router = useRouter();
+  const t = useTranslations('tournaments');
+  const tCommon = useTranslations('common');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,38 +113,38 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tournament Information</CardTitle>
+          <CardTitle>{t('management.form.tournamentInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Tournament Name</Label>
+            <Label htmlFor="name">{t('management.form.tournamentName')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="e.g., World Cup 2026"
+              placeholder={t('management.form.tournamentNamePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sport">Sport</Label>
+            <Label htmlFor="sport">{t('management.form.sport')}</Label>
             <Input
               id="sport"
               value={formData.sport}
               onChange={(e) =>
                 setFormData({ ...formData, sport: e.target.value })
               }
-              placeholder="e.g., Football"
+              placeholder={t('management.form.sportPlaceholder')}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="start_date">Start Date</Label>
+              <Label htmlFor="start_date">{t('management.form.startDate')}</Label>
               <Input
                 id="start_date"
                 type="date"
@@ -153,7 +157,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="end_date">End Date</Label>
+              <Label htmlFor="end_date">{t('management.form.endDate')}</Label>
               <Input
                 id="end_date"
                 type="date"
@@ -167,7 +171,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">{t('management.form.status')}</Label>
             <Select 
               value={formData.status} 
               onValueChange={(value: TournamentStatus) =>
@@ -175,12 +179,12 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder={t('management.form.selectStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="upcoming">Upcoming</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="upcoming">{t('status.upcoming')}</SelectItem>
+                <SelectItem value="active">{t('status.active')}</SelectItem>
+                <SelectItem value="completed">{t('status.completed')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -197,21 +201,20 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
-              Delete Tournament
+              {t('edit.deleteTournament')}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>{t('edit.deleteConfirmTitle')}</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                tournament &quot;{tournament.name}&quot; and remove all associated data.
+                {t('edit.deleteConfirmDescription', { name: tournament.name })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{tCommon('actions.cancel')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>
-                Delete
+                {tCommon('actions.delete')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -223,7 +226,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          Save Changes
+          {t('edit.saveChanges')}
         </Button>
       </div>
     </form>

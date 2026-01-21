@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Team, MatchWithTeams } from "@/types/database";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,8 @@ interface TeamDetailViewProps {
 }
 
 export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamDetailViewProps) {
+  const t = useTranslations("teams.detail");
+  const tCommon = useTranslations("common.labels");
 
   return (
     <div className="space-y-8">
@@ -60,7 +63,7 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
         <Link href={`/teams/${team.id}/edit`}>
           <Button>
             <Pencil className="h-4 w-4 mr-2" />
-            Edit Team
+            {t("editTeam")}
           </Button>
         </Link>
       </div>
@@ -71,7 +74,7 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5" />
-              Tournaments
+              {t("tournaments")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -95,14 +98,14 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
       <div className="space-y-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <Calendar className="h-6 w-6" />
-          Matches
+          {t("matches")}
         </h2>
 
         {matchesByTournament.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground">
-                No matches scheduled for this team yet.
+                {t("noMatchesYet")}
               </p>
             </CardContent>
           </Card>
@@ -118,7 +121,7 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
                     {tournamentName}
                   </Link>
                   <Badge variant="outline" className="ml-2">
-                    {matches.length} {matches.length === 1 ? "match" : "matches"}
+                    {matches.length} {matches.length === 1 ? tCommon("match") : tCommon("matches")}
                   </Badge>
                 </CardTitle>
               </CardHeader>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Tournament, Team, MatchWithTeams } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,6 +68,9 @@ export function TournamentDetailView({
   allUsers
 }: TournamentDetailViewProps) {
   const router = useRouter();
+  const t = useTranslations('tournaments');
+  const tCommon = useTranslations('common');
+  
   const [isAddingTeam, setIsAddingTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const [removingTeamId, setRemovingTeamId] = useState<string | null>(null);
@@ -198,7 +202,7 @@ export function TournamentDetailView({
             <div className="flex items-center gap-2 mb-2">
               <div className={`h-3 w-3 rounded-full ${statusColors[tournament.status]}`} />
               <Badge variant="outline" className="capitalize">
-                {tournament.status}
+                {t(`status.${tournament.status}`)}
               </Badge>
               <Badge variant="secondary" className="capitalize">
                 {tournament.sport}
@@ -213,7 +217,7 @@ export function TournamentDetailView({
         <Link href={`/tournaments/manage/${tournament.id}/edit`}>
           <Button>
             <Pencil className="h-4 w-4 mr-2" />
-            Edit Tournament
+            {t('detail.editTournament')}
           </Button>
         </Link>
       </div>
@@ -232,7 +236,7 @@ export function TournamentDetailView({
               <Users className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{teams.length}</p>
-                <p className="text-sm text-muted-foreground">Teams</p>
+                <p className="text-sm text-muted-foreground">{t('detail.teams')}</p>
               </div>
             </div>
           </CardContent>
@@ -243,7 +247,7 @@ export function TournamentDetailView({
               <Calendar className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{matches.length}</p>
-                <p className="text-sm text-muted-foreground">Matches</p>
+                <p className="text-sm text-muted-foreground">{t('detail.matches')}</p>
               </div>
             </div>
           </CardContent>
@@ -254,7 +258,7 @@ export function TournamentDetailView({
               <UserCircle className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{participants.length}</p>
-                <p className="text-sm text-muted-foreground">Participants</p>
+                <p className="text-sm text-muted-foreground">{t('detail.participants')}</p>
               </div>
             </div>
           </CardContent>
@@ -267,7 +271,7 @@ export function TournamentDetailView({
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5" />
-              Participating Teams
+              {t('detail.participatingTeams')}
             </CardTitle>
           </div>
         </CardHeader>
@@ -276,12 +280,12 @@ export function TournamentDetailView({
           <div className="flex gap-2">
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
               <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Select a team to add..." />
+                <SelectValue placeholder={t('detail.selectTeamToAdd')} />
               </SelectTrigger>
               <SelectContent>
                 {availableTeams.length === 0 ? (
                   <SelectItem value="none" disabled>
-                    No teams available
+                    {t('detail.noTeamsAvailable')}
                   </SelectItem>
                 ) : (
                   availableTeams.map((team) => (
@@ -307,7 +311,7 @@ export function TournamentDetailView({
           {/* Team List */}
           {teams.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              No teams added to this tournament yet.
+              {t('detail.noTeamsYet')}
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -344,7 +348,7 @@ export function TournamentDetailView({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserCircle className="h-5 w-5" />
-            Participating Users
+            {t('detail.participatingUsers')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -352,12 +356,12 @@ export function TournamentDetailView({
           <div className="flex gap-2">
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
               <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Select a user to add..." />
+                <SelectValue placeholder={t('detail.selectUserToAdd')} />
               </SelectTrigger>
               <SelectContent>
                 {availableUsers.length === 0 ? (
                   <SelectItem value="none" disabled>
-                    No users available
+                    {t('detail.noUsersAvailable')}
                   </SelectItem>
                 ) : (
                   availableUsers.map((user) => (
@@ -383,7 +387,7 @@ export function TournamentDetailView({
           {/* Participant List */}
           {participants.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              No participants added to this tournament yet.
+              {t('detail.noParticipantsYet')}
             </p>
           ) : (
             <div className="space-y-2">
@@ -416,7 +420,7 @@ export function TournamentDetailView({
                         )}
                       </div>
                       <Badge variant="secondary">
-                        {participant.total_points} pts
+                        {participant.total_points} {tCommon('labels.pts')}
                       </Badge>
                     </div>
                     <Button
@@ -424,7 +428,7 @@ export function TournamentDetailView({
                       size="icon"
                       onClick={() => handleRemoveParticipant(participant.user!.id)}
                       disabled={removingUserId === participant.user.id}
-                      title="Remove from tournament"
+                      title={t('detail.removeFromTournament')}
                     >
                       {removingUserId === participant.user.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -446,12 +450,12 @@ export function TournamentDetailView({
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Matches
+              {t('detail.matches')}
             </CardTitle>
             <Link href={`/tournaments/manage/${tournament.id}/matches`}>
               <Button variant="outline" size="sm">
                 <Pencil className="h-4 w-4 mr-2" />
-                Manage Matches
+                {t('detail.manageMatches')}
               </Button>
             </Link>
           </div>
@@ -459,7 +463,7 @@ export function TournamentDetailView({
         <CardContent>
           {matches.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              No matches scheduled for this tournament yet.
+              {t('detail.noMatchesYet')}
             </p>
           ) : (
             <div className="grid gap-4">

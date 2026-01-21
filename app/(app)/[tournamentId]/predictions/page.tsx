@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
 import { PredictionForm } from "@/components/predictions/prediction-form";
 import { PredictionResultCard } from "@/components/predictions/prediction-result-card";
@@ -10,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function PredictionsPage() {
+  const t = useTranslations('predictions');
+  const tCommon = useTranslations('common');
   const params = useParams();
   const router = useRouter();
   const tournamentId = params.tournamentId as string;
@@ -91,7 +94,7 @@ export default function PredictionsPage() {
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
     if (!isParticipant) {
-      alert("You must be a tournament participant to submit predictions.");
+      alert(t('mustBeParticipant'));
       return;
     }
 
@@ -109,7 +112,7 @@ export default function PredictionsPage() {
       loadData();
     } else if (response.status === 403) {
       const data = await response.json();
-      alert(data.error || "You are not authorized to submit predictions for this tournament.");
+      alert(data.error || t('notAuthorized'));
       setIsParticipant(false);
     }
   }
@@ -117,7 +120,7 @@ export default function PredictionsPage() {
   if (loading) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="text-center">Loading...</div>
+        <div className="text-center">{tCommon('status.loading')}</div>
       </div>
     );
   }
@@ -129,22 +132,21 @@ export default function PredictionsPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-bold mb-2">My Predictions</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Submit predictions for upcoming matches and view your results
+            {t('subtitle')}
           </p>
         </div>
         <Link href={`/${tournamentId}`}>
-          <Button variant="outline">Back to Tournament</Button>
+          <Button variant="outline">{t('backToTournament')}</Button>
         </Link>
       </div>
 
       {!isParticipant && (
         <div className="mb-8 p-6 bg-muted/50 border rounded-lg text-center">
-          <h3 className="text-lg font-semibold mb-2">Not a Participant</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('notParticipant')}</h3>
           <p className="text-muted-foreground">
-            You are not currently registered as a participant in this tournament.
-            Contact an administrator to be added to the participant list.
+            {t('notParticipantMessage')}
           </p>
         </div>
       )}
@@ -154,9 +156,9 @@ export default function PredictionsPage() {
         {completedWithPredictions.length > 0 && (
           <div>
             <div className="mb-4">
-              <h2 className="text-2xl font-bold">Completed Matches</h2>
+              <h2 className="text-2xl font-bold">{t('completedMatches')}</h2>
               <p className="text-sm text-muted-foreground">
-                View your predictions and points earned
+                {t('completedMatchesSubtitle')}
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -175,14 +177,14 @@ export default function PredictionsPage() {
         {isParticipant && (
           <div>
             <div className="mb-4">
-              <h2 className="text-2xl font-bold">Upcoming Matches</h2>
+              <h2 className="text-2xl font-bold">{t('upcomingMatches')}</h2>
               <p className="text-sm text-muted-foreground">
-                Submit your score predictions before matches start
+                {t('upcomingMatchesSubtitle')}
               </p>
             </div>
             {scheduledMatches.length === 0 ? (
               <div className="text-center py-12 border rounded-lg bg-muted/50">
-                <p className="text-muted-foreground">No upcoming matches available for predictions.</p>
+                <p className="text-muted-foreground">{t('noUpcomingMatches')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

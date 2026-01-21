@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@/types/database";
 import { UserManagementList } from "@/components/admin/user-management-list";
@@ -16,6 +17,7 @@ interface UserWithStats extends User {
 }
 
 export default function AdminUsersPage() {
+  const t = useTranslations('admin.users');
   const [users, setUsers] = useState<UserWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -73,9 +75,9 @@ export default function AdminUsersPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">User Management</h1>
+        <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
         <p className="text-muted-foreground">
-          Manage users and grant admin permissions
+          {t('subtitle')}
         </p>
       </div>
       <UserManagementList initialUsers={users} />
