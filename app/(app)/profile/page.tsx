@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { ProfileEditor } from "@/components/profile/profile-editor";
@@ -12,6 +13,9 @@ import { PasskeyList } from "@/components/auth/passkey/passkey-list";
 import { Fingerprint } from "lucide-react";
 
 export default function ProfilePage() {
+  const t = useTranslations('profile');
+  const tPasskeys = useTranslations('auth.passkeys');
+  const tCommon = useTranslations('common');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasPasskey, setHasPasskey] = useState(false);
@@ -87,7 +91,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="text-center">Loading...</div>
+        <div className="text-center">{tCommon('status.loading')}</div>
       </div>
     );
   }
@@ -99,9 +103,9 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">Profile Settings</h1>
+        <h1 className="text-4xl font-bold">{t('title')}</h1>
         <p className="text-muted-foreground mt-2">
-          Manage your account settings and preferences
+          {t('subtitle')}
         </p>
       </div>
 
@@ -114,28 +118,28 @@ export default function ProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Fingerprint className="h-5 w-5" />
-              Passkey Authentication
+              {tPasskeys('title')}
             </CardTitle>
             <CardDescription>
-              Use biometric authentication or a security key for secure, password-free sign-in
+              {tPasskeys('description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {checkingPasskey ? (
-              <p className="text-sm text-muted-foreground">Loading passkeys...</p>
+              <p className="text-sm text-muted-foreground">{tPasskeys('loadingPasskeys')}</p>
             ) : (
               <div className="space-y-4">
                 {/* Benefits section - show if no passkeys */}
                 {!hasPasskey && (
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                      Why use passkeys?
+                      {tPasskeys('whyUse')}
                     </h4>
                     <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-disc list-inside">
-                      <li>More secure than passwords</li>
-                      <li>Faster sign-in with biometrics</li>
-                      <li>Works across all your devices</li>
-                      <li>No passwords to remember or type</li>
+                      <li>{tPasskeys('benefits.secure')}</li>
+                      <li>{tPasskeys('benefits.fast')}</li>
+                      <li>{tPasskeys('benefits.crossDevice')}</li>
+                      <li>{tPasskeys('benefits.noPassword')}</li>
                     </ul>
                   </div>
                 )}
@@ -143,7 +147,7 @@ export default function ProfilePage() {
                 {/* Passkey List */}
                 {hasPasskey && (
                   <div>
-                    <h4 className="font-medium mb-3">Your Passkeys</h4>
+                    <h4 className="font-medium mb-3">{tPasskeys('yourPasskeys')}</h4>
                     <PasskeyList
                       onPasskeysChange={() => {
                         checkPasskeys(user!.id);
@@ -163,7 +167,7 @@ export default function ProfilePage() {
                   />
                   {hasPasskey && (
                     <p className="text-sm text-muted-foreground mt-2">
-                      Add another passkey for a different device or browser
+                      {tPasskeys('addPasskey')}
                     </p>
                   )}
                 </div>

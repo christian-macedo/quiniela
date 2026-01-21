@@ -5,8 +5,10 @@ import { TeamManagementList } from "@/components/teams/management/team-managemen
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
 export default async function TeamsPage() {
+  const t = await getTranslations('teams');
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -53,15 +55,15 @@ export default async function TeamsPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Team Management</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Manage teams, update their information, and view their matches
+            {t('subtitle')}
           </p>
         </div>
         <Link href="/teams/new">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Add Team
+            {t('addTeam')}
           </Button>
         </Link>
       </div>

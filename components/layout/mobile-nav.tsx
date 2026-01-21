@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { LanguageSwitcher } from "./language-switcher";
 import { User } from "@/types/database";
 
 interface MobileNavProps {
@@ -12,6 +14,7 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ user, onSignOut }: MobileNavProps) {
+  const t = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
 
   const closeMenu = () => setIsOpen(false);
@@ -48,7 +51,7 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
-            <span className="font-semibold">Menu</span>
+            <span className="font-semibold">{t('appName')}</span>
             <button onClick={closeMenu} aria-label="Close menu">
               <X className="h-5 w-5" />
             </button>
@@ -57,9 +60,13 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
           {/* Menu Items */}
           <nav className="flex-1 overflow-y-auto">
             <div className="flex flex-col p-4 space-y-2">
+              <div className="mb-2">
+                <LanguageSwitcher />
+              </div>
+
               <Link href="/tournaments" onClick={closeMenu}>
                 <Button variant="ghost" className="w-full justify-start">
-                  Tournaments
+                  {t('navigation.tournaments')}
                 </Button>
               </Link>
 
@@ -67,17 +74,17 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
                 <>
                   <Link href="/tournaments/manage" onClick={closeMenu}>
                     <Button variant="ghost" className="w-full justify-start">
-                      Manage Tournaments
+                      {t('navigation.manageTournaments')}
                     </Button>
                   </Link>
                   <Link href="/teams" onClick={closeMenu}>
                     <Button variant="ghost" className="w-full justify-start">
-                      Teams
+                      {t('navigation.manageTeams')}
                     </Button>
                   </Link>
                   <Link href="/admin/users" onClick={closeMenu}>
                     <Button variant="ghost" className="w-full justify-start">
-                      User Management
+                      {t('navigation.userManagement')}
                     </Button>
                   </Link>
                 </>
@@ -88,7 +95,7 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
                   <div className="border-t my-2" />
                   <Link href="/profile" onClick={closeMenu}>
                     <Button variant="ghost" className="w-full justify-start">
-                      Account
+                      {t('navigation.account')}
                     </Button>
                   </Link>
                   <Button
@@ -99,7 +106,7 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
                       onSignOut();
                     }}
                   >
-                    Sign Out
+                    {t('navigation.signOut')}
                   </Button>
                 </>
               )}

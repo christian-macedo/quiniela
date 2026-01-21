@@ -1,0 +1,526 @@
+{
+  "common": {
+    "appName": "Quiniela",
+    "vs": "vs",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "navigation": {
+      "tournaments": "Tournaments",
+      "manageTeams": "Manage Teams",
+      "manageTournaments": "Manage Tournaments",
+      "userManagement": "Manage Users",
+      "account": "Account",
+      "signOut": "Sign Out",
+      "admin": "Admin"
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "update": "Update",
+      "create": "Create",
+      "delete": "Delete",
+      "edit": "Edit",
+      "back": "Back",
+      "backTo": "Back to {destination}",
+      "viewAll": "View All",
+      "add": "Add",
+      "clearFilters": "Clear filters",
+      "clearAll": "Clear all",
+      "maybeLater": "Maybe Later"
+    },
+    "status": {
+      "loading": "Loading...",
+      "saving": "Saving...",
+      "creating": "Creating...",
+      "updating": "Updating...",
+      "authenticating": "Authenticating..."
+    },
+    "labels": {
+      "email": "Email",
+      "emailAddress": "Email Address",
+      "password": "Password",
+      "name": "Name",
+      "date": "Date",
+      "time": "Time",
+      "points": "Points",
+      "pts": "pts",
+      "rank": "Rank",
+      "score": "Score",
+      "status": "Status",
+      "preview": "Preview",
+      "match": "match",
+      "matches": "matches"
+    },
+    "empty": {
+      "noData": "No data available",
+      "noResults": "No results found"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search...",
+      "filterBy": "Filter by {field}",
+      "activeFilters": "Active filters",
+      "all": "All",
+      "allCountries": "All Countries",
+      "allTournaments": "All Tournaments",
+      "allStatuses": "All Statuses",
+      "country": "Country",
+      "tournament": "Tournament",
+      "showingOf": "Showing {showing} of {total} {item}"
+    }
+  },
+  "metadata": {
+    "home": {
+      "title": "Quiniela - Tournament Predictions",
+      "description": "Predict match scores and compete with friends across multiple tournaments"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in with a passkey or your email and password",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "loginButton": "Login",
+      "loggingIn": "Logging in...",
+      "orContinueWith": "Or continue with email",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "signInWithPasskey": "Sign In with Passkey",
+      "enterEmail": "Please enter your email address",
+      "passkeyNotSupported": "Passkeys are not supported in your browser. Please use email and password to log in.",
+      "passkeyDescription": "You'll use your device's biometric authentication or security key to sign in."
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Create an account to start making predictions",
+      "emailLabel": "Email",
+      "screenNameLabel": "Screen Name (optional)",
+      "screenNamePlaceholder": "Your display name",
+      "passwordLabel": "Password",
+      "signUpButton": "Sign Up",
+      "creatingAccount": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Login"
+    },
+    "passkeys": {
+      "title": "Passkey Authentication",
+      "description": "Use biometric authentication or a security key for secure, password-free sign-in",
+      "loadingPasskeys": "Loading passkeys...",
+      "whyUse": "Why use passkeys?",
+      "benefits": {
+        "secure": "More secure than passwords",
+        "fast": "Faster sign-in with biometrics",
+        "crossDevice": "Works across all your devices",
+        "noPassword": "No passwords to remember or type"
+      },
+      "yourPasskeys": "Your Passkeys",
+      "addPasskey": "Add another passkey for a different device or browser",
+      "setupPasskey": "Set Up Passkey",
+      "setUpPasskey": "Set Up Passkey",
+      "settingUp": "Setting Up Passkey...",
+      "notSupported": "Passkeys are not supported in your browser. Please use email and password to log in.",
+      "notSupportedShort": "Passkeys Not Supported",
+      "noPasskeysYet": "No passkeys registered yet.",
+      "signInWithPasskey": "Sign In with Passkey",
+      "enterEmailFirst": "Please enter your email address",
+      "authFailed": "Failed to authenticate with passkey",
+      "registerFailed": "Failed to register passkey",
+      "loadFailed": "Failed to load passkeys",
+      "renameFailed": "Failed to rename passkey",
+      "deleteFailed": "Failed to delete passkey",
+      "unexpectedError": "An unexpected error occurred",
+      "biometricHint": "You'll use your device's biometric authentication or security key to sign in.",
+      "migration": {
+        "switchTitle": "Switch to Passkeys",
+        "intro": "Passkeys are the modern, secure way to sign in. No more passwords to remember!",
+        "moreSecure": "More Secure",
+        "moreSecureDesc": "Passkeys can't be phished or stolen. They're protected by your device.",
+        "fasterSignIn": "Faster Sign-In",
+        "fasterSignInDesc": "Use Face ID, Touch ID, or your device PIN. No typing needed.",
+        "easyToUse": "Easy to Use",
+        "easyToUseDesc": "Works across all your devices that support biometric authentication.",
+        "setupLater": "You can always set up a passkey later from your profile settings.",
+        "setupComplete": "Passkey Set Up!",
+        "setupCompleteDesc": "You can now sign in quickly and securely with your passkey."
+      }
+    }
+  },
+  "home": {
+    "title": "Quiniela",
+    "subtitle": "Tournament prediction platform for the World Cup and beyond",
+    "description": "Predict match scores, compete with friends, and climb the leaderboard",
+    "getStarted": "Get Started",
+    "login": "Login",
+    "hero": {
+      "title": "Quiniela",
+      "subtitle": "Tournament prediction platform for various sports events",
+      "description": "Predict match scores, compete with friends, and climb the leaderboard",
+      "getStarted": "Get Started",
+      "login": "Login"
+    }
+  },
+  "tournaments": {
+    "title": "Tournaments",
+    "subtitle": "Select a tournament to view matches and make predictions",
+    "status": {
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "empty": "No tournaments available",
+    "dashboard": {
+      "myPredictions": "My Predictions",
+      "fullRankings": "Full Rankings",
+      "allMatches": "All Matches",
+      "yourRank": "Your Rank",
+      "totalPoints": "Total Points",
+      "predictions": "Predictions",
+      "leaderboard": "Leaderboard",
+      "noRankings": "No rankings yet. Be the first to make a prediction!",
+      "stats": {
+        "title": "Tournament Stats",
+        "totalMatches": "Total Matches",
+        "completed": "Completed",
+        "participants": "Participants"
+      },
+      "upcomingMatches": {
+        "title": "Upcoming Matches",
+        "empty": "No upcoming matches"
+      },
+      "recentResults": {
+        "title": "Recent Results",
+        "empty": "No completed matches yet"
+      }
+    },
+    "card": {
+      "viewDetails": "View details",
+      "editTournament": "Edit tournament",
+      "team": "team",
+      "teams": "teams"
+    },
+    "management": {
+      "title": "Tournament Management",
+      "subtitle": "Create, edit, and manage tournaments",
+      "createTournament": "Create Tournament",
+      "empty": "No tournaments created yet.",
+      "noMatch": "No tournaments match your filters.",
+      "searchPlaceholder": "Search tournaments...",
+      "filterByStatus": "Filter by status",
+      "backToTournaments": "Back to Tournaments",
+      "backToTournament": "Back to Tournament",
+      "item": "tournaments",
+      "create": {
+        "title": "Create Tournament",
+        "subtitle": "Set up a new tournament"
+      },
+      "edit": {
+        "title": "Edit Tournament",
+        "subtitle": "Update tournament information",
+        "deleteTournament": "Delete Tournament",
+        "deleteConfirmTitle": "Are you sure?",
+        "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the tournament \"{name}\" and remove all associated data.",
+        "saveChanges": "Save Changes"
+      },
+      "form": {
+        "tournamentInfo": "Tournament Information",
+        "tournamentName": "Tournament Name",
+        "tournamentNamePlaceholder": "e.g., World Cup 2026",
+        "sport": "Sport",
+        "sportPlaceholder": "e.g., Football",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "status": "Status",
+        "selectStatus": "Select status",
+        "createTournament": "Create Tournament",
+        "updateTournament": "Update Tournament",
+        "createFailed": "Failed to create tournament",
+        "errorOccurred": "An error occurred"
+      }
+    },
+    "detail": {
+      "editTournament": "Edit Tournament",
+      "teams": "Teams",
+      "matches": "Matches",
+      "participants": "Participants",
+      "participatingTeams": "Participating Teams",
+      "participatingUsers": "Participating Users",
+      "selectTeamToAdd": "Select a team to add...",
+      "selectUserToAdd": "Select a user to add...",
+      "noTeamsAvailable": "No teams available",
+      "noUsersAvailable": "No users available",
+      "noTeamsYet": "No teams added to this tournament yet.",
+      "noParticipantsYet": "No participants added to this tournament yet.",
+      "noMatchesYet": "No matches scheduled for this tournament yet.",
+      "manageMatches": "Manage Matches",
+      "removeFromTournament": "Remove from tournament"
+    }
+  },
+  "matches": {
+    "title": "Matches",
+    "subtitle": "Upcoming and completed matches",
+    "noMatches": "No matches scheduled yet.",
+    "backToTournament": "Back to Tournament",
+    "backToMatches": "Back to Matches",
+    "matchSummary": "Match Summary",
+    "status": {
+      "scheduled": "Scheduled",
+      "in_progress": "In Progress",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "postponed": "Postponed"
+    },
+    "vs": "vs",
+    "details": {
+      "dateTime": "Date & Time",
+      "round": "Round",
+      "multiplier": "Multiplier",
+      "totalPredictions": "Total Predictions",
+      "predictions": "Predictions",
+      "noPredictions": "No predictions have been submitted for this match yet.",
+      "multiplierNote": "This match has a {multiplier}x scoring multiplier! Points earned will be multiplied accordingly.",
+      "you": "(You)",
+      "hiddenUntilEnd": "Hidden until match ends",
+      "anonymous": "Anonymous"
+    },
+    "management": {
+      "searchTeams": "Search teams...",
+      "filterByStatus": "Filter by status",
+      "filterByRound": "Filter by round",
+      "allRounds": "All Rounds",
+      "showingMatches": "Showing {showing} of {total} match(es)",
+      "noMatchesFiltered": "No matches found matching your filters.",
+      "noMatchesYet": "No matches found. Create your first match to get started.",
+      "scoreMatch": "Score Match",
+      "editMatch": "Edit Match"
+    },
+    "form": {
+      "createMatch": "Create Match",
+      "editMatch": "Edit Match",
+      "homeTeam": "Home Team",
+      "awayTeam": "Away Team",
+      "selectHomeTeam": "Select home team",
+      "selectAwayTeam": "Select away team",
+      "matchDateTime": "Match Date & Time",
+      "roundStage": "Round/Stage",
+      "roundPlaceholder": "e.g., Group A, Round of 16, Final",
+      "status": "Status",
+      "pointMultiplier": "Point Multiplier",
+      "multiplierHelp": "Multiply points (1 = normal, 2 = double, 3 = triple)",
+      "deleteMatch": "Delete Match",
+      "deleteConfirmTitle": "Are you absolutely sure?",
+      "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the match between {homeTeam} and {awayTeam}.",
+      "deleteCompletedWarning": "Warning: This match has been completed. Deleting it may affect user rankings and predictions."
+    },
+    "score": {
+      "title": "Score Match",
+      "description": "Enter the final score for this match. This will calculate points for all predictions and update tournament rankings.",
+      "errorInvalidScores": "Please enter valid scores",
+      "errorNegativeScores": "Scores cannot be negative",
+      "pointMultiplier": "Point Multiplier: ×{multiplier}",
+      "multiplierNote": "Points will be multiplied by {multiplier} for this match",
+      "scoringRules": "Scoring Rules:",
+      "exactScore": "Exact score: 3 points",
+      "correctDifference": "Correct score difference: 2 points",
+      "correctWinner": "Correct winner: 1 point",
+      "ptsWithMultiplier": "pts with ×{multiplier}",
+      "submitButton": "Score Match & Calculate Points"
+    }
+  },
+  "predictions": {
+    "title": "My Predictions",
+    "subtitle": "Submit predictions for upcoming matches and view your results",
+    "backToTournament": "Back to Tournament",
+    "upcomingMatches": "Upcoming Matches",
+    "upcomingMatchesSubtitle": "Submit your score predictions before matches start",
+    "completedMatches": "Completed Matches",
+    "completedMatchesSubtitle": "View your predictions and points earned",
+    "notParticipant": {
+      "title": "Not a Participant",
+      "message": "You are not currently registered as a participant in this tournament.",
+      "contact": "Contact an administrator to be added to the participant list."
+    },
+    "completed": {
+      "title": "Completed Matches",
+      "subtitle": "View your predictions and points earned"
+    },
+    "upcoming": {
+      "title": "Upcoming Matches",
+      "subtitle": "Submit your score predictions before matches start",
+      "empty": "No upcoming matches available for predictions."
+    },
+    "form": {
+      "submitPrediction": "Submit Prediction",
+      "updatePrediction": "Update Prediction",
+      "saving": "Saving..."
+    },
+    "results": {
+      "finalScore": "Final Score",
+      "yourPrediction": "Your Prediction",
+      "exactMatch": "Exact score match!",
+      "correctDifference": "Correct score difference!",
+      "correctWinner": "Correct winner!",
+      "predictionHidden": "Prediction hidden",
+      "pointsEarned": "{points} points earned"
+    }
+  },
+  "rankings": {
+    "title": "Tournament Leaderboard",
+    "subtitle": "See how you rank against other players",
+    "backToTournament": "Back to Tournament",
+    "backToRankings": "Back to Rankings",
+    "rank": "Rank",
+    "player": "Player",
+    "points": "Points",
+    "predictions": "Predictions",
+    "empty": "No rankings available yet.",
+    "noRankings": "No rankings available yet.",
+    "you": "You",
+    "userPredictions": {
+      "you": "You",
+      "predictionsFor": "Predictions for {tournament}",
+      "totalPredictions": "Total Predictions",
+      "completed": "Completed",
+      "pending": "Pending",
+      "avgPointsPerMatch": "Avg Points/Match",
+      "noPredictions": "No predictions have been submitted yet."
+    }
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "edit": {
+      "title": "Edit Profile",
+      "subtitle": "Update your display name and profile picture",
+      "changePicture": "Change profile picture",
+      "imageFormat": "JPG, PNG or GIF (max 2MB)",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "Enter your display name",
+      "displayNameHelp": "This is how other users will see your name",
+      "emailAddress": "Email Address",
+      "saveChanges": "Save Changes",
+      "saving": "Saving..."
+    },
+    "account": {
+      "title": "Account Information",
+      "subtitle": "Your account details and activity",
+      "lastLogin": "Last Login",
+      "never": "Never",
+      "memberSince": "Member Since",
+      "userId": "User ID"
+    },
+    "language": {
+      "title": "Language Preference",
+      "subtitle": "Choose your preferred language",
+      "note": "Language preference is saved in your browser"
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "User Management",
+      "subtitle": "Manage users and grant admin permissions",
+      "admin": "Admin",
+      "user": "User",
+      "tournaments": "Tournaments",
+      "predictions": "Predictions",
+      "totalPoints": "Total Points",
+      "joined": "Joined",
+      "grantAdmin": "Grant Admin",
+      "revokeAdmin": "Revoke Admin"
+    },
+    "scoring": {
+      "title": "Score Match",
+      "description": "Enter the final score for this match. This will calculate points for all predictions and update tournament rankings.",
+      "multiplier": "Point Multiplier",
+      "multiplierNote": "Points will be multiplied by {multiplier} for this match",
+      "rules": {
+        "title": "Scoring Rules:",
+        "exactScore": "Exact score: 3 points",
+        "correctDifference": "Correct score difference: 2 points",
+        "correctWinner": "Correct winner: 1 point"
+      },
+      "cancel": "Cancel",
+      "scoreMatch": "Score Match & Calculate Points"
+    }
+  },
+  "teams": {
+    "title": "Team Management",
+    "subtitle": "Manage teams, update their information, and view their matches",
+    "addTeam": "Add Team",
+    "backToTeams": "Back to Teams",
+    "backToTeam": "Back to Team",
+    "empty": "No teams available yet.",
+    "noMatch": "No teams match your filters.",
+    "searchPlaceholder": "Search teams...",
+    "item": "teams",
+    "create": {
+      "title": "Add New Team",
+      "subtitle": "Create a new team to add to tournaments"
+    },
+    "edit": {
+      "title": "Edit Team",
+      "subtitle": "Update team information and logo",
+      "deleteTeam": "Delete Team",
+      "deleteConfirmTitle": "Are you sure?",
+      "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the team \"{name}\" and remove it from all tournaments and matches.",
+      "saveChanges": "Save Changes"
+    },
+    "detail": {
+      "editTeam": "Edit Team",
+      "tournaments": "Tournaments",
+      "matches": "Matches",
+      "noMatchesYet": "No matches scheduled for this team yet."
+    },
+    "card": {
+      "viewDetails": "View details",
+      "editTeam": "Edit team",
+      "shortName": "Short name",
+      "country": "Country"
+    },
+    "form": {
+      "preview": "Preview",
+      "teamInfo": "Team Information",
+      "teamName": "Team Name",
+      "teamNamePlaceholder": "e.g., Manchester United",
+      "shortName": "Short Name",
+      "shortNamePlaceholder": "e.g., MAN UTD",
+      "shortNameHint": "Used for display in compact views (max 10 characters)",
+      "shortNameHelp": "Used for display in compact views (max 10 characters)",
+      "countryCode": "Country Code",
+      "countryCodePlaceholder": "e.g., GB",
+      "countryCodeHint": "ISO country code (optional)",
+      "countryCodeHelp": "ISO country code (optional)",
+      "logoUrl": "Logo URL",
+      "logoUrlPlaceholder": "https://example.com/logo.png",
+      "logoUrlHint": "URL to the team logo image (optional)",
+      "logoUrlHelp": "URL to the team logo image (optional)",
+      "createTeam": "Create Team",
+      "updateTeam": "Update Team",
+      "defaultName": "Team Name",
+      "defaultShortName": "TEAM",
+      "createFailed": "Failed to create team",
+      "errorOccurred": "An error occurred",
+      "cancel": "Cancel"
+    }
+  },
+  "errors": {
+    "unauthorized": "Unauthorized",
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You don't have permission to access this page. Administrator privileges are required.",
+    "returnToTournaments": "Return to Tournaments",
+    "pageNotFound": "Page not found",
+    "matchNotFound": "Match not found",
+    "mustBeParticipant": "You must be a tournament participant to submit predictions",
+    "failedToSave": "Failed to save",
+    "failedToLoad": "Failed to load",
+    "genericError": "An error occurred"
+  },
+  "language": {
+    "english": "English",
+    "spanish": "Español",
+    "selectLanguage": "Select Language"
+  }
+}

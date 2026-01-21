@@ -3,12 +3,14 @@ import { MatchList } from "@/components/matches/match-list";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getTranslations } from 'next-intl/server';
 
 export default async function MatchesPage({
   params,
 }: {
   params: Promise<{ tournamentId: string }>;
 }) {
+  const t = await getTranslations('matches');
   const { tournamentId } = await params;
   const supabase = await createClient();
 
@@ -39,11 +41,11 @@ export default async function MatchesPage({
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">{tournament?.name}</h1>
-          <p className="text-muted-foreground">Upcoming and completed matches</p>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <div className="flex gap-2">
         <Link href={`/${tournamentId}`}>
-          <Button variant="outline">Back to Tournament</Button>
+          <Button variant="outline">{t('backToTournament')}</Button>
         </Link>
         </div>
       </div>

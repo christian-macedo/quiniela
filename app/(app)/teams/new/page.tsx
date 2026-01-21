@@ -5,8 +5,10 @@ import { TeamCreateForm } from "@/components/teams/management/team-create-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
 export default async function NewTeamPage() {
+  const t = await getTranslations('teams');
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,14 +29,14 @@ export default async function NewTeamPage() {
         <Link href="/teams">
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Teams
+            {t('backToTeams')}
           </Button>
         </Link>
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Add New Team</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('create.title')}</h1>
           <p className="text-muted-foreground">
-            Create a new team to add to tournaments
+            {t('create.subtitle')}
           </p>
         </div>
         

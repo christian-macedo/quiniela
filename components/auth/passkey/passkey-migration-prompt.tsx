@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Fingerprint, Shield, Zap, X } from "lucide-react";
 import { PasskeyRegisterButton } from "./passkey-register-button";
+import { useTranslations } from 'next-intl';
 
 interface PasskeyMigrationPromptProps {
   open: boolean;
@@ -33,6 +34,8 @@ export function PasskeyMigrationPrompt({
   onSkip,
   onSuccess,
 }: PasskeyMigrationPromptProps) {
+  const t = useTranslations('auth.passkeys.migration');
+  const tCommon = useTranslations('common.actions');
   const router = useRouter();
   const [hasRegistered, setHasRegistered] = useState(false);
 
@@ -63,9 +66,9 @@ export function PasskeyMigrationPrompt({
             <div className="mx-auto w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
               <Shield className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Passkey Set Up!</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('setupComplete')}</h2>
             <p className="text-muted-foreground">
-              You can now sign in quickly and securely with your passkey.
+              {t('setupCompleteDesc')}
             </p>
           </div>
         </AlertDialogContent>
@@ -79,7 +82,7 @@ export function PasskeyMigrationPrompt({
         <AlertDialogHeader>
           <div className="flex items-center justify-between">
             <AlertDialogTitle className="text-2xl">
-              Switch to Passkeys
+              {t('switchTitle')}
             </AlertDialogTitle>
             <button
               onClick={handleSkip}
@@ -91,7 +94,7 @@ export function PasskeyMigrationPrompt({
           </div>
           <AlertDialogDescription className="text-left space-y-4 pt-4">
             <p>
-              Passkeys are the modern, secure way to sign in. No more passwords to remember!
+              {t('intro')}
             </p>
 
             <div className="space-y-3">
@@ -100,9 +103,9 @@ export function PasskeyMigrationPrompt({
                   <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-foreground">More Secure</h4>
+                  <h4 className="font-medium text-foreground">{t('moreSecure')}</h4>
                   <p className="text-sm">
-                    Passkeys can&apos;t be phished or stolen. They&apos;re protected by your device.
+                    {t('moreSecureDesc')}
                   </p>
                 </div>
               </div>
@@ -112,9 +115,9 @@ export function PasskeyMigrationPrompt({
                   <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-foreground">Faster Sign-In</h4>
+                  <h4 className="font-medium text-foreground">{t('fasterSignIn')}</h4>
                   <p className="text-sm">
-                    Use Face ID, Touch ID, or your device PIN. No typing needed.
+                    {t('fasterSignInDesc')}
                   </p>
                 </div>
               </div>
@@ -124,9 +127,9 @@ export function PasskeyMigrationPrompt({
                   <Fingerprint className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-foreground">Easy to Use</h4>
+                  <h4 className="font-medium text-foreground">{t('easyToUse')}</h4>
                   <p className="text-sm">
-                    Works across all your devices that support biometric authentication.
+                    {t('easyToUseDesc')}
                   </p>
                 </div>
               </div>
@@ -144,12 +147,12 @@ export function PasskeyMigrationPrompt({
 
           <AlertDialogCancel asChild>
             <button onClick={handleSkip} className="w-full">
-              Maybe Later
+              {tCommon('maybeLater')}
             </button>
           </AlertDialogCancel>
 
           <p className="text-xs text-muted-foreground text-center pt-2">
-            You can always set up a passkey later from your profile settings.
+            {t('setupLater')}
           </p>
         </AlertDialogFooter>
       </AlertDialogContent>

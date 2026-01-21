@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 
@@ -10,18 +12,21 @@ export const metadata: Metadata = {
   description: "Predict match scores and compete with friends across multiple tournaments",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
-        </ThemeProvider>
-        </body>
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

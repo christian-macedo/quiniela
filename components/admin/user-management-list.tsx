@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { User } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,8 @@ interface UserManagementListProps {
 }
 
 export function UserManagementList({ initialUsers }: UserManagementListProps) {
+  const t = useTranslations('admin');
+  
   const [users, setUsers] = useState<UserWithStats[]>(initialUsers);
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -62,26 +65,26 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
               {user.is_admin ? (
                 <Badge variant="default" className="gap-1">
                   <Shield className="h-3 w-3" />
-                  Admin
+                  {t('users.admin')}
                 </Badge>
               ) : (
-                <Badge variant="outline">User</Badge>
+                <Badge variant="outline">{t('users.user')}</Badge>
               )}
             </div>
             <div className="text-sm">
-              <p className="text-muted-foreground">Tournaments</p>
+              <p className="text-muted-foreground">{t('users.tournaments')}</p>
               <p className="font-medium">{user.stats.tournament_count}</p>
             </div>
             <div className="text-sm">
-              <p className="text-muted-foreground">Predictions</p>
+              <p className="text-muted-foreground">{t('users.predictions')}</p>
               <p className="font-medium">{user.stats.prediction_count}</p>
             </div>
             <div className="text-sm">
-              <p className="text-muted-foreground">Total Points</p>
+              <p className="text-muted-foreground">{t('users.totalPoints')}</p>
               <p className="font-medium">{user.stats.total_points}</p>
             </div>
             <div className="text-sm">
-              <p className="text-muted-foreground">Joined</p>
+              <p className="text-muted-foreground">{t('users.joined')}</p>
               <p className="font-medium">{formatLocalDate(user.created_at)}</p>
             </div>
           </div>
@@ -95,12 +98,12 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
               {user.is_admin ? (
                 <>
                   <ShieldOff className="h-4 w-4 mr-1" />
-                  Revoke Admin
+                  {t('users.revokeAdmin')}
                 </>
               ) : (
                 <>
                   <Shield className="h-4 w-4 mr-1" />
-                  Grant Admin
+                  {t('users.grantAdmin')}
                 </>
               )}
             </Button>

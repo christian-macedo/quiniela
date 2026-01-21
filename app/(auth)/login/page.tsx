@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import { PasskeyLoginButton } from "@/components/auth/passkey/passkey-login-butt
 import { PasskeyMigrationPrompt } from "@/components/auth/passkey/passkey-migration-prompt";
 
 export default function LoginPage() {
+  const t = useTranslations('auth.login');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -55,9 +57,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">{t('title')}</CardTitle>
           <CardDescription>
-            Sign in with a passkey or your email and password
+            {t('subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -78,7 +80,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">
-                Or continue with email
+                {t('orContinueWith')}
               </span>
             </div>
           </div>
@@ -87,7 +89,7 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                Email
+                {t('emailLabel')}
               </label>
               <Input
                 id="email"
@@ -100,7 +102,7 @@ export default function LoginPage() {
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                Password
+                {t('passwordLabel')}
               </label>
               <Input
                 id="password"
@@ -115,13 +117,13 @@ export default function LoginPage() {
               <div className="text-sm text-destructive">{error}</div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+              {loading ? t('loggingIn') : t('loginButton')}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            {t('noAccount')}{" "}
             <Link href="/signup" className="text-primary hover:underline">
-              Sign up
+              {t('signUpLink')}
             </Link>
           </div>
         </CardContent>

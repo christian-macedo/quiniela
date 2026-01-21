@@ -5,12 +5,14 @@ import { TournamentEditForm } from "@/components/tournaments/management/tourname
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
 interface TournamentEditPageProps {
   params: Promise<{ tournamentId: string }>;
 }
 
 export default async function TournamentEditPage({ params }: TournamentEditPageProps) {
+  const t = await getTranslations('tournaments.management');
   const { tournamentId } = await params;
   const supabase = await createClient();
 
@@ -42,14 +44,14 @@ export default async function TournamentEditPage({ params }: TournamentEditPageP
         <Link href={`/tournaments/manage/${tournamentId}`}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Tournament
+            {t('backToTournament')}
           </Button>
         </Link>
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Edit Tournament</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('edit.title')}</h1>
           <p className="text-muted-foreground">
-            Update tournament information
+            {t('edit.subtitle')}
           </p>
         </div>
         

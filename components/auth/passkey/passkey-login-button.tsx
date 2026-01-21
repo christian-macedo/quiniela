@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Fingerprint, Loader2 } from "lucide-react";
 import { authenticateWithPasskey, isPasskeySupported } from "@/lib/webauthn/client";
+import { useTranslations } from 'next-intl';
 
 interface PasskeyLoginButtonProps {
   onSuccess?: () => void;
@@ -24,6 +25,8 @@ export function PasskeyLoginButton({
   onError,
   className,
 }: PasskeyLoginButtonProps) {
+  const t = useTranslations('auth.passkeys');
+  const tCommon = useTranslations('common');
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +37,7 @@ export function PasskeyLoginButton({
 
   const handleAuthenticate = async () => {
     if (!email) {
-      setError("Please enter your email address");
+      setError(t('enterEmailFirst'));
       return;
     }
 
@@ -54,14 +57,14 @@ export function PasskeyLoginButton({
         }
       } else {
         // Handle error
-        const errorMessage = result.error || "Failed to authenticate with passkey";
+        const errorMessage = result.error || t('authFailed');
         setError(errorMessage);
         if (onError) {
           onError(errorMessage);
         }
       }
     } catch (err) {
-      const errorMessage = "An unexpected error occurred";
+      const errorMessage = t('unexpectedError');
       setError(errorMessage);
       if (onError) {
         onError(errorMessage);
@@ -75,7 +78,7 @@ export function PasskeyLoginButton({
     return (
       <div className={className}>
         <p className="text-sm text-muted-foreground text-center">
-          Passkeys are not supported in your browser. Please use email and password to log in.
+          {t('notSupported')}
         </p>
       </div>
     );
@@ -84,7 +87,7 @@ export function PasskeyLoginButton({
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="space-y-2">
-        <Label htmlFor="passkey-email">Email Address</Label>
+        <Label htmlFor="passkey-email">{tCommon('labels.emailAddress')}</Label>
         <Input
           id="passkey-email"
           type="email"
@@ -109,12 +112,12 @@ export function PasskeyLoginButton({
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Authenticating...
+            {tCommon('status.authenticating')}
           </>
         ) : (
           <>
             <Fingerprint className="mr-2 h-4 w-4" />
-            Sign In with Passkey
+            {t('signInWithPasskey')}
           </>
         )}
       </Button>
@@ -126,7 +129,7 @@ export function PasskeyLoginButton({
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        You&apos;ll use your device&apos;s biometric authentication or security key to sign in.
+        {t('biometricHint')}
       </p>
     </div>
   );

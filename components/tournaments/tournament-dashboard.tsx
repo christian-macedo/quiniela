@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Tournament, MatchWithTeams, RankingWithUser } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,12 +38,6 @@ const statusColors = {
   completed: "bg-gray-500",
 };
 
-const statusLabels = {
-  upcoming: "Upcoming",
-  active: "Active",
-  completed: "Completed",
-};
-
 export function TournamentDashboard({
   tournament,
   matches,
@@ -51,6 +46,9 @@ export function TournamentDashboard({
   userStats,
   tournamentStats
 }: TournamentDashboardProps) {
+  const t = useTranslations('tournaments');
+  const tCommon = useTranslations('common');
+  
   const upcomingMatches = matches.filter(m => m.status === "scheduled").slice(0, 5);
   const recentMatches = matches.filter(m => m.status === "completed").slice(-5).reverse();
   const topRankings = rankings.slice(0, 10);
@@ -62,7 +60,7 @@ export function TournamentDashboard({
         <div className="flex items-center gap-3">
           <div className={`h-3 w-3 rounded-full ${statusColors[tournament.status]}`} />
           <Badge variant="outline" className="capitalize">
-            {statusLabels[tournament.status]}
+            {t(`status.${tournament.status}`)}
           </Badge>
           <Badge variant="secondary" className="capitalize">
             {tournament.sport}
@@ -81,19 +79,19 @@ export function TournamentDashboard({
         <Link href={`/${tournament.id}/predictions`}>
           <Button size="lg">
             <Target className="h-4 w-4 mr-2" />
-            My Predictions
+            {t('dashboard.myPredictions')}
           </Button>
         </Link>
         <Link href={`/${tournament.id}/rankings`}>
           <Button variant="outline" size="lg">
             <Trophy className="h-4 w-4 mr-2" />
-            Full Rankings
+            {t('dashboard.fullRankings')}
           </Button>
         </Link>
         <Link href={`/${tournament.id}/matches`}>
           <Button variant="outline" size="lg">
             <Calendar className="h-4 w-4 mr-2" />
-            All Matches
+            {t('dashboard.allMatches')}
           </Button>
         </Link>
       </div>
@@ -105,15 +103,15 @@ export function TournamentDashboard({
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-3xl font-bold">{userStats.rank || "-"}</p>
-                <p className="text-sm text-muted-foreground">Your Rank</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.yourRank')}</p>
               </div>
               <div>
                 <p className="text-3xl font-bold">{userStats.pointsEarned}</p>
-                <p className="text-sm text-muted-foreground">Total Points</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.totalPoints')}</p>
               </div>
               <div>
                 <p className="text-3xl font-bold">{userStats.totalPredictions}</p>
-                <p className="text-sm text-muted-foreground">Predictions</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.predictions')}</p>
               </div>
             </div>
           </CardContent>
@@ -127,11 +125,11 @@ export function TournamentDashboard({
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="h-5 w-5" />
-                Leaderboard
+                {t('dashboard.leaderboard')}
               </CardTitle>
               <Link href={`/${tournament.id}/rankings`}>
                 <Button variant="ghost" size="sm">
-                  View All
+                  {tCommon('actions.viewAll')}
                 </Button>
               </Link>
             </div>
@@ -139,7 +137,7 @@ export function TournamentDashboard({
           <CardContent>
             {topRankings.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
-                No rankings yet. Be the first to make a prediction!
+                {t('dashboard.noRankings')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -183,7 +181,7 @@ export function TournamentDashboard({
 
                       {/* Points */}
                       <Badge variant="secondary" className="text-xs">
-                        {ranking.total_points} pts
+                        {ranking.total_points} {tCommon('labels.pts')}
                       </Badge>
                     </div>
                   );
@@ -198,7 +196,7 @@ export function TournamentDashboard({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              Tournament Stats
+              {t('dashboard.stats.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -206,14 +204,14 @@ export function TournamentDashboard({
               <div className="flex justify-between items-center p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">Total Matches</span>
+                  <span className="font-medium">{t('dashboard.stats.totalMatches')}</span>
                 </div>
                 <Badge variant="secondary">{matches.length}</Badge>
               </div>
               <div className="flex justify-between items-center p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <Trophy className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">Completed</span>
+                  <span className="font-medium">{t('dashboard.stats.completed')}</span>
                 </div>
                 <Badge variant="secondary">
                   {matches.filter(m => m.status === "completed").length}
@@ -222,7 +220,7 @@ export function TournamentDashboard({
               <div className="flex justify-between items-center p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <UserCircle className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">Participants</span>
+                  <span className="font-medium">{t('dashboard.stats.participants')}</span>
                 </div>
                 <Badge variant="secondary">{tournamentStats?.participantCount || 0}</Badge>
               </div>
@@ -239,11 +237,11 @@ export function TournamentDashboard({
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Upcoming Matches
+                {t('dashboard.upcomingMatches.title')}
               </CardTitle>
               <Link href={`/${tournament.id}/matches`}>
                 <Button variant="ghost" size="sm">
-                  View All
+                  {tCommon('actions.viewAll')}
                 </Button>
               </Link>
             </div>
@@ -251,7 +249,7 @@ export function TournamentDashboard({
           <CardContent>
             {upcomingMatches.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
-                No upcoming matches
+                {t('dashboard.upcomingMatches.empty')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -269,11 +267,11 @@ export function TournamentDashboard({
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="h-5 w-5" />
-                Recent Results
+                {t('dashboard.recentResults.title')}
               </CardTitle>
               <Link href={`/${tournament.id}/matches`}>
                 <Button variant="ghost" size="sm">
-                  View All
+                  {tCommon('actions.viewAll')}
                 </Button>
               </Link>
             </div>
@@ -281,7 +279,7 @@ export function TournamentDashboard({
           <CardContent>
             {recentMatches.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
-                No completed matches yet
+                {t('dashboard.recentResults.empty')}
               </p>
             ) : (
               <div className="space-y-3">
