@@ -20,10 +20,10 @@ export default async function Home() {
         <h1 className="text-6xl font-bold tracking-tight">
           {t('title')}
         </h1>
-        <p className="text-xl text-muted-foreground max-w-md">
+        <p className="text-xl text-muted-foreground max-w-md mx-auto">
           {t('subtitle')}
         </p>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground max-w-md mx-auto">
           {t('description')}
         </p>
         <div className="flex gap-4 justify-center pt-4">

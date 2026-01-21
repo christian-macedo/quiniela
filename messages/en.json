@@ -149,9 +149,14 @@
     }
   },
   "home": {
+    "title": "Quiniela",
+    "subtitle": "Tournament prediction platform for the World Cup and beyond",
+    "description": "Predict match scores, compete with friends, and climb the leaderboard",
+    "getStarted": "Get Started",
+    "login": "Login",
     "hero": {
       "title": "Quiniela",
-      "subtitle": "Tournament prediction platform for the World Cup and beyond",
+      "subtitle": "Tournament prediction platform for various sports events",
       "description": "Predict match scores, compete with friends, and climb the leaderboard",
       "getStarted": "Get Started",
       "login": "Login"

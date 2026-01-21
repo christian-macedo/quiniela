@@ -73,8 +73,8 @@
   },
   "metadata": {
     "home": {
-      "title": "Quiniela - Predicciones de Torneos",
-      "description": "Predice resultados de partidos y compite con amigos en múltiples torneos"
+      "title": "Quiniela - pronósticos de Torneos",
+      "description": "Pronostica resultados de partidos y compite con amigos en múltiples torneos"
     }
   },
   "auth": {
@@ -95,7 +95,7 @@
     },
     "signup": {
       "title": "Registrarse",
-      "subtitle": "Crea una cuenta para empezar a hacer predicciones",
+      "subtitle": "Crea una cuenta para empezar a hacer pronósticos",
       "emailLabel": "Correo Electrónico",
       "screenNameLabel": "Nombre de Usuario (opcional)",
       "screenNamePlaceholder": "Tu nombre de usuario",
@@ -149,17 +149,22 @@
     }
   },
   "home": {
+    "title": "Quiniela",
+    "subtitle": "Plataforma de pronósticos de torneos para la Copa del Mundo y más",
+    "description": "Pronostica resultados de partidos, compite con amigos y escala en la tabla de posiciones",
+    "getStarted": "Comenzar",
+    "login": "Iniciar Sesión",
     "hero": {
       "title": "Quiniela",
-      "subtitle": "Plataforma de predicciones de torneos para la Copa del Mundo y más",
-      "description": "Predice resultados de partidos, compite con amigos y escala en la tabla de posiciones",
+      "subtitle": "Plataforma de pronósticos de torneos para la Copa del Mundo y más",
+      "description": "Pronostica resultados de partidos, compite con amigos y escala en la tabla de posiciones",
       "getStarted": "Comenzar",
       "login": "Iniciar Sesión"
     }
   },
   "tournaments": {
     "title": "Torneos",
-    "subtitle": "Selecciona un torneo para ver partidos y hacer predicciones",
+    "subtitle": "Selecciona un torneo para ver partidos y hacer pronósticos",
     "status": {
       "upcoming": "Próximo",
       "active": "Activo",
@@ -167,14 +172,14 @@
     },
     "empty": "No hay torneos disponibles",
     "dashboard": {
-      "myPredictions": "Mis Predicciones",
+      "myPredictions": "Mis pronósticos",
       "fullRankings": "Clasificación Completa",
       "allMatches": "Todos los Partidos",
       "yourRank": "Tu Posición",
       "totalPoints": "Puntos Totales",
-      "predictions": "Predicciones",
+      "predictions": "pronósticos",
       "leaderboard": "Tabla de Posiciones",
-      "noRankings": "Aún no hay clasificaciones. ¡Sé el primero en hacer una predicción!",
+      "noRankings": "Aún no hay clasificaciones. ¡Sé el primero en hacer una pronóstico!",
       "stats": {
         "title": "Estadísticas del Torneo",
         "totalMatches": "Partidos Totales",
@@ -348,17 +353,17 @@
       "empty": "No hay próximos partidos disponibles para pronósticos."
     },
     "form": {
-      "submitPrediction": "Enviar Predicción",
-      "updatePrediction": "Actualizar Predicción",
+      "submitPrediction": "Enviar Pronóstico",
+      "updatePrediction": "Actualizar Pronóstico",
       "saving": "Guardando..."
     },
     "results": {
       "finalScore": "Resultado Final",
-      "yourPrediction": "Tu Predicción",
+      "yourPrediction": "Tu Pronóstico",
       "exactMatch": "¡Puntuación exacta!",
       "correctDifference": "¡Diferencia de goles correcta!",
       "correctWinner": "¡Ganador correcto!",
-      "predictionHidden": "Predicción oculta",
+      "predictionHidden": "Pronóstico oculta",
       "pointsEarned": "{points} puntos ganados"
     }
   },
@@ -370,18 +375,18 @@
     "rank": "Posición",
     "player": "Jugador",
     "points": "Puntos",
-    "predictions": "Predicciones",
+    "predictions": "pronósticos",
     "empty": "Aún no hay clasificaciones disponibles.",
     "noRankings": "Aún no hay clasificaciones disponibles.",
     "you": "Tú",
     "userPredictions": {
       "you": "Tú",
-      "predictionsFor": "Predicciones para {tournament}",
-      "totalPredictions": "Total de Predicciones",
+      "predictionsFor": "pronósticos para {tournament}",
+      "totalPredictions": "Total de pronósticos",
       "completed": "Completados",
       "pending": "Pendientes",
       "avgPointsPerMatch": "Promedio Puntos/Partido",
-      "noPredictions": "Aún no se han enviado predicciones."
+      "noPredictions": "Aún no se han enviado pronósticos."
     }
   },
   "profile": {
@@ -420,7 +425,7 @@
       "admin": "Admin",
       "user": "Usuario",
       "tournaments": "Torneos",
-      "predictions": "Predicciones",
+      "predictions": "pronósticos",
       "totalPoints": "Puntos Totales",
       "joined": "Ingresó",
       "grantAdmin": "Otorgar Admin",
@@ -428,7 +433,7 @@
     },
     "scoring": {
       "title": "Puntuar Partido",
-      "description": "Ingresa el resultado final de este partido. Esto calculará los puntos para todas las predicciones y actualizará las clasificaciones del torneo.",
+      "description": "Ingresa el resultado final de este partido. Esto calculará los puntos para todas las pronósticos y actualizará las clasificaciones del torneo.",
       "multiplier": "Multiplicador de Puntos",
       "multiplierNote": "Los puntos se multiplicarán por {multiplier} para este partido",
       "rules": {
@@ -508,7 +513,7 @@
     "returnToTournaments": "Volver a Torneos",
     "pageNotFound": "Página no encontrada",
     "matchNotFound": "Partido no encontrado",
-    "mustBeParticipant": "Debes ser un participante del torneo para enviar predicciones",
+    "mustBeParticipant": "Debes ser un participante del torneo para enviar pronósticos",
     "failedToSave": "Error al guardar",
     "failedToLoad": "Error al cargar",
     "genericError": "Ocurrió un error"
