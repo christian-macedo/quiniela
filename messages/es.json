@@ -2,11 +2,14 @@
   "common": {
     "appName": "Quiniela",
     "vs": "vs",
+    "saveChanges": "Guardar Cambios",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
     "navigation": {
       "tournaments": "Torneos",
-      "teams": "Equipos",
+      "manageTeams": "Gestionar Equipos",
       "manageTournaments": "Gestionar Torneos",
-      "userManagement": "Gestión de Usuarios",
+      "userManagement": "Gestionar Usuarios",
       "account": "Cuenta",
       "signOut": "Cerrar Sesión",
       "admin": "Admin"
@@ -260,6 +263,7 @@
     "status": {
       "scheduled": "Programado",
       "in_progress": "En Progreso",
+      "inProgress": "En Progreso",
       "completed": "Completado",
       "cancelled": "Cancelado",
       "postponed": "Pospuesto"
@@ -324,6 +328,11 @@
   "predictions": {
     "title": "Mis Pronósticos",
     "subtitle": "Envía pronósticos para próximos partidos y ve tus resultados",
+    "backToTournament": "Volver al Torneo",
+    "upcomingMatches": "Próximos Partidos",
+    "upcomingMatchesSubtitle": "Envía tus pronósticos de puntuación antes de que comiencen los partidos",
+    "completedMatches": "Partidos Completados",
+    "completedMatchesSubtitle": "Ve tus pronósticos y puntos ganados",
     "notParticipant": {
       "title": "No Eres Participante",
       "message": "Actualmente no estás registrado como participante en este torneo.",
@@ -366,6 +375,7 @@
     "noRankings": "Aún no hay clasificaciones disponibles.",
     "you": "Tú",
     "userPredictions": {
+      "you": "Tú",
       "predictionsFor": "Predicciones para {tournament}",
       "totalPredictions": "Total de Predicciones",
       "completed": "Completados",

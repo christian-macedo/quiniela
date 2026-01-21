@@ -79,7 +79,7 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
                   </Link>
                   <Link href="/teams" onClick={closeMenu}>
                     <Button variant="ghost" className="w-full justify-start">
-                      {t('navigation.teams')}
+                      {t('navigation.manageTeams')}
                     </Button>
                   </Link>
                   <Link href="/admin/users" onClick={closeMenu}>

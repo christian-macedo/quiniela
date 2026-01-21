@@ -2,11 +2,14 @@
   "common": {
     "appName": "Quiniela",
     "vs": "vs",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
     "navigation": {
       "tournaments": "Tournaments",
-      "teams": "Teams",
+      "manageTeams": "Manage Teams",
       "manageTournaments": "Manage Tournaments",
-      "userManagement": "User Management",
+      "userManagement": "Manage Users",
       "account": "Account",
       "signOut": "Sign Out",
       "admin": "Admin"
@@ -260,6 +263,7 @@
     "status": {
       "scheduled": "Scheduled",
       "in_progress": "In Progress",
+      "inProgress": "In Progress",
       "completed": "Completed",
       "cancelled": "Cancelled",
       "postponed": "Postponed"
@@ -324,6 +328,11 @@
   "predictions": {
     "title": "My Predictions",
     "subtitle": "Submit predictions for upcoming matches and view your results",
+    "backToTournament": "Back to Tournament",
+    "upcomingMatches": "Upcoming Matches",
+    "upcomingMatchesSubtitle": "Submit your score predictions before matches start",
+    "completedMatches": "Completed Matches",
+    "completedMatchesSubtitle": "View your predictions and points earned",
     "notParticipant": {
       "title": "Not a Participant",
       "message": "You are not currently registered as a participant in this tournament.",
@@ -366,6 +375,7 @@
     "noRankings": "No rankings available yet.",
     "you": "You",
     "userPredictions": {
+      "you": "You",
       "predictionsFor": "Predictions for {tournament}",
       "totalPredictions": "Total Predictions",
       "completed": "Completed",

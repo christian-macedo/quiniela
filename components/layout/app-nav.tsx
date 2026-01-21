@@ -44,7 +44,7 @@ export function AppNav({ user }: AppNavProps) {
                 <Button variant="ghost">{t('navigation.manageTournaments')}</Button>
               </Link>
               <Link href="/teams">
-                <Button variant="ghost">{t('navigation.teams')}</Button>
+                <Button variant="ghost">{t('navigation.manageTeams')}</Button>
               </Link>
               <Link href="/admin/users">
                 <Button variant="ghost">{t('navigation.userManagement')}</Button>
