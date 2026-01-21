@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@/types/database";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +24,7 @@ interface UserNavProps {
 export function UserNav({ user }: UserNavProps) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations('common');
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -56,7 +58,7 @@ export function UserNav({ user }: UserNavProps) {
               {user.is_admin && (
                 <Badge variant="default" className="text-xs gap-1">
                   <Shield className="h-3 w-3" />
-                  Admin
+                  {t('navigation.admin')}
                 </Badge>
               )}
             </div>
@@ -71,7 +73,7 @@ export function UserNav({ user }: UserNavProps) {
           className="cursor-pointer"
         >
           <UserCircle className="mr-2 h-4 w-4" />
-          <span>Account</span>
+          <span>{t('navigation.account')}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -79,7 +81,7 @@ export function UserNav({ user }: UserNavProps) {
           className="cursor-pointer text-destructive focus:text-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign Out</span>
+          <span>{t('navigation.signOut')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

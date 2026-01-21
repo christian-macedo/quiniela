@@ -15,8 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Save } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 export function TournamentCreateForm() {
+  const t = useTranslations('tournaments.management.form');
+  const tCommon = useTranslations('common');
+  const tStatus = useTranslations('tournaments.status');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,14 +53,14 @@ export function TournamentCreateForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to create tournament");
+        throw new Error(data.error || t('createFailed'));
       }
 
       const tournament = await response.json();
       router.push(`/tournaments/manage/${tournament.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : t('errorOccurred'));
     } finally {
       setIsLoading(false);
     }
@@ -72,38 +76,38 @@ export function TournamentCreateForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tournament Information</CardTitle>
+          <CardTitle>{t('tournamentInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Tournament Name</Label>
+            <Label htmlFor="name">{t('tournamentName')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="e.g., World Cup 2026"
+              placeholder={t('tournamentNamePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sport">Sport</Label>
+            <Label htmlFor="sport">{t('sport')}</Label>
             <Input
               id="sport"
               value={formData.sport}
               onChange={(e) =>
                 setFormData({ ...formData, sport: e.target.value })
               }
-              placeholder="e.g., Football"
+              placeholder={t('sportPlaceholder')}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="start_date">Start Date</Label>
+              <Label htmlFor="start_date">{t('startDate')}</Label>
               <Input
                 id="start_date"
                 type="date"
@@ -116,7 +120,7 @@ export function TournamentCreateForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="end_date">End Date</Label>
+              <Label htmlFor="end_date">{t('endDate')}</Label>
               <Input
                 id="end_date"
                 type="date"
@@ -130,7 +134,7 @@ export function TournamentCreateForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">{tCommon('labels.status')}</Label>
             <Select 
               value={formData.status} 
               onValueChange={(value: TournamentStatus) =>
@@ -138,12 +142,12 @@ export function TournamentCreateForm() {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder={t('selectStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="upcoming">Upcoming</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="upcoming">{tStatus('upcoming')}</SelectItem>
+                <SelectItem value="active">{tStatus('active')}</SelectItem>
+                <SelectItem value="completed">{tStatus('completed')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -158,7 +162,7 @@ export function TournamentCreateForm() {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          Create Tournament
+          {t('createTournament')}
         </Button>
         <Button
           type="button"
@@ -166,7 +170,7 @@ export function TournamentCreateForm() {
           onClick={() => router.back()}
           disabled={isLoading}
         >
-          Cancel
+          {tCommon('actions.cancel')}
         </Button>
       </div>
     </form>

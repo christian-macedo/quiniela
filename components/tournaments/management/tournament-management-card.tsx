@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Tournament } from "@/types/database";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +26,10 @@ export function TournamentManagementCard({
   teamCount, 
   matchCount 
 }: TournamentManagementCardProps) {
+  const t = useTranslations("tournaments.card");
+  const tStatus = useTranslations("tournaments.status");
+  const tLabels = useTranslations("common.labels");
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="pb-3">
@@ -30,17 +37,17 @@ export function TournamentManagementCard({
           <div className="flex items-center gap-2">
             <div className={`h-2 w-2 rounded-full ${statusColors[tournament.status]}`} />
             <Badge variant="outline" className="capitalize">
-              {tournament.status}
+              {tStatus(tournament.status)}
             </Badge>
           </div>
           <div className="flex gap-2">
             <Link href={`/tournaments/manage/${tournament.id}`}>
-              <Button variant="outline" size="icon" title="View details">
+              <Button variant="outline" size="icon" title={t("viewDetails")}>
                 <Eye className="h-4 w-4" />
               </Button>
             </Link>
             <Link href={`/tournaments/manage/${tournament.id}/edit`}>
-              <Button variant="outline" size="icon" title="Edit tournament">
+              <Button variant="outline" size="icon" title={t("editTournament")}>
                 <Pencil className="h-4 w-4" />
               </Button>
             </Link>
@@ -55,11 +62,11 @@ export function TournamentManagementCard({
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
-            <span>{teamCount} teams</span>
+            <span>{teamCount} {teamCount === 1 ? t("team") : t("teams")}</span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            <span>{matchCount} matches</span>
+            <span>{matchCount} {matchCount === 1 ? tLabels("match") : tLabels("matches")}</span>
           </div>
           <Badge variant="secondary" className="capitalize">
             {tournament.sport}

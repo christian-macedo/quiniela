@@ -1,0 +1,511 @@
+{
+  "common": {
+    "appName": "Quiniela",
+    "vs": "vs",
+    "navigation": {
+      "tournaments": "Torneos",
+      "teams": "Equipos",
+      "manageTournaments": "Gestionar Torneos",
+      "userManagement": "Gestión de Usuarios",
+      "account": "Cuenta",
+      "signOut": "Cerrar Sesión",
+      "admin": "Admin"
+    },
+    "actions": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "submit": "Enviar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "back": "Volver",
+      "backTo": "Volver a {destination}",
+      "viewAll": "Ver Todo",
+      "add": "Agregar",
+      "clearFilters": "Limpiar filtros",
+      "clearAll": "Limpiar todo",
+      "maybeLater": "Quizás Después"
+    },
+    "status": {
+      "loading": "Cargando...",
+      "saving": "Guardando...",
+      "creating": "Creando...",
+      "updating": "Actualizando...",
+      "authenticating": "Autenticando..."
+    },
+    "labels": {
+      "email": "Correo Electrónico",
+      "emailAddress": "Correo Electrónico",
+      "password": "Contraseña",
+      "name": "Nombre",
+      "date": "Fecha",
+      "time": "Hora",
+      "points": "Puntos",
+      "pts": "pts",
+      "rank": "Posición",
+      "score": "Puntuación",
+      "status": "Estado",
+      "preview": "Vista Previa",
+      "match": "partido",
+      "matches": "partidos"
+    },
+    "empty": {
+      "noData": "No hay datos disponibles",
+      "noResults": "No se encontraron resultados"
+    },
+    "filters": {
+      "search": "Buscar",
+      "searchPlaceholder": "Buscar...",
+      "filterBy": "Filtrar por {field}",
+      "activeFilters": "Filtros activos",
+      "all": "Todos",
+      "allCountries": "Todos los Países",
+      "allTournaments": "Todos los Torneos",
+      "allStatuses": "Todos los Estados",
+      "country": "País",
+      "tournament": "Torneo",
+      "showingOf": "Mostrando {showing} de {total} {item}"
+    }
+  },
+  "metadata": {
+    "home": {
+      "title": "Quiniela - Predicciones de Torneos",
+      "description": "Predice resultados de partidos y compite con amigos en múltiples torneos"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Inicia sesión con una llave de acceso o tu correo y contraseña",
+      "emailLabel": "Correo Electrónico",
+      "passwordLabel": "Contraseña",
+      "loginButton": "Iniciar Sesión",
+      "loggingIn": "Iniciando sesión...",
+      "orContinueWith": "O continuar con correo",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUpLink": "Regístrate",
+      "signInWithPasskey": "Iniciar Sesión con Llave de Acceso",
+      "enterEmail": "Por favor ingresa tu correo electrónico",
+      "passkeyNotSupported": "Las llaves de acceso no son compatibles con tu navegador. Por favor usa correo y contraseña para iniciar sesión.",
+      "passkeyDescription": "Usarás la autenticación biométrica de tu dispositivo o una llave de seguridad para iniciar sesión."
+    },
+    "signup": {
+      "title": "Registrarse",
+      "subtitle": "Crea una cuenta para empezar a hacer predicciones",
+      "emailLabel": "Correo Electrónico",
+      "screenNameLabel": "Nombre de Usuario (opcional)",
+      "screenNamePlaceholder": "Tu nombre de usuario",
+      "passwordLabel": "Contraseña",
+      "signUpButton": "Registrarse",
+      "creatingAccount": "Creando cuenta...",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "loginLink": "Iniciar sesión"
+    },
+    "passkeys": {
+      "title": "Autenticación con Llave de Acceso",
+      "description": "Usa autenticación biométrica o una llave de seguridad para iniciar sesión de forma segura sin contraseñas",
+      "loadingPasskeys": "Cargando llaves de acceso...",
+      "whyUse": "¿Por qué usar llaves de acceso?",
+      "benefits": {
+        "secure": "Más seguro que las contraseñas",
+        "fast": "Inicio de sesión más rápido con biometría",
+        "crossDevice": "Funciona en todos tus dispositivos",
+        "noPassword": "Sin contraseñas que recordar o escribir"
+      },
+      "yourPasskeys": "Tus Llaves de Acceso",
+      "addPasskey": "Agregar otra llave de acceso para un dispositivo o navegador diferente",
+      "setupPasskey": "Configurar Llave de Acceso",
+      "setUpPasskey": "Configurar Llave de Acceso",
+      "settingUp": "Configurando Llave de Acceso...",
+      "notSupported": "Las llaves de acceso no son compatibles con tu navegador. Por favor usa correo electrónico y contraseña para iniciar sesión.",
+      "notSupportedShort": "Llaves de Acceso No Compatibles",
+      "noPasskeysYet": "Aún no hay llaves de acceso registradas.",
+      "signInWithPasskey": "Iniciar Sesión con Llave de Acceso",
+      "enterEmailFirst": "Por favor ingresa tu correo electrónico",
+      "authFailed": "No se pudo autenticar con la llave de acceso",
+      "registerFailed": "No se pudo registrar la llave de acceso",
+      "loadFailed": "No se pudieron cargar las llaves de acceso",
+      "renameFailed": "No se pudo renombrar la llave de acceso",
+      "deleteFailed": "No se pudo eliminar la llave de acceso",
+      "unexpectedError": "Ocurrió un error inesperado",
+      "biometricHint": "Usarás la autenticación biométrica de tu dispositivo o llave de seguridad para iniciar sesión.",
+      "migration": {
+        "switchTitle": "Cambiar a Llaves de Acceso",
+        "intro": "Las llaves de acceso son la forma moderna y segura de iniciar sesión. ¡No más contraseñas que recordar!",
+        "moreSecure": "Más Seguro",
+        "moreSecureDesc": "Las llaves de acceso no pueden ser robadas ni suplantadas. Están protegidas por tu dispositivo.",
+        "fasterSignIn": "Inicio de Sesión Más Rápido",
+        "fasterSignInDesc": "Usa Face ID, Touch ID o el PIN de tu dispositivo. Sin necesidad de escribir.",
+        "easyToUse": "Fácil de Usar",
+        "easyToUseDesc": "Funciona en todos tus dispositivos que soporten autenticación biométrica.",
+        "setupLater": "Siempre puedes configurar una llave de acceso más tarde desde la configuración de tu perfil.",
+        "setupComplete": "¡Llave de Acceso Configurada!",
+        "setupCompleteDesc": "Ahora puedes iniciar sesión de forma rápida y segura con tu llave de acceso."
+      }
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Quiniela",
+      "subtitle": "Plataforma de predicciones de torneos para la Copa del Mundo y más",
+      "description": "Predice resultados de partidos, compite con amigos y escala en la tabla de posiciones",
+      "getStarted": "Comenzar",
+      "login": "Iniciar Sesión"
+    }
+  },
+  "tournaments": {
+    "title": "Torneos",
+    "subtitle": "Selecciona un torneo para ver partidos y hacer predicciones",
+    "status": {
+      "upcoming": "Próximo",
+      "active": "Activo",
+      "completed": "Completado"
+    },
+    "empty": "No hay torneos disponibles",
+    "dashboard": {
+      "myPredictions": "Mis Predicciones",
+      "fullRankings": "Clasificación Completa",
+      "allMatches": "Todos los Partidos",
+      "yourRank": "Tu Posición",
+      "totalPoints": "Puntos Totales",
+      "predictions": "Predicciones",
+      "leaderboard": "Tabla de Posiciones",
+      "noRankings": "Aún no hay clasificaciones. ¡Sé el primero en hacer una predicción!",
+      "stats": {
+        "title": "Estadísticas del Torneo",
+        "totalMatches": "Partidos Totales",
+        "completed": "Completados",
+        "participants": "Participantes"
+      },
+      "upcomingMatches": {
+        "title": "Próximos Partidos",
+        "empty": "No hay próximos partidos"
+      },
+      "recentResults": {
+        "title": "Resultados Recientes",
+        "empty": "Aún no hay partidos completados"
+      }
+    },
+    "card": {
+      "viewDetails": "Ver detalles",
+      "editTournament": "Editar torneo",
+      "team": "equipo",
+      "teams": "equipos"
+    },
+    "management": {
+      "title": "Gestión de Torneos",
+      "subtitle": "Crear, editar y gestionar torneos",
+      "createTournament": "Crear Torneo",
+      "empty": "Aún no hay torneos creados.",
+      "noMatch": "Ningún torneo coincide con tus filtros.",
+      "searchPlaceholder": "Buscar torneos...",
+      "filterByStatus": "Filtrar por estado",
+      "backToTournaments": "Volver a Torneos",
+      "backToTournament": "Volver al Torneo",
+      "item": "torneos",
+      "create": {
+        "title": "Crear Torneo",
+        "subtitle": "Configurar un nuevo torneo"
+      },
+      "edit": {
+        "title": "Editar Torneo",
+        "subtitle": "Actualizar información del torneo",
+        "deleteTournament": "Eliminar Torneo",
+        "deleteConfirmTitle": "¿Estás seguro?",
+        "deleteConfirmDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente el torneo \"{name}\" y todos los datos asociados.",
+        "saveChanges": "Guardar Cambios"
+      },
+      "form": {
+        "tournamentInfo": "Información del Torneo",
+        "tournamentName": "Nombre del Torneo",
+        "tournamentNamePlaceholder": "ej., Copa del Mundo 2026",
+        "sport": "Deporte",
+        "sportPlaceholder": "ej., Fútbol",
+        "startDate": "Fecha de Inicio",
+        "endDate": "Fecha de Fin",
+        "status": "Estado",
+        "selectStatus": "Seleccionar estado",
+        "createTournament": "Crear Torneo",
+        "updateTournament": "Actualizar Torneo",
+        "createFailed": "Error al crear el torneo",
+        "errorOccurred": "Ocurrió un error"
+      }
+    },
+    "detail": {
+      "editTournament": "Editar Torneo",
+      "teams": "Equipos",
+      "matches": "Partidos",
+      "participants": "Participantes",
+      "participatingTeams": "Equipos Participantes",
+      "participatingUsers": "Usuarios Participantes",
+      "selectTeamToAdd": "Selecciona un equipo para agregar...",
+      "selectUserToAdd": "Selecciona un usuario para agregar...",
+      "noTeamsAvailable": "No hay equipos disponibles",
+      "noUsersAvailable": "No hay usuarios disponibles",
+      "noTeamsYet": "Aún no hay equipos agregados a este torneo.",
+      "noParticipantsYet": "Aún no hay participantes agregados a este torneo.",
+      "noMatchesYet": "Aún no hay partidos programados para este torneo.",
+      "manageMatches": "Gestionar Partidos",
+      "removeFromTournament": "Eliminar del torneo"
+    }
+  },
+  "matches": {
+    "title": "Partidos",
+    "subtitle": "Próximos partidos y completados",
+    "noMatches": "No hay partidos programados aún.",
+    "backToTournament": "Volver al Torneo",
+    "backToMatches": "Volver a Partidos",
+    "matchSummary": "Resumen del Partido",
+    "status": {
+      "scheduled": "Programado",
+      "in_progress": "En Progreso",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "postponed": "Pospuesto"
+    },
+    "vs": "vs",
+    "details": {
+      "dateTime": "Fecha y Hora",
+      "round": "Jornada",
+      "multiplier": "Multiplicador",
+      "totalPredictions": "Pronósticos Totales",
+      "predictions": "Pronósticos",
+      "noPredictions": "Aún no se han enviado pronósticos para este partido.",
+      "multiplierNote": "¡Este partido tiene un multiplicador de puntuación de {multiplier}x! Los puntos ganados en consecuencia.",
+      "you": "(Tú)",
+      "hiddenUntilEnd": "Oculto hasta que termine el partido",
+      "anonymous": "Anónimo"
+    },
+    "management": {
+      "searchTeams": "Buscar equipos...",
+      "filterByStatus": "Filtrar por estado",
+      "filterByRound": "Filtrar por jornada",
+      "allRounds": "Todas las jornadas",
+      "showingMatches": "Mostrando {showing} de {total} partido(s)",
+      "noMatchesFiltered": "No se encontraron partidos con esos filtros.",
+      "noMatchesYet": "No se encontraron partidos. Crea tu primer partido para comenzar.",
+      "scoreMatch": "Registrar Resultado",
+      "editMatch": "Editar Partido"
+    },
+    "form": {
+      "createMatch": "Crear Partido",
+      "editMatch": "Editar Partido",
+      "homeTeam": "Equipo Local",
+      "awayTeam": "Equipo Visitante",
+      "selectHomeTeam": "Seleccionar equipo local",
+      "selectAwayTeam": "Seleccionar equipo visitante",
+      "matchDateTime": "Fecha y Hora del Partido",
+      "roundStage": "Jornada/Fase",
+      "roundPlaceholder": "ej., Grupo A, Octavos de final, Final",
+      "status": "Estado",
+      "pointMultiplier": "Multiplicador de Puntos",
+      "multiplierHelp": "Multiplicar puntos (1 = normal, 2 = doble, 3 = triple)",
+      "deleteMatch": "Eliminar Partido",
+      "deleteConfirmTitle": "¿Estás completamente seguro?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente el partido entre {homeTeam} y {awayTeam}.",
+      "deleteCompletedWarning": "Advertencia: Este partido ya ha sido completado. Eliminarlo puede afectar los rankings y pronósticos de los usuarios."
+    },
+    "score": {
+      "title": "Registrar Resultado",
+      "description": "Ingresa el marcador final de este partido. Esto calculará los puntos de todos los pronósticos y actualizará los rankings del torneo.",
+      "errorInvalidScores": "Por favor ingresa marcadores válidos",
+      "errorNegativeScores": "Los marcadores no pueden ser negativos",
+      "pointMultiplier": "Multiplicador de Puntos: ×{multiplier}",
+      "multiplierNote": "Los puntos se multiplicarán por {multiplier} para este partido",
+      "scoringRules": "Reglas de Puntuación:",
+      "exactScore": "Marcador exacto: 3 puntos",
+      "correctDifference": "Diferencia de goles correcta: 2 puntos",
+      "correctWinner": "Ganador correcto: 1 punto",
+      "ptsWithMultiplier": "pts con ×{multiplier}",
+      "submitButton": "Registrar Resultado y Calcular Puntos"
+    }
+  },
+  "predictions": {
+    "title": "Mis Pronósticos",
+    "subtitle": "Envía pronósticos para próximos partidos y ve tus resultados",
+    "notParticipant": {
+      "title": "No Eres Participante",
+      "message": "Actualmente no estás registrado como participante en este torneo.",
+      "contact": "Contacta a un administrador para ser agregado a la lista de participantes."
+    },
+    "completed": {
+      "title": "Partidos Completados",
+      "subtitle": "Ve tus pronósticos y puntos ganados"
+    },
+    "upcoming": {
+      "title": "Próximos Partidos",
+      "subtitle": "Envía tus pronósticos de puntuación antes de que comiencen los partidos",
+      "empty": "No hay próximos partidos disponibles para pronósticos."
+    },
+    "form": {
+      "submitPrediction": "Enviar Predicción",
+      "updatePrediction": "Actualizar Predicción",
+      "saving": "Guardando..."
+    },
+    "results": {
+      "finalScore": "Resultado Final",
+      "yourPrediction": "Tu Predicción",
+      "exactMatch": "¡Puntuación exacta!",
+      "correctDifference": "¡Diferencia de goles correcta!",
+      "correctWinner": "¡Ganador correcto!",
+      "predictionHidden": "Predicción oculta",
+      "pointsEarned": "{points} puntos ganados"
+    }
+  },
+  "rankings": {
+    "title": "Tabla de Posiciones del Torneo",
+    "subtitle": "Mira cómo te clasificas contra otros jugadores",
+    "backToTournament": "Volver al Torneo",
+    "backToRankings": "Volver a Clasificaciones",
+    "rank": "Posición",
+    "player": "Jugador",
+    "points": "Puntos",
+    "predictions": "Predicciones",
+    "empty": "Aún no hay clasificaciones disponibles.",
+    "noRankings": "Aún no hay clasificaciones disponibles.",
+    "you": "Tú",
+    "userPredictions": {
+      "predictionsFor": "Predicciones para {tournament}",
+      "totalPredictions": "Total de Predicciones",
+      "completed": "Completados",
+      "pending": "Pendientes",
+      "avgPointsPerMatch": "Promedio Puntos/Partido",
+      "noPredictions": "Aún no se han enviado predicciones."
+    }
+  },
+  "profile": {
+    "title": "Configuración del Perfil",
+    "subtitle": "Administra la configuración y preferencias de tu cuenta",
+    "edit": {
+      "title": "Editar Perfil",
+      "subtitle": "Actualiza tu nombre de usuario y foto de perfil",
+      "changePicture": "Cambiar foto de perfil",
+      "imageFormat": "JPG, PNG o GIF (máx 2MB)",
+      "displayName": "Nombre de Usuario",
+      "displayNamePlaceholder": "Ingresa tu nombre de usuario",
+      "displayNameHelp": "Así es como otros usuarios verán tu nombre",
+      "emailAddress": "Correo Electrónico",
+      "saveChanges": "Guardar Cambios",
+      "saving": "Guardando..."
+    },
+    "account": {
+      "title": "Información de la Cuenta",
+      "subtitle": "Detalles y actividad de tu cuenta",
+      "lastLogin": "Último Inicio de Sesión",
+      "never": "Nunca",
+      "memberSince": "Miembro Desde",
+      "userId": "ID de Usuario"
+    },
+    "language": {
+      "title": "Preferencia de Idioma",
+      "subtitle": "Elige tu idioma preferido",
+      "note": "La preferencia de idioma se guarda en tu navegador"
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "Gestión de Usuarios",
+      "subtitle": "Administra usuarios y otorga permisos de administrador",
+      "admin": "Admin",
+      "user": "Usuario",
+      "tournaments": "Torneos",
+      "predictions": "Predicciones",
+      "totalPoints": "Puntos Totales",
+      "joined": "Ingresó",
+      "grantAdmin": "Otorgar Admin",
+      "revokeAdmin": "Revocar Admin"
+    },
+    "scoring": {
+      "title": "Puntuar Partido",
+      "description": "Ingresa el resultado final de este partido. Esto calculará los puntos para todas las predicciones y actualizará las clasificaciones del torneo.",
+      "multiplier": "Multiplicador de Puntos",
+      "multiplierNote": "Los puntos se multiplicarán por {multiplier} para este partido",
+      "rules": {
+        "title": "Reglas de Puntuación:",
+        "exactScore": "Puntuación exacta: 3 puntos",
+        "correctDifference": "Diferencia de goles correcta: 2 puntos",
+        "correctWinner": "Ganador correcto: 1 punto"
+      },
+      "cancel": "Cancelar",
+      "scoreMatch": "Puntuar Partido y Calcular Puntos"
+    }
+  },
+  "teams": {
+    "title": "Gestión de Equipos",
+    "subtitle": "Administra equipos, actualiza su información y ve sus partidos",
+    "addTeam": "Agregar Equipo",
+    "backToTeams": "Volver a Equipos",
+    "backToTeam": "Volver al Equipo",
+    "empty": "Aún no hay equipos disponibles.",
+    "noMatch": "Ningún equipo coincide con tus filtros.",
+    "searchPlaceholder": "Buscar equipos...",
+    "item": "equipos",
+    "create": {
+      "title": "Agregar Nuevo Equipo",
+      "subtitle": "Crea un nuevo equipo para agregar a torneos"
+    },
+    "edit": {
+      "title": "Editar Equipo",
+      "subtitle": "Actualiza información y logo del equipo",
+      "deleteTeam": "Eliminar Equipo",
+      "deleteConfirmTitle": "¿Estás seguro?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente el equipo \"{name}\" y lo removerá de todos los torneos y partidos.",
+      "saveChanges": "Guardar Cambios"
+    },
+    "detail": {
+      "editTeam": "Editar Equipo",
+      "tournaments": "Torneos",
+      "matches": "Partidos",
+      "noMatchesYet": "No hay partidos programados para este equipo aún."
+    },
+    "card": {
+      "viewDetails": "Ver detalles",
+      "editTeam": "Editar equipo",
+      "shortName": "Nombre corto",
+      "country": "País"
+    },
+    "form": {
+      "preview": "Vista Previa",
+      "teamInfo": "Información del Equipo",
+      "teamName": "Nombre del Equipo",
+      "teamNamePlaceholder": "ej., Manchester United",
+      "shortName": "Nombre Corto",
+      "shortNamePlaceholder": "ej., MAN UTD",
+      "shortNameHint": "Usado para mostrar en vistas compactas (máx 10 caracteres)",
+      "shortNameHelp": "Usado para mostrar en vistas compactas (máx 10 caracteres)",
+      "countryCode": "Código de País",
+      "countryCodePlaceholder": "ej., GB",
+      "countryCodeHint": "Código ISO de país (opcional)",
+      "countryCodeHelp": "Código ISO de país (opcional)",
+      "logoUrl": "URL del Logo",
+      "logoUrlPlaceholder": "https://ejemplo.com/logo.png",
+      "logoUrlHint": "URL de la imagen del logo del equipo (opcional)",
+      "logoUrlHelp": "URL de la imagen del logo del equipo (opcional)",
+      "createTeam": "Crear Equipo",
+      "updateTeam": "Actualizar Equipo",
+      "defaultName": "Nombre del Equipo",
+      "defaultShortName": "EQUIPO",
+      "createFailed": "Error al crear el equipo",
+      "errorOccurred": "Ocurrió un error",
+      "cancel": "Cancelar"
+    }
+  },
+  "errors": {
+    "unauthorized": "No Autorizado",
+    "accessDenied": "Acceso Denegado",
+    "accessDeniedMessage": "No tienes permiso para acceder a esta página. Se requieren privilegios de administrador.",
+    "returnToTournaments": "Volver a Torneos",
+    "pageNotFound": "Página no encontrada",
+    "matchNotFound": "Partido no encontrado",
+    "mustBeParticipant": "Debes ser un participante del torneo para enviar predicciones",
+    "failedToSave": "Error al guardar",
+    "failedToLoad": "Error al cargar",
+    "genericError": "Ocurrió un error"
+  },
+  "language": {
+    "english": "English",
+    "spanish": "Español",
+    "selectLanguage": "Seleccionar Idioma"
+  }
+}

@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from 'next-intl';
 import { MatchWithTeams } from "@/types/database";
 import { Card, CardContent } from "@/components/ui/card";
 import { TeamBadge } from "@/components/teams/team-badge";
@@ -10,6 +13,8 @@ interface MatchCardProps {
 }
 
 export function MatchCard({ match }: MatchCardProps) {
+  const t = useTranslations('matches.status');
+  const tCommon = useTranslations('common');
   const isCompleted = match.status === "completed";
   const isLive = match.status === "in_progress";
 
@@ -34,7 +39,7 @@ export function MatchCard({ match }: MatchCardProps) {
               variant={isLive ? "default" : "outline"}
               className={isLive ? "bg-green-500" : ""}
             >
-              {match.status.replace("_", " ")}
+              {t(match.status as 'scheduled' | 'in_progress' | 'completed' | 'postponed' | 'cancelled')}
             </Badge>
           </div>
 
@@ -52,7 +57,7 @@ export function MatchCard({ match }: MatchCardProps) {
               </div>
             ) : (
               <div className="text-xl font-semibold text-muted-foreground">
-                vs
+                {tCommon('vs')}
               </div>
             )}
 

@@ -5,12 +5,14 @@ import { TeamEditForm } from "@/components/teams/management/team-edit-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from 'next-intl/server';
 
 interface TeamEditPageProps {
   params: Promise<{ teamId: string }>;
 }
 
 export default async function TeamEditPage({ params }: TeamEditPageProps) {
+  const t = await getTranslations('teams');
   const { teamId } = await params;
   const supabase = await createClient();
 
@@ -42,14 +44,14 @@ export default async function TeamEditPage({ params }: TeamEditPageProps) {
         <Link href={`/teams/${teamId}`}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Team
+            {t('backToTeam')}
           </Button>
         </Link>
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Edit Team</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('edit.title')}</h1>
           <p className="text-muted-foreground">
-            Update team information and logo
+            {t('edit.subtitle')}
           </p>
         </div>
         

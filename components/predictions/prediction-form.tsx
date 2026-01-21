@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { MatchWithTeams } from "@/types/database";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { TeamBadge } from "@/components/teams/team-badge";
@@ -18,6 +19,8 @@ interface PredictionFormProps {
 }
 
 export function PredictionForm({ match, existingPrediction, onSubmit }: PredictionFormProps) {
+  const t = useTranslations('predictions');
+  
   const [homeScore, setHomeScore] = useState(
     existingPrediction?.predicted_home_score?.toString() ?? ""
   );
@@ -96,7 +99,7 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
             className="w-full"
             disabled={!homeScore || !awayScore || isPastMatchDate || isCompleted || isSubmitting}
           >
-            {isSubmitting ? "Saving..." : existingPrediction ? "Update Prediction" : "Submit Prediction"}
+            {isSubmitting ? t('form.saving') : existingPrediction ? t('form.updatePrediction') : t('form.submitPrediction')}
           </Button>
         </CardFooter>
       </form>

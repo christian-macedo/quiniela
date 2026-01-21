@@ -3,12 +3,14 @@ import { RankingsTable } from "@/components/rankings/rankings-table";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getTranslations } from 'next-intl/server';
 
 export default async function RankingsPage({
   params,
 }: {
   params: Promise<{ tournamentId: string }>;
 }) {
+  const t = await getTranslations('rankings');
   const { tournamentId } = await params;
   const supabase = await createClient();
 
@@ -38,11 +40,11 @@ export default async function RankingsPage({
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">{tournament?.name}</h1>
-          <p className="text-muted-foreground">Tournament Leaderboard</p>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
         <div className="flex gap-2">
         <Link href={`/${tournamentId}`}>
-          <Button variant="outline">Back to Tournament</Button>
+          <Button variant="outline">{t('backToTournament')}</Button>
         </Link>
         </div>
       </div>
