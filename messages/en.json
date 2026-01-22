@@ -83,6 +83,7 @@
       "subtitle": "Sign in with a passkey or your email and password",
       "emailLabel": "Email",
       "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
       "loginButton": "Login",
       "loggingIn": "Logging in...",
       "orContinueWith": "Or continue with email",
@@ -92,6 +93,35 @@
       "enterEmail": "Please enter your email address",
       "passkeyNotSupported": "Passkeys are not supported in your browser. Please use email and password to log in.",
       "passkeyDescription": "You'll use your device's biometric authentication or security key to sign in."
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email address and we'll send you a link to reset your password",
+      "emailLabel": "Email",
+      "sendResetLink": "Send Reset Link",
+      "sending": "Sending...",
+      "successTitle": "Check Your Email",
+      "successMessage": "If an account exists with that email, we've sent you a password reset link.",
+      "checkSpam": "If you don't see the email, please check your spam folder.",
+      "backToLogin": "Back to Login"
+    },
+    "updatePassword": {
+      "title": "Set New Password",
+      "subtitle": "Enter your new password below",
+      "newPasswordLabel": "New Password",
+      "confirmPasswordLabel": "Confirm Password",
+      "updatePassword": "Update Password",
+      "updating": "Updating...",
+      "verifying": "Verifying...",
+      "successTitle": "Password Updated",
+      "successMessage": "Your password has been updated successfully. You can now log in with your new password.",
+      "goToLogin": "Go to Login",
+      "invalidLinkTitle": "Invalid or Expired Link",
+      "invalidLinkMessage": "This password reset link is invalid or has expired. Please request a new one.",
+      "requestNewLink": "Request New Reset Link",
+      "backToLogin": "Back to Login",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters"
     },
     "signup": {
       "title": "Sign Up",

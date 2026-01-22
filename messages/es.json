@@ -83,6 +83,7 @@
       "subtitle": "Inicia sesión con una llave de acceso o tu correo y contraseña",
       "emailLabel": "Correo Electrónico",
       "passwordLabel": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
       "loginButton": "Iniciar Sesión",
       "loggingIn": "Iniciando sesión...",
       "orContinueWith": "O continuar con correo",
@@ -92,6 +93,35 @@
       "enterEmail": "Por favor ingresa tu correo electrónico",
       "passkeyNotSupported": "Las llaves de acceso no son compatibles con tu navegador. Por favor usa correo y contraseña para iniciar sesión.",
       "passkeyDescription": "Usarás la autenticación biométrica de tu dispositivo o una llave de seguridad para iniciar sesión."
+    },
+    "forgotPassword": {
+      "title": "Restablecer Contraseña",
+      "subtitle": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+      "emailLabel": "Correo Electrónico",
+      "sendResetLink": "Enviar Enlace",
+      "sending": "Enviando...",
+      "successTitle": "Revisa tu Correo",
+      "successMessage": "Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña.",
+      "checkSpam": "Si no ves el correo, revisa tu carpeta de spam.",
+      "backToLogin": "Volver a Iniciar Sesión"
+    },
+    "updatePassword": {
+      "title": "Nueva Contraseña",
+      "subtitle": "Ingresa tu nueva contraseña a continuación",
+      "newPasswordLabel": "Nueva Contraseña",
+      "confirmPasswordLabel": "Confirmar Contraseña",
+      "updatePassword": "Actualizar Contraseña",
+      "updating": "Actualizando...",
+      "verifying": "Verificando...",
+      "successTitle": "Contraseña Actualizada",
+      "successMessage": "Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.",
+      "goToLogin": "Ir a Iniciar Sesión",
+      "invalidLinkTitle": "Enlace Inválido o Expirado",
+      "invalidLinkMessage": "Este enlace para restablecer contraseña es inválido o ha expirado. Por favor solicita uno nuevo.",
+      "requestNewLink": "Solicitar Nuevo Enlace",
+      "backToLogin": "Volver a Iniciar Sesión",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres"
     },
     "signup": {
       "title": "Registrarse",
