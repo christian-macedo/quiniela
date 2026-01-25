@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
@@ -23,11 +23,7 @@ export default function PredictionsPage() {
   const [isParticipant, setIsParticipant] = useState(true);
   const supabase = createClient();
 
-  useEffect(() => {
-    loadData();
-  }, [tournamentId]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -90,7 +86,11 @@ export default function PredictionsPage() {
     });
     setPredictions(predictionsMap);
     setLoading(false);
-  }
+  }, [supabase, router, tournamentId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
     if (!isParticipant) {

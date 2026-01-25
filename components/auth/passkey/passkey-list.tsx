@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { PasskeyListItem } from "./passkey-list-item";
 import { listPasskeys, renamePasskey, deletePasskey } from "@/lib/webauthn/client";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -18,7 +18,7 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const loadPasskeys = async () => {
+  const loadPasskeys = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -31,11 +31,11 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
     }
 
     setLoading(false);
-  };
+  }, [t]);
 
   useEffect(() => {
     loadPasskeys();
-  }, []);
+  }, [loadPasskeys]);
 
   const handleRename = async (id: string, newName: string) => {
     const result = await renamePasskey(id, newName);
