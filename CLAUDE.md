@@ -290,3 +290,13 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 5. **Image optimization** - use Next.js `<Image>` component for team logos and avatars
 6. **Date handling** - use `lib/utils/date.ts` utilities for all date operations (see Date and Time Handling section)
 7. **Responsive design** - all components should work on mobile and desktop (Tailwind mobile-first)
+8. **Database bootstrapping** - always generate a database bootstrapping script that includes the latest based on the schema, relationships and access rules defined.
+
+## Code Quality
+
+1. **Do not leave unused variables** - only declare variables that are needed and used, if an unused variable is found it should be deleted.
+2. **Use concrete types** - avoid using **any** for variables and always favor concrete (well-defined) types.
+3. **Name variables consistently** - variables that refer to same types, values and behaviors should have the same names for consistency.
+4. **Always localize UX strings** - any string that is displayed to a user should be localized to the following languages:
+  - English
+  - Spanish
