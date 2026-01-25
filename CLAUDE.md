@@ -57,9 +57,12 @@ The application is built around a **tournament-centric architecture** with these
 
 ### Database Schema Location
 
-- Schema: `supabase/migrations/20240101000000_initial_schema.sql`
+- **Bootstrap script**: `supabase/bootstrap.sql` - Complete database setup script
+- Schema migrations: `supabase/migrations/`
 - Seed data: `supabase/seed.sql`
 - TypeScript types: `types/database.ts`
+
+**IMPORTANT**: After any schema change (new tables, columns, RLS policies, functions, etc.), the `supabase/bootstrap.sql` script MUST be updated to reflect the latest database structure. This script is the single source of truth for bootstrapping a fresh database.
 
 ## Project Structure
 
@@ -300,3 +303,38 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 4. **Always localize UX strings** - any string that is displayed to a user should be localized to the following languages:
   - English
   - Spanish
+
+## Database Bootstrap Script
+
+The file `supabase/bootstrap.sql` contains the complete database schema and must be kept up to date.
+
+### When to Update
+
+Update `supabase/bootstrap.sql` after ANY of these changes:
+- Adding, modifying, or removing tables
+- Adding, modifying, or removing columns
+- Adding, modifying, or removing indexes
+- Adding, modifying, or removing RLS policies
+- Adding, modifying, or removing functions or triggers
+- Adding, modifying, or removing views
+- Changing grants or permissions
+
+### How to Use
+
+To bootstrap a fresh Supabase project:
+1. Create a new Supabase project
+2. Go to SQL Editor in Supabase Dashboard
+3. Paste and run the contents of `supabase/bootstrap.sql`
+4. Configure storage buckets via Dashboard (team-logos, user-avatars)
+5. Set environment variables in `.env.local`
+
+### Script Contents
+
+The bootstrap script includes:
+- All table definitions with constraints
+- All indexes for performance
+- The `tournament_rankings` view
+- All functions (admin checks, WebAuthn support, triggers)
+- All triggers (user creation, last login, updated_at)
+- All RLS policies (public read, user writes, admin access)
+- All grants for anon and authenticated roles
