@@ -51,7 +51,6 @@ export function calculatePoints(
  * Get a description of how the points were calculated
  */
 export function getPointsDescription(basePoints: number, multiplier: number = 1): string {
-  const totalPoints = basePoints * multiplier;
   const multiplierText = multiplier > 1 ? ` (×${multiplier})` : "";
 
   if (basePoints === 3) {

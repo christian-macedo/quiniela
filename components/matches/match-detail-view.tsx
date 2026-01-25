@@ -42,16 +42,6 @@ export function MatchDetailView({
     }
   };
 
-  const getInitials = (name: string | null) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   // Sort predictions: current user first, then alphabetically by screen_name
   const sortedPredictions = [...predictions].sort((a, b) => {
     if (a.user.id === currentUserId) return -1;

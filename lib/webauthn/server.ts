@@ -29,7 +29,6 @@ import {
   WEBAUTHN_TIMEOUT,
 } from "./config";
 import type {
-  WebAuthnCredential,
   WebAuthnCredentialInsert,
   WebAuthnChallengeInsert,
   AuthenticatorTransport,

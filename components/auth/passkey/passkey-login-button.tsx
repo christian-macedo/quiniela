@@ -63,7 +63,7 @@ export function PasskeyLoginButton({
           onError(errorMessage);
         }
       }
-    } catch (err) {
+    } catch {
       const errorMessage = t('unexpectedError');
       setError(errorMessage);
       if (onError) {
