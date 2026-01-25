@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PasskeyLoginButton } from "@/components/auth/passkey/passkey-login-button";
 import { PasskeyMigrationPrompt } from "@/components/auth/passkey/passkey-migration-prompt";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function LoginPage() {
   const t = useTranslations('auth.login');
@@ -54,7 +55,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">{t('title')}</CardTitle>

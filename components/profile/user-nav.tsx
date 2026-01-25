@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { UserCircle, LogOut, Shield } from "lucide-react";
-import ThemeSwitcher  from "../../app/ThemeSwitcher";
+import { UserCircle, LogOut, Shield, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 interface UserNavProps {
   user: User;
@@ -26,6 +26,10 @@ export function UserNav({ user }: UserNavProps) {
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations('common');
+  const { theme, setTheme, systemTheme } = useTheme();
+
+  const currentTheme = theme === 'system' ? systemTheme : theme;
+  const isDark = currentTheme === 'dark';
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -69,8 +73,12 @@ export function UserNav({ user }: UserNavProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-            <ThemeSwitcher/>
+        <DropdownMenuItem
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          className="cursor-pointer"
+        >
+          {isDark ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+          <span>{isDark ? t('navigation.lightMode') : t('navigation.darkMode')}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

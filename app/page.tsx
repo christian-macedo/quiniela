@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getTranslations } from 'next-intl/server';
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default async function Home() {
   const t = await getTranslations('home');
@@ -15,7 +16,10 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="text-center space-y-6 p-8">
         <h1 className="text-6xl font-bold tracking-tight">
           {t('title')}

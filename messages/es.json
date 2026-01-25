@@ -12,7 +12,9 @@
       "userManagement": "Gestionar Usuarios",
       "account": "Cuenta",
       "signOut": "Cerrar Sesión",
-      "admin": "Admin"
+      "admin": "Admin",
+      "lightMode": "Modo Claro",
+      "darkMode": "Modo Oscuro"
     },
     "actions": {
       "save": "Guardar",

@@ -12,7 +12,9 @@
       "userManagement": "Manage Users",
       "account": "Account",
       "signOut": "Sign Out",
-      "admin": "Admin"
+      "admin": "Admin",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode"
     },
     "actions": {
       "save": "Save",

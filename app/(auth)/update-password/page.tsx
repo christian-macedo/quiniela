@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function UpdatePasswordPage() {
   const t = useTranslations('auth.updatePassword');
@@ -88,7 +89,10 @@ export default function UpdatePasswordPage() {
   // Loading state while checking session
   if (isValidSession === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Card className="w-full max-w-md">
           <CardContent className="py-8">
             <div className="text-center text-muted-foreground">
@@ -103,7 +107,10 @@ export default function UpdatePasswordPage() {
   // Invalid/expired token state
   if (isValidSession === false) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl">{t('invalidLinkTitle')}</CardTitle>
@@ -131,7 +138,10 @@ export default function UpdatePasswordPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl">{t('successTitle')}</CardTitle>
@@ -152,7 +162,10 @@ export default function UpdatePasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">{t('title')}</CardTitle>
