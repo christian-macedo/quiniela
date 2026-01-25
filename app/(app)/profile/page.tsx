@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from 'next-intl';
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -23,11 +23,19 @@ export default function ProfilePage() {
   const router = useRouter();
   const supabase = createClient();
 
-  useEffect(() => {
-    loadUser();
-  }, []);
+  const checkPasskeys = useCallback(async (userId: string) => {
+    setCheckingPasskey(true);
+    const { data } = await supabase
+      .from("webauthn_credentials")
+      .select("id")
+      .eq("user_id", userId)
+      .limit(1);
 
-  async function loadUser() {
+    setHasPasskey((data && data.length > 0) || false);
+    setCheckingPasskey(false);
+  }, [supabase]);
+
+  const loadUser = useCallback(async () => {
     const { data: { user: authUser } } = await supabase.auth.getUser();
 
     if (!authUser) {
@@ -46,19 +54,11 @@ export default function ProfilePage() {
 
     // Check if user has passkeys
     checkPasskeys(authUser.id);
-  }
+  }, [supabase, router, checkPasskeys]);
 
-  async function checkPasskeys(userId: string) {
-    setCheckingPasskey(true);
-    const { data } = await supabase
-      .from("webauthn_credentials")
-      .select("id")
-      .eq("user_id", userId)
-      .limit(1);
-
-    setHasPasskey((data && data.length > 0) || false);
-    setCheckingPasskey(false);
-  }
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
 
   async function handleUpdate(screenName: string, avatarFile?: File) {
     if (!user) return;
