@@ -28,6 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Trash2 } from "lucide-react";
 import { Team, MatchStatus } from "@/types/database";
 import { ScoreMatchDialog } from "./score-match-dialog";
+import { useLocalizedToast } from "@/lib/hooks/use-toast";
 
 interface MatchWithTeams {
   id: string;
@@ -54,9 +55,9 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
+  const toast = useLocalizedToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     tournament_id: match.tournament_id,
     home_team_id: match.home_team_id,
@@ -70,7 +71,6 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/matches/${match.id}`, {
@@ -84,10 +84,12 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
         throw new Error(data.error || "Failed to update match");
       }
 
+      toast.success("success.updated");
       router.push(`/tournaments/manage/${match.tournament_id}/matches`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update match");
+      console.error(err);
+      toast.error("error.failedToUpdate", { item: "match" });
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +97,6 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/matches/${match.id}`, {
@@ -107,10 +108,12 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
         throw new Error(data.error || "Failed to delete match");
       }
 
+      toast.success("success.deleted");
       router.push(`/tournaments/manage/${match.tournament_id}/matches`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete match");
+      console.error(err);
+      toast.error("error.failedToDelete", { item: "match" });
       setIsDeleting(false);
     }
   };
@@ -130,12 +133,6 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-              {error}
-            </div>
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="home_team_id">{t("homeTeam")} *</Label>

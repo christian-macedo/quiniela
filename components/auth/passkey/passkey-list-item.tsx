@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,6 +31,10 @@ export function PasskeyListItem({
   onDelete,
   isDeleting,
 }: PasskeyListItemProps) {
+  const t = useTranslations("auth.passkeys");
+  const tCommon = useTranslations("common.actions");
+  const tAccessibility = useTranslations("accessibility");
+
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(passkey.credentialName || "");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -69,10 +74,10 @@ export function PasskeyListItem({
   };
 
   const getDeviceTypeLabel = () => {
-    if (passkey.backedUp) return "Synced across devices";
-    if (passkey.deviceType === "singleDevice") return "This device only";
-    if (passkey.deviceType === "multiDevice") return "Available on multiple devices";
-    return "Security key";
+    if (passkey.backedUp) return t("deviceTypes.synced");
+    if (passkey.deviceType === "singleDevice") return t("deviceTypes.singleDevice");
+    if (passkey.deviceType === "multiDevice") return t("deviceTypes.multiDevice");
+    return t("deviceTypes.securityKey");
   };
 
   return (
@@ -91,7 +96,7 @@ export function PasskeyListItem({
                   onChange={(e) => setEditName(e.target.value)}
                   maxLength={100}
                   className="max-w-xs"
-                  placeholder="Enter passkey name"
+                  placeholder={t("enterName")}
                   disabled={isRenaming}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSaveRename();
@@ -119,15 +124,15 @@ export function PasskeyListItem({
             ) : (
               <div>
                 <p className="font-medium truncate">
-                  {passkey.credentialName || "Unnamed Passkey"}
+                  {passkey.credentialName || t("unnamed")}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {getDeviceTypeLabel()}
                 </p>
                 <div className="text-xs text-muted-foreground mt-1">
-                  <p>Created {formatLocalDate(passkey.createdAt)}</p>
+                  <p>{t("createdOn", { date: formatLocalDate(passkey.createdAt) })}</p>
                   {passkey.lastUsedAt && (
-                    <p>Last used {formatLocalDateTime(passkey.lastUsedAt)}</p>
+                    <p>{t("lastUsed", { date: formatLocalDateTime(passkey.lastUsedAt) })}</p>
                   )}
                 </div>
               </div>
@@ -142,7 +147,7 @@ export function PasskeyListItem({
               variant="ghost"
               onClick={() => setIsEditing(true)}
               disabled={isDeleting}
-              title="Rename passkey"
+              title={tAccessibility("renamePasskey")}
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -151,7 +156,7 @@ export function PasskeyListItem({
               variant="ghost"
               onClick={() => setShowDeleteDialog(true)}
               disabled={isDeleting}
-              title="Delete passkey"
+              title={tAccessibility("deletePasskey")}
               className="text-destructive hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
@@ -163,20 +168,18 @@ export function PasskeyListItem({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Passkey</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{passkey.credentialName || "this passkey"}&quot;?
-              This action cannot be undone. You will need to register this device again to use
-              passkey authentication.
+              {t("deleteDescription", { name: passkey.credentialName || t("unnamed") })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

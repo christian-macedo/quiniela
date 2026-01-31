@@ -79,6 +79,58 @@
       "description": "Pronostica resultados de partidos y compite con amigos en múltiples torneos"
     }
   },
+  "toast": {
+    "success": {
+      "saved": "Cambios guardados exitosamente",
+      "created": "Creado exitosamente",
+      "updated": "Actualizado exitosamente",
+      "deleted": "Eliminado exitosamente",
+      "predictionSubmitted": "Pronóstico enviado exitosamente",
+      "predictionUpdated": "Pronóstico actualizado exitosamente",
+      "matchScored": "Partido puntuado y puntos calculados",
+      "teamAdded": "Equipo agregado al torneo",
+      "teamRemoved": "Equipo eliminado del torneo",
+      "participantAdded": "Participante agregado al torneo",
+      "participantRemoved": "Participante eliminado del torneo",
+      "adminGranted": "Permisos de administrador otorgados a {name}",
+      "adminRevoked": "Permisos de administrador revocados de {name}",
+      "passkeyRegistered": "Llave de acceso registrada exitosamente",
+      "passkeyRenamed": "Llave de acceso renombrada exitosamente",
+      "passkeyDeleted": "Llave de acceso eliminada exitosamente",
+      "profileUpdated": "Perfil actualizado exitosamente"
+    },
+    "error": {
+      "generic": "Ocurrió un error. Por favor intenta de nuevo.",
+      "networkError": "Error de red. Por favor verifica tu conexión.",
+      "unauthorized": "No estás autorizado para realizar esta acción",
+      "failedToSave": "Error al guardar los cambios",
+      "failedToCreate": "Error al crear {item}",
+      "failedToUpdate": "Error al actualizar {item}",
+      "failedToDelete": "Error al eliminar {item}",
+      "failedToLoad": "Error al cargar los datos",
+      "failedToSubmitPrediction": "Error al enviar el pronóstico",
+      "failedToScoreMatch": "Error al puntuar el partido",
+      "failedToAddTeam": "Error al agregar equipo al torneo",
+      "failedToRemoveTeam": "Error al eliminar equipo del torneo",
+      "failedToAddParticipant": "Error al agregar participante",
+      "failedToRemoveParticipant": "Error al eliminar participante",
+      "failedToUpdatePermissions": "Error al actualizar permisos",
+      "failedToRegisterPasskey": "Error al registrar llave de acceso",
+      "failedToRenamePasskey": "Error al renombrar llave de acceso",
+      "failedToDeletePasskey": "Error al eliminar llave de acceso",
+      "failedToLoadPasskeys": "Error al cargar llaves de acceso",
+      "passkeyAuthFailed": "Falló la autenticación con llave de acceso",
+      "invalidScores": "Por favor ingresa marcadores válidos",
+      "negativeScores": "Los marcadores no pueden ser negativos"
+    },
+    "info": {
+      "noChanges": "No hay cambios para guardar",
+      "alreadySubmitted": "Pronóstico ya enviado"
+    },
+    "warning": {
+      "unsavedChanges": "Tienes cambios sin guardar"
+    }
+  },
   "auth": {
     "login": {
       "title": "Iniciar Sesión",
@@ -177,7 +229,21 @@
         "setupLater": "Siempre puedes configurar una llave de acceso más tarde desde la configuración de tu perfil.",
         "setupComplete": "¡Llave de Acceso Configurada!",
         "setupCompleteDesc": "Ahora puedes iniciar sesión de forma rápida y segura con tu llave de acceso."
-      }
+      },
+      "deviceTypes": {
+        "synced": "Sincronizado en dispositivos",
+        "singleDevice": "Solo este dispositivo",
+        "multiDevice": "Disponible en múltiples dispositivos",
+        "securityKey": "Llave de seguridad"
+      },
+      "unnamed": "Llave de Acceso Sin Nombre",
+      "enterName": "Ingresa nombre de llave de acceso",
+      "createdOn": "Creado {date}",
+      "lastUsed": "Último uso {date}",
+      "deleteTitle": "Eliminar Llave de Acceso",
+      "deleteDescription": "¿Estás seguro de que quieres eliminar \"{name}\"? Esta acción no se puede deshacer. Necesitarás registrar este dispositivo nuevamente para usar autenticación con llave de acceso.",
+      "renamePasskey": "Renombrar llave de acceso",
+      "deletePasskeyAction": "Eliminar llave de acceso"
     }
   },
   "home": {
@@ -319,6 +385,9 @@
       "anonymous": "Anónimo"
     },
     "management": {
+      "title": "Gestionar Partidos",
+      "createNew": "Crear Nuevo Partido",
+      "createMatchButton": "Crear Partido",
       "searchTeams": "Buscar equipos...",
       "filterByStatus": "Filtrar por estado",
       "filterByRound": "Filtrar por jornada",
@@ -461,7 +530,9 @@
       "totalPoints": "Puntos Totales",
       "joined": "Ingresó",
       "grantAdmin": "Otorgar Admin",
-      "revokeAdmin": "Revocar Admin"
+      "revokeAdmin": "Revocar Admin",
+      "anonymous": "Anónimo",
+      "failedToUpdateStatus": "Error al actualizar estado de administrador"
     },
     "scoring": {
       "title": "Puntuar Partido",
@@ -548,11 +619,25 @@
     "mustBeParticipant": "Debes ser un participante del torneo para enviar pronósticos",
     "failedToSave": "Error al guardar",
     "failedToLoad": "Error al cargar",
-    "genericError": "Ocurrió un error"
+    "genericError": "Ocurrió un error",
+    "teamHasMatches": "No se puede eliminar el equipo: Este equipo ha participado en partidos. Elimina primero el equipo de todos los partidos.",
+    "teamInTournaments": "No se puede eliminar el equipo: Este equipo está registrado en torneos. Elimina primero el equipo de todos los torneos.",
+    "tournamentHasMatches": "No se puede eliminar el torneo: Este torneo tiene partidos. Elimina primero todos los partidos.",
+    "matchHasPredictions": "No se puede eliminar el partido: Los usuarios han enviado pronósticos para este partido."
   },
   "language": {
     "english": "English",
     "spanish": "Español",
     "selectLanguage": "Seleccionar Idioma"
+  },
+  "accessibility": {
+    "renamePasskey": "Renombrar llave de acceso",
+    "deletePasskey": "Eliminar llave de acceso",
+    "removeTeamFromTournament": "Eliminar equipo del torneo",
+    "removeParticipantFromTournament": "Eliminar participante del torneo",
+    "goBack": "Volver",
+    "toggleTheme": "Cambiar tema",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
   }
 }
