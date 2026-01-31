@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, Trophy } from "lucide-react";
 import { Team } from "@/types/database";
+import { useLocalizedToast } from "@/lib/hooks/use-toast";
 
 interface ScoreMatchDialogProps {
   matchId: string;
@@ -41,9 +42,9 @@ export function ScoreMatchDialog({
   const router = useRouter();
   const t = useTranslations("matches.score");
   const tCommon = useTranslations("common");
+  const toast = useLocalizedToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [homeScore, setHomeScore] = useState<string>(
     currentHomeScore?.toString() || ""
   );
@@ -53,19 +54,18 @@ export function ScoreMatchDialog({
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    setError(null);
 
     const homeScoreNum = parseInt(homeScore);
     const awayScoreNum = parseInt(awayScore);
 
     if (isNaN(homeScoreNum) || isNaN(awayScoreNum)) {
-      setError(t("errorInvalidScores"));
+      toast.error("error.invalidScores");
       setIsLoading(false);
       return;
     }
 
     if (homeScoreNum < 0 || awayScoreNum < 0) {
-      setError(t("errorNegativeScores"));
+      toast.error("error.negativeScores");
       setIsLoading(false);
       return;
     }
@@ -85,10 +85,12 @@ export function ScoreMatchDialog({
         throw new Error(data.error || "Failed to score match");
       }
 
+      toast.success("success.matchScored");
       setIsOpen(false);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to score match");
+      console.error(err);
+      toast.error("error.failedToScoreMatch");
     } finally {
       setIsLoading(false);
     }
@@ -113,12 +115,6 @@ export function ScoreMatchDialog({
         </AlertDialogHeader>
 
         <div className="space-y-4 py-4">
-          {error && (
-            <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
-              {error}
-            </div>
-          )}
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="home_score">{homeTeam.name}</Label>

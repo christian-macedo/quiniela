@@ -79,6 +79,58 @@
       "description": "Predict match scores and compete with friends across multiple tournaments"
     }
   },
+  "toast": {
+    "success": {
+      "saved": "Changes saved successfully",
+      "created": "Created successfully",
+      "updated": "Updated successfully",
+      "deleted": "Deleted successfully",
+      "predictionSubmitted": "Prediction submitted successfully",
+      "predictionUpdated": "Prediction updated successfully",
+      "matchScored": "Match scored and points calculated",
+      "teamAdded": "Team added to tournament",
+      "teamRemoved": "Team removed from tournament",
+      "participantAdded": "Participant added to tournament",
+      "participantRemoved": "Participant removed from tournament",
+      "adminGranted": "Admin permissions granted to {name}",
+      "adminRevoked": "Admin permissions revoked from {name}",
+      "passkeyRegistered": "Passkey registered successfully",
+      "passkeyRenamed": "Passkey renamed successfully",
+      "passkeyDeleted": "Passkey deleted successfully",
+      "profileUpdated": "Profile updated successfully"
+    },
+    "error": {
+      "generic": "An error occurred. Please try again.",
+      "networkError": "Network error. Please check your connection.",
+      "unauthorized": "You are not authorized to perform this action",
+      "failedToSave": "Failed to save changes",
+      "failedToCreate": "Failed to create {item}",
+      "failedToUpdate": "Failed to update {item}",
+      "failedToDelete": "Failed to delete {item}",
+      "failedToLoad": "Failed to load data",
+      "failedToSubmitPrediction": "Failed to submit prediction",
+      "failedToScoreMatch": "Failed to score match",
+      "failedToAddTeam": "Failed to add team to tournament",
+      "failedToRemoveTeam": "Failed to remove team from tournament",
+      "failedToAddParticipant": "Failed to add participant",
+      "failedToRemoveParticipant": "Failed to remove participant",
+      "failedToUpdatePermissions": "Failed to update permissions",
+      "failedToRegisterPasskey": "Failed to register passkey",
+      "failedToRenamePasskey": "Failed to rename passkey",
+      "failedToDeletePasskey": "Failed to delete passkey",
+      "failedToLoadPasskeys": "Failed to load passkeys",
+      "passkeyAuthFailed": "Passkey authentication failed",
+      "invalidScores": "Please enter valid scores",
+      "negativeScores": "Scores cannot be negative"
+    },
+    "info": {
+      "noChanges": "No changes to save",
+      "alreadySubmitted": "Prediction already submitted"
+    },
+    "warning": {
+      "unsavedChanges": "You have unsaved changes"
+    }
+  },
   "auth": {
     "login": {
       "title": "Login",
@@ -177,7 +229,21 @@
         "setupLater": "You can always set up a passkey later from your profile settings.",
         "setupComplete": "Passkey Set Up!",
         "setupCompleteDesc": "You can now sign in quickly and securely with your passkey."
-      }
+      },
+      "deviceTypes": {
+        "synced": "Synced across devices",
+        "singleDevice": "This device only",
+        "multiDevice": "Available on multiple devices",
+        "securityKey": "Security key"
+      },
+      "unnamed": "Unnamed Passkey",
+      "enterName": "Enter passkey name",
+      "createdOn": "Created {date}",
+      "lastUsed": "Last used {date}",
+      "deleteTitle": "Delete Passkey",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"? This action cannot be undone. You will need to register this device again to use passkey authentication.",
+      "renamePasskey": "Rename passkey",
+      "deletePasskeyAction": "Delete passkey"
     }
   },
   "home": {
@@ -319,6 +385,9 @@
       "anonymous": "Anonymous"
     },
     "management": {
+      "title": "Manage Matches",
+      "createNew": "Create New Match",
+      "createMatchButton": "Create Match",
       "searchTeams": "Search teams...",
       "filterByStatus": "Filter by status",
       "filterByRound": "Filter by round",
@@ -461,7 +530,9 @@
       "totalPoints": "Total Points",
       "joined": "Joined",
       "grantAdmin": "Grant Admin",
-      "revokeAdmin": "Revoke Admin"
+      "revokeAdmin": "Revoke Admin",
+      "anonymous": "Anonymous",
+      "failedToUpdateStatus": "Failed to update admin status"
     },
     "scoring": {
       "title": "Score Match",
@@ -548,11 +619,25 @@
     "mustBeParticipant": "You must be a tournament participant to submit predictions",
     "failedToSave": "Failed to save",
     "failedToLoad": "Failed to load",
-    "genericError": "An error occurred"
+    "genericError": "An error occurred",
+    "teamHasMatches": "Cannot delete team: This team has participated in matches. Remove the team from all matches first.",
+    "teamInTournaments": "Cannot delete team: This team is registered in tournaments. Remove the team from all tournaments first.",
+    "tournamentHasMatches": "Cannot delete tournament: This tournament has matches. Remove all matches first.",
+    "matchHasPredictions": "Cannot delete match: Users have submitted predictions for this match."
   },
   "language": {
     "english": "English",
     "spanish": "Español",
     "selectLanguage": "Select Language"
+  },
+  "accessibility": {
+    "renamePasskey": "Rename passkey",
+    "deletePasskey": "Delete passkey",
+    "removeTeamFromTournament": "Remove team from tournament",
+    "removeParticipantFromTournament": "Remove participant from tournament",
+    "goBack": "Go back",
+    "toggleTheme": "Toggle theme",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   }
 }
