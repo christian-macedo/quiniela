@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,6 +32,7 @@ export function PasskeyListItem({
   onDelete,
   isDeleting,
 }: PasskeyListItemProps) {
+  const t = useTranslations("messages");
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(passkey.credentialName || "");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -41,7 +44,10 @@ export function PasskeyListItem({
     setIsRenaming(true);
     try {
       await onRename(passkey.id, editName.trim());
+      toast.success(t('passkeys.renameSuccess'));
       setIsEditing(false);
+    } catch {
+      toast.error(t('passkeys.renameFailed'));
     } finally {
       setIsRenaming(false);
     }
@@ -53,8 +59,13 @@ export function PasskeyListItem({
   };
 
   const handleDelete = async () => {
-    await onDelete(passkey.id);
-    setShowDeleteDialog(false);
+    try {
+      await onDelete(passkey.id);
+      toast.success(t('passkeys.deleteSuccess'));
+      setShowDeleteDialog(false);
+    } catch {
+      toast.error(t('passkeys.deleteFailed'));
+    }
   };
 
   // Get device icon based on transports and device type

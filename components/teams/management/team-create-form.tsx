@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Team } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { useTranslations } from 'next-intl';
 export function TeamCreateForm() {
   const t = useTranslations('teams.form');
   const tCommon = useTranslations('common');
+  const tMessages = useTranslations('messages');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,14 +56,17 @@ export function TeamCreateForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || t('createFailed'));
+        throw new Error(data.error || tMessages('teams.createFailed'));
       }
 
+      toast.success(tMessages('teams.createSuccess'));
       const team = await response.json();
       router.push(`/teams/${team.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errorOccurred'));
+      const message = err instanceof Error ? err.message : tMessages('teams.createFailed');
+      toast.error(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }

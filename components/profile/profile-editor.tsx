@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { User } from "@/types/database";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,9 @@ interface ProfileEditorProps {
 }
 
 export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
-  const t = useTranslations('profile');
+  const t = useTranslations('messages');
+  const tCommon = useTranslations('common');
+  const tProfile = useTranslations('profile');
   
   const [screenName, setScreenName] = useState(user.screen_name ?? "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -25,14 +28,25 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validation with translated messages
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t('profile.avatarTooLarge'));
+      return;
     }
+
+    if (!file.type.startsWith('image/')) {
+      toast.error(t('profile.invalidImageFormat'));
+      return;
+    }
+
+    setAvatarFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +54,8 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
     setIsSubmitting(true);
     try {
       await onUpdate(screenName, avatarFile ?? undefined);
+    } catch {
+      toast.error(t('profile.updateFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -50,9 +66,9 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
       {/* Profile Editor Card */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('edit.title')}</CardTitle>
+          <CardTitle>{tProfile('edit.title')}</CardTitle>
           <CardDescription>
-            {t('edit.subtitle')}
+            {tProfile('edit.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,7 +84,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
               <div className="flex flex-col gap-2">
                 <label htmlFor="avatar" className="cursor-pointer">
                   <div className="text-sm text-primary hover:underline text-center">
-                    {t('edit.changePicture')}
+                    {tProfile('edit.changePicture')}
                   </div>
                   <input
                     id="avatar"
@@ -79,7 +95,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
                   />
                 </label>
                 <p className="text-xs text-muted-foreground text-center">
-                  {t('edit.imageFormat')}
+                  {tProfile('edit.imageFormat')}
                 </p>
               </div>
             </div>
@@ -87,27 +103,27 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
             {/* Screen Name */}
             <div className="space-y-2">
               <label htmlFor="screenName" className="text-sm font-medium">
-                {t('edit.displayName')}
+                {tProfile('edit.displayName')}
               </label>
               <Input
                 id="screenName"
                 value={screenName}
                 onChange={(e) => setScreenName(e.target.value)}
-                placeholder={t('edit.displayNamePlaceholder')}
+                placeholder={tProfile('edit.displayNamePlaceholder')}
               />
               <p className="text-xs text-muted-foreground">
-                {t('edit.displayNameHelp')}
+                {tProfile('edit.displayNameHelp')}
               </p>
             </div>
 
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('edit.emailAddress')}</label>
+              <label className="text-sm font-medium">{tProfile('edit.emailAddress')}</label>
               <Input value={user.email} disabled className="bg-muted" />
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? t('edit.saving') : t('edit.saveChanges')}
+              {isSubmitting ? tCommon('status.saving') : tProfile('edit.saveChanges')}
             </Button>
           </form>
         </CardContent>
@@ -116,9 +132,9 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
       {/* Account Information Card */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('account.title')}</CardTitle>
+          <CardTitle>{tProfile('account.title')}</CardTitle>
           <CardDescription>
-            {t('account.subtitle')}
+            {tProfile('account.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -126,7 +142,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
             {/* Last Login */}
             <div className="space-y-1">
               <label className="text-sm font-medium text-muted-foreground">
-                {t('account.lastLogin')}
+                {tProfile('account.lastLogin')}
               </label>
               <div className="flex items-center gap-2">
                 {user.last_login ? (
@@ -147,7 +163,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
             {/* Account Created */}
             <div className="space-y-1">
               <label className="text-sm font-medium text-muted-foreground">
-                {t('account.memberSince')}
+                {tProfile('account.memberSince')}
               </label>
               <div className="flex items-center gap-2">
                 <Badge variant="outline">
@@ -160,7 +176,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
           {/* User ID */}
           <div className="space-y-1">
             <label className="text-sm font-medium text-muted-foreground">
-              {t('account.userId')}
+              {tProfile('account.userId')}
             </label>
             <div className="flex items-center gap-2">
               <code className="text-xs bg-muted px-2 py-1 rounded">

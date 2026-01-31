@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Team } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
   const router = useRouter();
   const t = useTranslations('teams');
   const tCommon = useTranslations('common');
+  const tMessages = useTranslations('messages');
   
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -68,13 +70,16 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to update team");
+        throw new Error(data.error || tMessages('teams.updateFailed'));
       }
 
+      toast.success(tMessages('teams.updateSuccess'));
       router.push(`/teams/${team.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const message = err instanceof Error ? err.message : tMessages('teams.updateFailed');
+      toast.error(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -91,13 +96,16 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete team");
+        throw new Error(data.error || tMessages('teams.deleteFailed'));
       }
 
+      toast.success(tMessages('teams.deleteSuccess'));
       router.push("/teams");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const message = err instanceof Error ? err.message : tMessages('teams.deleteFailed');
+      toast.error(message);
+      setError(message);
       setIsDeleting(false);
     }
   };

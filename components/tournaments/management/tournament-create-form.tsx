@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { TournamentStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ export function TournamentCreateForm() {
   const t = useTranslations('tournaments.management.form');
   const tCommon = useTranslations('common');
   const tStatus = useTranslations('tournaments.status');
+  const tMessages = useTranslations('messages');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,14 +55,17 @@ export function TournamentCreateForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || t('createFailed'));
+        throw new Error(data.error || tMessages('tournaments.createFailed'));
       }
 
+      toast.success(tMessages('tournaments.createSuccess'));
       const tournament = await response.json();
       router.push(`/tournaments/manage/${tournament.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errorOccurred'));
+      const message = err instanceof Error ? err.message : tMessages('tournaments.createFailed');
+      toast.error(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }

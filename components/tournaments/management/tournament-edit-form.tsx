@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Tournament, TournamentStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const router = useRouter();
   const t = useTranslations('tournaments');
   const tCommon = useTranslations('common');
+  const tMessages = useTranslations('messages');
   
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -69,13 +71,16 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to update tournament");
+        throw new Error(data.error || tMessages('tournaments.updateFailed'));
       }
 
+      toast.success(tMessages('tournaments.updateSuccess'));
       router.push(`/tournaments/manage/${tournament.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const message = err instanceof Error ? err.message : tMessages('tournaments.updateFailed');
+      toast.error(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -92,12 +97,15 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete tournament");
+        throw new Error(data.error || tMessages('tournaments.deleteFailed'));
       }
 
+      toast.success(tMessages('tournaments.deleteSuccess'));
       router.push("/tournaments/manage");
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : tMessages('tournaments.deleteFailed');
+      toast.error(message);
       setError(err instanceof Error ? err.message : "An error occurred");
       setIsDeleting(false);
     }

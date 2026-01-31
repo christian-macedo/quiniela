@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { User } from "@/types/database";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ interface UserManagementListProps {
 
 export function UserManagementList({ initialUsers }: UserManagementListProps) {
   const t = useTranslations('admin');
+  const tMessages = useTranslations('messages');
   
   const [users, setUsers] = useState<UserWithStats[]>(initialUsers);
   const [loading, setLoading] = useState<string | null>(null);
@@ -41,9 +43,20 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
       setUsers(users.map(u =>
         u.id === userId ? { ...u, is_admin: !currentStatus } : u
       ));
+
+      // Show success toast
+      if (currentStatus) {
+        toast.success(tMessages('admin.revokeSuccess'));
+      } else {
+        toast.success(tMessages('admin.grantSuccess'));
+      }
     } catch (error) {
       console.error("Error updating admin status:", error);
-      alert("Failed to update admin status");
+      if (currentStatus) {
+        toast.error(tMessages('admin.revokeFailed'));
+      } else {
+        toast.error(tMessages('admin.grantFailed'));
+      }
     } finally {
       setLoading(null);
     }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from 'next-intl';
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function SignupPage() {
   const t = useTranslations('auth.signup');
+  const tMessages = useTranslations('messages');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [screenName, setScreenName] = useState("");
@@ -36,6 +38,10 @@ export default function SignupPage() {
     });
 
     if (signUpError) {
+      const errorMessage = signUpError.message.toLowerCase().includes('already') 
+        ? tMessages('auth.emailTaken')
+        : tMessages('auth.signupFailed');
+      toast.error(errorMessage);
       setError(signUpError.message);
       setLoading(false);
       return;
@@ -43,6 +49,7 @@ export default function SignupPage() {
 
     if (data.user) {
       // User profile is created automatically by database trigger
+      toast.success(tMessages('auth.signupSuccess'));
       router.push("/tournaments");
       router.refresh();
     }

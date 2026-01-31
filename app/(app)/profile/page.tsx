@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from 'next-intl';
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { ProfileEditor } from "@/components/profile/profile-editor";
@@ -13,7 +14,8 @@ import { PasskeyList } from "@/components/auth/passkey/passkey-list";
 import { Fingerprint } from "lucide-react";
 
 export default function ProfilePage() {
-  const t = useTranslations('profile');
+  const tMessages = useTranslations('messages');
+  const tProfile = useTranslations('messages.profile');
   const tPasskeys = useTranslations('auth.passkeys');
   const tCommon = useTranslations('common');
   const [user, setUser] = useState<User | null>(null);
@@ -67,10 +69,19 @@ export default function ProfilePage() {
 
     // Upload avatar if provided
     if (avatarFile) {
-      const filename = generateImageFilename(user.id, avatarFile);
-      const url = await uploadImage(avatarFile, "user-avatars", filename);
-      if (url) {
-        avatarUrl = url;
+      try {
+        const filename = generateImageFilename(user.id, avatarFile);
+        const url = await uploadImage(avatarFile, "user-avatars", filename);
+        if (url) {
+          toast.success(tProfile('avatarUploadSuccess'));
+          avatarUrl = url;
+        } else {
+          toast.error(tProfile('avatarUploadFailed'));
+          return;
+        }
+      } catch {
+        toast.error(tProfile('avatarUploadFailed'));
+        return;
       }
     }
 
@@ -84,7 +95,10 @@ export default function ProfilePage() {
       .eq("id", user.id);
 
     if (!error) {
+      toast.success(tProfile('updateSuccess'));
       loadUser();
+    } else {
+      toast.error(tProfile('updateFailed'));
     }
   }
 
@@ -103,9 +117,9 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">{t('title')}</h1>
+        <h1 className="text-4xl font-bold">{tProfile('title')}</h1>
         <p className="text-muted-foreground mt-2">
-          {t('subtitle')}
+          {tProfile('subtitle')}
         </p>
       </div>
 

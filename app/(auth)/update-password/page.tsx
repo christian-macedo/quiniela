@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function UpdatePasswordPage() {
   const t = useTranslations('auth.updatePassword');
+  const tMessages = useTranslations('messages');
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,12 +58,12 @@ export default function UpdatePasswordPage() {
 
     // Client-side validation
     if (password !== confirmPassword) {
-      setError(t('passwordMismatch'));
+      toast.error(tMessages('auth.passwordTooShort'));
       return;
     }
 
     if (password.length < 6) {
-      setError(t('passwordTooShort'));
+      toast.error(tMessages('auth.passwordTooShort'));
       return;
     }
 
@@ -72,11 +74,13 @@ export default function UpdatePasswordPage() {
     });
 
     if (error) {
+      toast.error(tMessages('auth.passwordUpdateFailed'));
       setError(error.message);
       setLoading(false);
       return;
     }
 
+    toast.success(tMessages('auth.passwordUpdateSuccess'));
     setSuccess(true);
     setLoading(false);
 

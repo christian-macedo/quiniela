@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
 import { PasskeyListItem } from "./passkey-list-item";
 import { listPasskeys, renamePasskey, deletePasskey } from "@/lib/webauthn/client";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -13,6 +14,7 @@ interface PasskeyListProps {
 
 export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
   const t = useTranslations('auth.passkeys');
+  const tMessages = useTranslations('messages');
   const [passkeys, setPasskeys] = useState<PasskeyCredentialSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,9 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
     if (result.success && result.passkeys) {
       setPasskeys(result.passkeys);
     } else {
-      setError(result.error || t('loadFailed'));
+      const errorMsg = result.error || t('loadFailed');
+      toast.error(errorMsg);
+      setError(errorMsg);
     }
 
     setLoading(false);
@@ -47,7 +51,9 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
       );
       onPasskeysChange?.();
     } else {
-      setError(result.error || t('renameFailed'));
+      const errorMsg = result.error || t('renameFailed');
+      toast.error(errorMsg);
+      setError(errorMsg);
     }
   };
 
@@ -60,7 +66,9 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
       setPasskeys((prev) => prev.filter((p) => p.id !== id));
       onPasskeysChange?.();
     } else {
-      setError(result.error || t('deleteFailed'));
+      const errorMsg = result.error || t('deleteFailed');
+      toast.error(errorMsg);
+      setError(errorMsg);
     }
 
     setDeletingId(null);

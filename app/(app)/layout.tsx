@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/layout/app-nav";
+import { Toaster } from "sonner";
 
 export default async function AppLayout({
   children,
@@ -39,6 +40,7 @@ export default async function AppLayout({
     <div className="min-h-screen bg-background">
       <AppNav user={userProfile} />
       {children}
+      <Toaster position="top-right" />
     </div>
   );
 }

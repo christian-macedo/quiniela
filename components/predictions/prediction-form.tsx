@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { MatchWithTeams } from "@/types/database";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { TeamBadge } from "@/components/teams/team-badge";
@@ -19,7 +20,7 @@ interface PredictionFormProps {
 }
 
 export function PredictionForm({ match, existingPrediction, onSubmit }: PredictionFormProps) {
-  const t = useTranslations('predictions');
+  const t = useTranslations('messages');
   
   const [homeScore, setHomeScore] = useState(
     existingPrediction?.predicted_home_score?.toString() ?? ""
@@ -34,11 +35,15 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!homeScore || !awayScore || isPastMatchDate) return;
-
     setIsSubmitting(true);
     try {
       await onSubmit(parseInt(homeScore), parseInt(awayScore));
+      const message = existingPrediction 
+        ? t('predictions.updateSuccess')
+        : t('predictions.savedSuccess');
+      toast.success(message);
+    } catch {
+      toast.error(t('predictions.saveFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -99,7 +104,7 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
             className="w-full"
             disabled={!homeScore || !awayScore || isPastMatchDate || isCompleted || isSubmitting}
           >
-            {isSubmitting ? t('form.saving') : existingPrediction ? t('form.updatePrediction') : t('form.submitPrediction')}
+            {isSubmitting ? t('common.status.saving') : existingPrediction ? 'Actualizar Pronóstico' : 'Enviar Pronóstico'}
           </Button>
         </CardFooter>
       </form>

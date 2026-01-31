@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from 'next-intl';
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function LoginPage() {
   const t = useTranslations('auth.login');
+  const tMessages = useTranslations('messages');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,6 +35,10 @@ export default function LoginPage() {
     });
 
     if (error) {
+      const errorMessage = error.message.toLowerCase().includes('invalid') 
+        ? tMessages('auth.invalidCredentials')
+        : tMessages('auth.loginFailed');
+      toast.error(errorMessage);
       setError(error.message);
       setLoading(false);
     } else {
@@ -45,9 +51,11 @@ export default function LoginPage() {
 
       if (!credentials || credentials.length === 0) {
         // Show migration prompt if no passkeys registered
+        toast.success(tMessages('auth.loginSuccess'));
         setShowMigrationPrompt(true);
       } else {
         // User already has passkeys, just redirect
+        toast.success(tMessages('auth.loginSuccess'));
         router.push("/tournaments");
         router.refresh();
       }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
+  const tMessages = useTranslations("messages");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -55,13 +57,16 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to create match");
+        throw new Error(data.error || tMessages('matches.createFailed'));
       }
 
+      toast.success(tMessages('matches.createSuccess'));
       router.push(`/tournaments/manage/${tournamentId}/matches`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create match");
+      const message = err instanceof Error ? err.message : tMessages('matches.createFailed');
+      toast.error(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from 'next-intl';
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { PredictionForm } from "@/components/predictions/prediction-form";
 import { PredictionResultCard } from "@/components/predictions/prediction-result-card";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function PredictionsPage() {
-  const t = useTranslations('predictions');
+  const t = useTranslations('messages');
   const tCommon = useTranslations('common');
   const params = useParams();
   const router = useRouter();
@@ -94,7 +95,7 @@ export default function PredictionsPage() {
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
     if (!isParticipant) {
-      alert(t('mustBeParticipant'));
+      toast.error(t('predictions.notParticipant'));
       return;
     }
 
@@ -109,11 +110,14 @@ export default function PredictionsPage() {
     });
 
     if (response.ok) {
+      toast.success(t('predictions.savedSuccess'));
       loadData();
     } else if (response.status === 403) {
       const data = await response.json();
-      alert(data.error || t('notAuthorized'));
+      toast.error(data.error || t('predictions.notAuthorized'));
       setIsParticipant(false);
+    } else {
+      toast.error(t('common.networkError'));
     }
   }
 

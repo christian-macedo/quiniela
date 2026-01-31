@@ -233,6 +233,12 @@
       "team": "equipo",
       "teams": "equipos"
     },
+    "edit": {
+      "deleteTournament": "Eliminar Torneo",
+      "deleteConfirmTitle": "¿Estás seguro?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Esto eliminará permanentemente el torneo \"{name}\" y todos los datos asociados.",
+      "saveChanges": "Guardar Cambios"
+    },
     "management": {
       "title": "Gestión de Torneos",
       "subtitle": "Crear, editar y gestionar torneos",
@@ -549,6 +555,81 @@
     "failedToSave": "Error al guardar",
     "failedToLoad": "Error al cargar",
     "genericError": "Ocurrió un error"
+  },
+  "messages": {
+    "common": {
+      "networkError": "Error de red. Por favor intenta de nuevo.",
+      "unexpectedError": "Ocurrió un error inesperado."
+    },
+    "predictions": {
+      "savedSuccess": "¡Pronóstico guardado!",
+      "updateSuccess": "¡Pronóstico actualizado!",
+      "saveFailed": "Error al guardar el pronóstico",
+      "notParticipant": "Debes ser un participante del torneo para hacer pronósticos",
+      "notAuthorized": "No autorizado para enviar pronósticos"
+    },
+    "profile": {
+      "title": "Perfil",
+      "subtitle": "Administra tus configuraciones y preferencias de cuenta",
+      "updateSuccess": "¡Perfil actualizado!",
+      "updateFailed": "Error al actualizar el perfil",
+      "avatarUploadSuccess": "¡Foto de perfil cargada!",
+      "avatarUploadFailed": "Error al cargar la foto de perfil",
+      "avatarTooLarge": "La imagen debe ser menor a 5MB",
+      "invalidImageFormat": "Por favor selecciona un archivo de imagen"
+    },
+    "auth": {
+      "loginSuccess": "¡Sesión iniciada correctamente!",
+      "loginFailed": "Falló el inicio de sesión",
+      "signupSuccess": "¡Cuenta creada! Por favor inicia sesión.",
+      "signupFailed": "No se pudo crear la cuenta",
+      "emailTaken": "El correo ya está en uso",
+      "invalidCredentials": "Correo o contraseña inválidos",
+      "passwordResetSent": "Enlace de restablecimiento enviado a tu correo",
+      "passwordResetFailed": "No se pudo enviar el enlace",
+      "passwordUpdateSuccess": "¡Contraseña actualizada correctamente!",
+      "passwordUpdateFailed": "No se pudo actualizar la contraseña",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres"
+    },
+    "teams": {
+      "createSuccess": "¡Equipo creado!",
+      "createFailed": "Error al crear el equipo",
+      "updateSuccess": "¡Equipo actualizado!",
+      "updateFailed": "Error al actualizar el equipo",
+      "deleteSuccess": "¡Equipo eliminado!",
+      "deleteFailed": "Error al eliminar el equipo",
+      "uploadSuccess": "¡Logo cargado!"
+    },
+    "tournaments": {
+      "createSuccess": "¡Torneo creado!",
+      "createFailed": "Error al crear el torneo",
+      "updateSuccess": "¡Torneo actualizado!",
+      "updateFailed": "Error al actualizar el torneo",
+      "deleteSuccess": "¡Torneo eliminado!",
+      "deleteFailed": "Error al eliminar el torneo"
+    },
+    "matches": {
+      "createSuccess": "¡Partido creado!",
+      "createFailed": "Error al crear el partido",
+      "updateSuccess": "¡Partido actualizado!",
+      "updateFailed": "Error al actualizar el partido",
+      "deleteSuccess": "¡Partido eliminado!",
+      "deleteFailed": "Error al eliminar el partido",
+      "scoreSuccess": "¡Resultado registrado y puntos calculados!",
+      "scoreFailed": "Error al registrar el resultado"
+    },
+    "passkeys": {
+      "renameSuccess": "¡Llave de acceso renombrada!",
+      "renameFailed": "Error al renombrar la llave de acceso",
+      "deleteSuccess": "¡Llave de acceso eliminada!",
+      "deleteFailed": "Error al eliminar la llave de acceso"
+    },
+    "admin": {
+      "grantSuccess": "¡Permisos de administrador otorgados!",
+      "grantFailed": "Error al otorgar permisos de administrador",
+      "revokeSuccess": "¡Permisos de administrador revocados!",
+      "revokeFailed": "Error al revocar permisos de administrador"
+    }
   },
   "language": {
     "english": "English",

@@ -233,6 +233,12 @@
       "team": "team",
       "teams": "teams"
     },
+    "edit": {
+      "deleteTournament": "Delete Tournament",
+      "deleteConfirmTitle": "Are you sure?",
+      "deleteConfirmDescription": "This action cannot be undone. This will permanently delete the tournament \"{name}\" and remove all associated data.",
+      "saveChanges": "Save Changes"
+    },
     "management": {
       "title": "Tournament Management",
       "subtitle": "Create, edit, and manage tournaments",
@@ -549,6 +555,81 @@
     "failedToSave": "Failed to save",
     "failedToLoad": "Failed to load",
     "genericError": "An error occurred"
+  },
+  "messages": {
+    "common": {
+      "networkError": "Network error. Please try again.",
+      "unexpectedError": "An unexpected error occurred."
+    },
+    "predictions": {
+      "savedSuccess": "Prediction saved!",
+      "updateSuccess": "Prediction updated!",
+      "saveFailed": "Failed to save prediction",
+      "notParticipant": "You must be a tournament participant to make predictions",
+      "notAuthorized": "Not authorized to submit predictions"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Manage your account settings and preferences",
+      "updateSuccess": "Profile updated!",
+      "updateFailed": "Failed to update profile",
+      "avatarUploadSuccess": "Avatar uploaded!",
+      "avatarUploadFailed": "Failed to upload avatar",
+      "avatarTooLarge": "Image must be less than 5MB",
+      "invalidImageFormat": "Please select an image file"
+    },
+    "auth": {
+      "loginSuccess": "Successfully logged in!",
+      "loginFailed": "Login failed",
+      "signupSuccess": "Account created! Please log in.",
+      "signupFailed": "Failed to create account",
+      "emailTaken": "Email already in use",
+      "invalidCredentials": "Invalid email or password",
+      "passwordResetSent": "Password reset link sent to your email",
+      "passwordResetFailed": "Failed to send reset link",
+      "passwordUpdateSuccess": "Password updated successfully!",
+      "passwordUpdateFailed": "Failed to update password",
+      "passwordTooShort": "Password must be at least 6 characters"
+    },
+    "teams": {
+      "createSuccess": "Team created!",
+      "createFailed": "Failed to create team",
+      "updateSuccess": "Team updated!",
+      "updateFailed": "Failed to update team",
+      "deleteSuccess": "Team deleted!",
+      "deleteFailed": "Failed to delete team",
+      "uploadSuccess": "Logo uploaded!"
+    },
+    "tournaments": {
+      "createSuccess": "Tournament created!",
+      "createFailed": "Failed to create tournament",
+      "updateSuccess": "Tournament updated!",
+      "updateFailed": "Failed to update tournament",
+      "deleteSuccess": "Tournament deleted!",
+      "deleteFailed": "Failed to delete tournament"
+    },
+    "matches": {
+      "createSuccess": "Match created!",
+      "createFailed": "Failed to create match",
+      "updateSuccess": "Match updated!",
+      "updateFailed": "Failed to update match",
+      "deleteSuccess": "Match deleted!",
+      "deleteFailed": "Failed to delete match",
+      "scoreSuccess": "Score recorded and points calculated!",
+      "scoreFailed": "Failed to record score"
+    },
+    "passkeys": {
+      "renameSuccess": "Passkey renamed!",
+      "renameFailed": "Failed to rename passkey",
+      "deleteSuccess": "Passkey deleted!",
+      "deleteFailed": "Failed to delete passkey"
+    },
+    "admin": {
+      "grantSuccess": "Admin permissions granted!",
+      "grantFailed": "Failed to grant admin permissions",
+      "revokeSuccess": "Admin permissions revoked!",
+      "revokeFailed": "Failed to revoke admin permissions"
+    }
   },
   "language": {
     "english": "English",

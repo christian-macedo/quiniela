@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +55,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
+  const tMessages = useTranslations("messages");
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,13 +83,16 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to update match");
+        throw new Error(data.error || tMessages('matches.updateFailed'));
       }
 
+      toast.success(tMessages('matches.updateSuccess'));
       router.push(`/tournaments/manage/${match.tournament_id}/matches`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update match");
+      const message = err instanceof Error ? err.message : tMessages('matches.updateFailed');
+      toast.error(message);
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -104,13 +109,16 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete match");
+        throw new Error(data.error || tMessages('matches.deleteFailed'));
       }
 
+      toast.success(tMessages('matches.deleteSuccess'));
       router.push(`/tournaments/manage/${match.tournament_id}/matches`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete match");
+      const message = err instanceof Error ? err.message : tMessages('matches.deleteFailed');
+      toast.error(message);
+      setError(message);
       setIsDeleting(false);
     }
   };
