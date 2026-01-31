@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useLocalizedToast } from "@/lib/hooks/use-toast";
 import { Tournament, TournamentStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,10 +37,10 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const router = useRouter();
   const t = useTranslations('tournaments');
   const tCommon = useTranslations('common');
-  
+  const toast = useLocalizedToast();
+
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     name: tournament.name,
@@ -52,7 +53,6 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/tournaments/${tournament.id}`, {
@@ -69,13 +69,16 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to update tournament");
+        toast.error('error.failedToUpdate', { item: t('title').toLowerCase() });
+        return;
       }
 
+      toast.success('success.updated');
       router.push(`/tournaments/manage/${tournament.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Error updating tournament:", err);
+      toast.error('error.generic');
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +86,6 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/tournaments/${tournament.id}`, {
@@ -92,24 +94,23 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to delete tournament");
+        toast.error('error.failedToDelete', { item: t('title').toLowerCase() });
+        setIsDeleting(false);
+        return;
       }
 
+      toast.success('success.deleted');
       router.push("/tournaments/manage");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Error deleting tournament:", err);
+      toast.error('error.generic');
       setIsDeleting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-          {error}
-        </div>
-      )}
 
       <Card>
         <CardHeader>

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/utils/admin";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,8 @@ export default async function EditMatchPage({
 
   const teams = (tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || []) as unknown as Team[];
 
+  const t = await getTranslations("matches.form");
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="flex items-center gap-4 mb-8">
@@ -64,7 +67,7 @@ export default async function EditMatchPage({
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">Edit Match</h1>
+          <h1 className="text-3xl font-bold">{t("editMatch")}</h1>
           <p className="text-muted-foreground mt-1">
             {match.home_team.name} vs {match.away_team.name}
           </p>
