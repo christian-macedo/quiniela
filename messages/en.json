@@ -34,9 +34,11 @@
     },
     "status": {
       "loading": "Loading...",
-      "saving": "Saving...",
+      "saving": "Saving changes...",
       "creating": "Creating...",
       "updating": "Updating...",
+      "deleting": "Deleting...",
+      "submitting": "Submitting...",
       "authenticating": "Authenticating..."
     },
     "labels": {
@@ -71,64 +73,33 @@
       "country": "Country",
       "tournament": "Tournament",
       "showingOf": "Showing {showing} of {total} {item}"
+    },
+    "messages": {
+      "success": {
+        "saved": "Changes saved successfully",
+        "created": "Created successfully",
+        "updated": "Updated successfully",
+        "deleted": "Deleted successfully"
+      },
+      "error": {
+        "generic": "An error occurred. Please try again.",
+        "networkError": "Network error. Please check your connection.",
+        "unauthorized": "You are not authorized to perform this action",
+        "failedToSave": "Failed to save changes",
+        "failedToLoad": "Failed to load data"
+      },
+      "info": {
+        "noChanges": "No changes to save"
+      },
+      "warning": {
+        "unsavedChanges": "You have unsaved changes"
+      }
     }
   },
   "metadata": {
     "home": {
       "title": "Quiniela - Tournament Predictions",
       "description": "Predict match scores and compete with friends across multiple tournaments"
-    }
-  },
-  "toast": {
-    "success": {
-      "saved": "Changes saved successfully",
-      "created": "Created successfully",
-      "updated": "Updated successfully",
-      "deleted": "Deleted successfully",
-      "predictionSubmitted": "Prediction submitted successfully",
-      "predictionUpdated": "Prediction updated successfully",
-      "matchScored": "Match scored and points calculated",
-      "teamAdded": "Team added to tournament",
-      "teamRemoved": "Team removed from tournament",
-      "participantAdded": "Participant added to tournament",
-      "participantRemoved": "Participant removed from tournament",
-      "adminGranted": "Admin permissions granted to {name}",
-      "adminRevoked": "Admin permissions revoked from {name}",
-      "passkeyRegistered": "Passkey registered successfully",
-      "passkeyRenamed": "Passkey renamed successfully",
-      "passkeyDeleted": "Passkey deleted successfully",
-      "profileUpdated": "Profile updated successfully"
-    },
-    "error": {
-      "generic": "An error occurred. Please try again.",
-      "networkError": "Network error. Please check your connection.",
-      "unauthorized": "You are not authorized to perform this action",
-      "failedToSave": "Failed to save changes",
-      "failedToCreate": "Failed to create {item}",
-      "failedToUpdate": "Failed to update {item}",
-      "failedToDelete": "Failed to delete {item}",
-      "failedToLoad": "Failed to load data",
-      "failedToSubmitPrediction": "Failed to submit prediction",
-      "failedToScoreMatch": "Failed to score match",
-      "failedToAddTeam": "Failed to add team to tournament",
-      "failedToRemoveTeam": "Failed to remove team from tournament",
-      "failedToAddParticipant": "Failed to add participant",
-      "failedToRemoveParticipant": "Failed to remove participant",
-      "failedToUpdatePermissions": "Failed to update permissions",
-      "failedToRegisterPasskey": "Failed to register passkey",
-      "failedToRenamePasskey": "Failed to rename passkey",
-      "failedToDeletePasskey": "Failed to delete passkey",
-      "failedToLoadPasskeys": "Failed to load passkeys",
-      "passkeyAuthFailed": "Passkey authentication failed",
-      "invalidScores": "Please enter valid scores",
-      "negativeScores": "Scores cannot be negative"
-    },
-    "info": {
-      "noChanges": "No changes to save",
-      "alreadySubmitted": "Prediction already submitted"
-    },
-    "warning": {
-      "unsavedChanges": "You have unsaved changes"
     }
   },
   "auth": {
@@ -192,6 +163,20 @@
     "passkeys": {
       "title": "Passkey Authentication",
       "description": "Use biometric authentication or a security key for secure, password-free sign-in",
+      "messages": {
+        "success": {
+          "registered": "Passkey registered successfully",
+          "renamed": "Passkey renamed successfully",
+          "deleted": "Passkey deleted successfully"
+        },
+        "error": {
+          "failedToRegister": "Failed to register passkey",
+          "failedToRename": "Failed to rename passkey",
+          "failedToDelete": "Failed to delete passkey",
+          "failedToLoad": "Failed to load passkeys",
+          "authFailed": "Passkey authentication failed"
+        }
+      },
       "loadingPasskeys": "Loading passkeys...",
       "whyUse": "Why use passkeys?",
       "benefits": {
@@ -263,6 +248,22 @@
   "tournaments": {
     "title": "Tournaments",
     "subtitle": "Select a tournament to view matches and make predictions",
+    "messages": {
+      "success": {
+        "created": "Tournament created successfully",
+        "updated": "Tournament updated successfully",
+        "deleted": "Tournament deleted successfully",
+        "participantAdded": "Participant added to tournament",
+        "participantRemoved": "Participant removed from tournament"
+      },
+      "error": {
+        "failedToCreate": "Failed to create tournament",
+        "failedToUpdate": "Failed to update tournament",
+        "failedToDelete": "Failed to delete tournament",
+        "failedToAddParticipant": "Failed to add participant",
+        "failedToRemoveParticipant": "Failed to remove participant"
+      }
+    },
     "status": {
       "upcoming": "Upcoming",
       "active": "Active",
@@ -363,6 +364,22 @@
     "backToTournament": "Back to Tournament",
     "backToMatches": "Back to Matches",
     "matchSummary": "Match Summary",
+    "messages": {
+      "success": {
+        "created": "Match created successfully",
+        "updated": "Match updated successfully",
+        "deleted": "Match deleted successfully",
+        "scored": "Match scored and points calculated"
+      },
+      "error": {
+        "failedToCreate": "Failed to create match",
+        "failedToUpdate": "Failed to update match",
+        "failedToDelete": "Failed to delete match",
+        "failedToScore": "Failed to score match",
+        "invalidScores": "Please enter valid scores",
+        "negativeScores": "Scores cannot be negative"
+      }
+    },
     "status": {
       "scheduled": "Scheduled",
       "in_progress": "In Progress",
@@ -434,6 +451,19 @@
   "predictions": {
     "title": "My Predictions",
     "subtitle": "Submit predictions for upcoming matches and view your results",
+    "messages": {
+      "success": {
+        "submitted": "Prediction submitted successfully",
+        "updated": "Prediction updated successfully"
+      },
+      "error": {
+        "failedToSubmit": "Failed to submit prediction",
+        "failedToUpdate": "Failed to update prediction"
+      },
+      "info": {
+        "alreadySubmitted": "Prediction already submitted"
+      }
+    },
     "backToTournament": "Back to Tournament",
     "upcomingMatches": "Upcoming Matches",
     "upcomingMatchesSubtitle": "Submit your score predictions before matches start",
@@ -493,6 +523,14 @@
   "profile": {
     "title": "Profile Settings",
     "subtitle": "Manage your account settings and preferences",
+    "messages": {
+      "success": {
+        "profileUpdated": "Profile updated successfully"
+      },
+      "error": {
+        "failedToUpdate": "Failed to update profile"
+      }
+    },
     "edit": {
       "title": "Edit Profile",
       "subtitle": "Update your display name and profile picture",
@@ -520,6 +558,15 @@
     }
   },
   "admin": {
+    "messages": {
+      "success": {
+        "adminGranted": "Admin permissions granted to {name}",
+        "adminRevoked": "Admin permissions revoked from {name}"
+      },
+      "error": {
+        "failedToUpdatePermissions": "Failed to update permissions"
+      }
+    },
     "users": {
       "title": "User Management",
       "subtitle": "Manage users and grant admin permissions",
@@ -559,6 +606,22 @@
     "noMatch": "No teams match your filters.",
     "searchPlaceholder": "Search teams...",
     "item": "teams",
+    "messages": {
+      "success": {
+        "created": "Team added successfully",
+        "updated": "Team updated successfully",
+        "deleted": "Team deleted successfully",
+        "addedToTournament": "Team added to tournament",
+        "removedFromTournament": "Team removed from tournament"
+      },
+      "error": {
+        "failedToCreate": "Failed to create team",
+        "failedToUpdate": "Failed to update team",
+        "failedToDelete": "Failed to delete team",
+        "failedToAddToTournament": "Failed to add team to tournament",
+        "failedToRemoveFromTournament": "Failed to remove team from tournament"
+      }
+    },
     "create": {
       "title": "Add New Team",
       "subtitle": "Create a new team to add to tournaments"

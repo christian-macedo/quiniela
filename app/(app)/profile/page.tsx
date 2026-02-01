@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PasskeyRegisterButton } from "@/components/auth/passkey/passkey-register-button";
 import { PasskeyList } from "@/components/auth/passkey/passkey-list";
 import { Fingerprint } from "lucide-react";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
@@ -22,6 +23,7 @@ export default function ProfilePage() {
   const [checkingPasskey, setCheckingPasskey] = useState(true);
   const router = useRouter();
   const supabase = createClient();
+  const toast = useFeatureToast('profile');
 
   const checkPasskeys = useCallback(async (userId: string) => {
     setCheckingPasskey(true);
@@ -65,26 +67,36 @@ export default function ProfilePage() {
 
     let avatarUrl = user.avatar_url;
 
-    // Upload avatar if provided
-    if (avatarFile) {
-      const filename = generateImageFilename(user.id, avatarFile);
-      const url = await uploadImage(avatarFile, "user-avatars", filename);
-      if (url) {
-        avatarUrl = url;
+    try {
+      // Upload avatar if provided
+      if (avatarFile) {
+        const filename = generateImageFilename(user.id, avatarFile);
+        const url = await uploadImage(avatarFile, "user-avatars", filename);
+        if (url) {
+          avatarUrl = url;
+        }
       }
-    }
 
-    const { error } = await supabase
-      .from("users")
-      .update({
-        screen_name: screenName,
-        avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+      // Update user profile
+      const { error } = await supabase
+        .from("users")
+        .update({
+          screen_name: screenName,
+          avatar_url: avatarUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
 
-    if (!error) {
+      if (error) {
+        toast.error('error.failedToUpdate');
+        return;
+      }
+
+      toast.success('success.profileUpdated');
       loadUser();
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      toast.error('common:error.generic');
     }
   }
 

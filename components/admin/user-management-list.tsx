@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useLocalizedToast } from "@/lib/hooks/use-toast";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { User } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,7 @@ interface UserManagementListProps {
 
 export function UserManagementList({ initialUsers }: UserManagementListProps) {
   const t = useTranslations('admin');
-  const toast = useLocalizedToast();
+  const toast = useFeatureToast('admin');
 
   const [users, setUsers] = useState<UserWithStats[]>(initialUsers);
   const [loading, setLoading] = useState<string | null>(null);

@@ -12,7 +12,7 @@ import { TeamBadge } from "@/components/teams/team-badge";
 import { MatchCard } from "@/components/matches/match-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDate } from "@/lib/utils/date";
-import { useLocalizedToast } from "@/lib/hooks/use-toast";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import {
   ArrowLeft,
   Pencil,
@@ -71,7 +71,8 @@ export function TournamentDetailView({
   const router = useRouter();
   const t = useTranslations('tournaments');
   const tCommon = useTranslations('common');
-  const toast = useLocalizedToast();
+  const toastTeams = useFeatureToast('teams');
+  const toastTournaments = useFeatureToast('tournaments');
 
   const [isAddingTeam, setIsAddingTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
@@ -106,12 +107,12 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to add team");
       }
 
-      toast.success("success.teamAdded");
+      toastTeams.success("success.addedToTournament");
       setSelectedTeamId("");
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToAddTeam");
+      toastTeams.error("error.failedToAddToTournament");
     } finally {
       setIsAddingTeam(false);
     }
@@ -131,11 +132,11 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to remove team");
       }
 
-      toast.success("success.teamRemoved");
+      toastTeams.success("success.removedFromTournament");
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToRemoveTeam");
+      toastTeams.error("error.failedToRemoveFromTournament");
     } finally {
       setRemovingTeamId(null);
     }
@@ -158,12 +159,12 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to add participant");
       }
 
-      toast.success("success.participantAdded");
+      toastTournaments.success("success.participantAdded");
       setSelectedUserId("");
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToAddParticipant");
+      toastTournaments.error("error.failedToAddParticipant");
     } finally {
       setIsAddingParticipant(false);
     }
@@ -183,11 +184,11 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to remove participant");
       }
 
-      toast.success("success.participantRemoved");
+      toastTournaments.success("success.participantRemoved");
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToRemoveParticipant");
+      toastTournaments.error("error.failedToRemoveParticipant");
     } finally {
       setRemovingUserId(null);
     }

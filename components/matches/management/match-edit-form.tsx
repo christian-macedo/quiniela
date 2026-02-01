@@ -28,7 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Trash2 } from "lucide-react";
 import { Team, MatchStatus } from "@/types/database";
 import { ScoreMatchDialog } from "./score-match-dialog";
-import { useLocalizedToast } from "@/lib/hooks/use-toast";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 interface MatchWithTeams {
   id: string;
@@ -55,7 +55,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
-  const toast = useLocalizedToast();
+  const toast = useFeatureToast('matches');
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
@@ -89,7 +89,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToUpdate", { item: "match" });
+      toast.error("error.failedToUpdate");
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +113,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToDelete", { item: "match" });
+      toast.error("error.failedToDelete");
       setIsDeleting(false);
     }
   };
