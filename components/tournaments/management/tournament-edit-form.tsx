@@ -70,7 +70,6 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
         toast.error('error.failedToUpdate');
         return;
       }
@@ -95,7 +94,6 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
         toast.error('error.failedToDelete');
         setIsDeleting(false);
         return;

@@ -67,7 +67,6 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
         toast.error('error.failedToUpdate');
         return;
       }
@@ -92,7 +91,6 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
         toast.error('error.failedToDelete');
         setIsDeleting(false);
         return;
