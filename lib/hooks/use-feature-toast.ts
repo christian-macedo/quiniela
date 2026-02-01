@@ -14,9 +14,9 @@ import { useTranslations } from "next-intl";
  * toast.error('error.failedToUpdate'); // Uses teams.messages.error.failedToUpdate
  * toast.success('common:success.saved'); // Explicit common namespace
  */
-export function useFeatureToast(namespace?: string) {
+export function useFeatureToast(namespace: string) {
   // Feature-specific translations
-  const tFeature = namespace ? useTranslations(`${namespace}.messages`) : null;
+  const tFeature = useTranslations(`${namespace}.messages`);
   // Common fallback translations
   const tCommon = useTranslations("common.messages");
   // Status translations for loading states
@@ -36,9 +36,7 @@ export function useFeatureToast(namespace?: string) {
     } else {
       // Try feature-specific first, fall back to common
       try {
-        translatedMessage = tFeature
-          ? tFeature(messageKey, values)
-          : tCommon(messageKey, values);
+        translatedMessage = tFeature(messageKey, values);
       } catch {
         // Fallback to common if feature key doesn't exist
         translatedMessage = tCommon(messageKey, values);
@@ -62,23 +60,17 @@ export function useFeatureToast(namespace?: string) {
       ? tStatus(messages.loading.replace("status:", ""), values)
       : messages.loading.startsWith("common:")
       ? tCommon(messages.loading.replace("common:", ""), values)
-      : tFeature
-      ? tFeature(messages.loading, values)
-      : tCommon(messages.loading, values);
+      : tFeature(messages.loading, values);
 
     // Translate success message
     const successMsg = messages.success.startsWith("common:")
       ? tCommon(messages.success.replace("common:", ""), values)
-      : tFeature
-      ? tFeature(messages.success, values)
-      : tCommon(messages.success, values);
+      : tFeature(messages.success, values);
 
     // Translate error message
     const errorMsg = messages.error.startsWith("common:")
       ? tCommon(messages.error.replace("common:", ""), values)
-      : tFeature
-      ? tFeature(messages.error, values)
-      : tCommon(messages.error, values);
+      : tFeature(messages.error, values);
 
     return sonnerToast.promise(promise, {
       loading: loadingMsg,
