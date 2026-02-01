@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, Trophy } from "lucide-react";
 import { Team } from "@/types/database";
-import { useLocalizedToast } from "@/lib/hooks/use-toast";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 interface ScoreMatchDialogProps {
   matchId: string;
@@ -42,7 +42,7 @@ export function ScoreMatchDialog({
   const router = useRouter();
   const t = useTranslations("matches.score");
   const tCommon = useTranslations("common");
-  const toast = useLocalizedToast();
+  const toast = useFeatureToast('matches');
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [homeScore, setHomeScore] = useState<string>(
@@ -85,12 +85,12 @@ export function ScoreMatchDialog({
         throw new Error(data.error || "Failed to score match");
       }
 
-      toast.success("success.matchScored");
+      toast.success("success.scored");
       setIsOpen(false);
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToScoreMatch");
+      toast.error("error.failedToScore");
     } finally {
       setIsLoading(false);
     }

@@ -16,7 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Team, MatchStatus } from "@/types/database";
-import { useLocalizedToast } from "@/lib/hooks/use-toast";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 interface MatchCreateFormProps {
   tournamentId: string;
@@ -28,7 +28,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
-  const toast = useLocalizedToast();
+  const toast = useFeatureToast('matches');
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     home_team_id: "",
@@ -63,7 +63,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("error.failedToCreate", { item: "match" });
+      toast.error("error.failedToCreate");
     } finally {
       setIsLoading(false);
     }

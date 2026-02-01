@@ -6,6 +6,78 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Quiniela is a multi-tournament prediction application initially designed for the FIFA World Cup 2026. Users can submit match score predictions, earn points based on accuracy, and compete on tournament-specific leaderboards.
 
+## Table of Contents
+
+- [Quick Reference](#quick-reference)
+- [Tech Stack](#tech-stack)
+- [Development Commands](#development-commands)
+- [Component Patterns](#component-patterns)
+- [Toast Notifications](#toast-notifications) → See [TOASTS.md](./TOASTS.md)
+- [Date and Time Handling](#date-and-time-handling)
+- [Supabase Configuration](#supabase-configuration)
+- [Database Architecture](#database-architecture)
+- [Project Structure](#project-structure)
+- [Authentication Flow](#authentication-flow)
+- [Image Uploads](#image-uploads)
+- [Theming & Color Scheme](#theming--color-scheme) → See [THEMING.md](./THEMING.md)
+- [Scoring Logic](#scoring-logic)
+- [Extending to New Tournaments](#extending-to-new-tournaments)
+- [Best Practices](#best-practices)
+- [Code Quality](#code-quality)
+- [Database Bootstrap Script](#database-bootstrap-script)
+
+## Quick Reference
+
+### Essential Imports
+
+```typescript
+// Toast notifications
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
+
+// Supabase clients
+import { createClient } from "@/lib/supabase/server";  // Server Components
+import { createClient } from "@/lib/supabase/client";  // Client Components
+
+// Date utilities
+import { formatLocalDate, formatLocalDateTime, formatLocalTime, isPastDate } from "@/lib/utils/date";
+
+// Image uploads
+import { uploadImage, generateImageFilename } from "@/lib/utils/image";
+
+// Scoring
+import { calculatePoints } from "@/lib/utils/scoring";
+```
+
+### Common Patterns
+
+```typescript
+// Toast feedback
+const toast = useFeatureToast('teams');
+toast.success('success.created');
+
+// Promise toast (with loading state)
+await toast.promise(asyncOperation(), {
+  loading: 'status:creating',
+  success: 'success.created',
+  error: 'error.failedToCreate'
+});
+
+// Server data fetch
+const supabase = await createClient();
+const { data } = await supabase.from('teams').select('*');
+
+// Client data fetch
+const supabase = createClient();
+const { data } = await supabase.from('matches').select('*');
+
+// Date display
+formatLocalDateTime(match.date_time)  // "Jun 11, 2026 at 12:00"
+
+// Image upload
+const filename = generateImageFilename(teamId, file);
+const url = await uploadImage(file, "team-logos", filename);
+```
+
 ## Tech Stack
 
 - **Frontend**: Next.js 15+ (App Router), React 19, TypeScript
@@ -33,6 +105,145 @@ npm start
 # Lint code
 npm run lint
 ```
+
+## Component Patterns
+
+### Server Components (Default)
+
+Use for data fetching and static rendering:
+
+```typescript
+import { createClient } from "@/lib/supabase/server";
+
+export default async function TournamentsPage() {
+  const supabase = await createClient();
+  const { data: tournaments } = await supabase
+    .from("tournaments")
+    .select("*")
+    .order("start_date", { ascending: false });
+
+  return <TournamentList tournaments={tournaments || []} />;
+}
+```
+
+### Client Components
+
+Use "use client" directive for interactivity:
+
+```typescript
+"use client";
+import { useState } from "react";
+// Component with form handling, state management
+```
+
+## Toast Notifications
+
+Use `useFeatureToast(namespace)` for all user feedback with automatic localization.
+
+### Quick Start
+
+```typescript
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
+
+const toast = useFeatureToast('teams');
+toast.success('success.created');           // Feature-specific
+toast.error('common:error.generic');        // Common message
+toast.promise(asyncOp, { loading, success, error }); // Loading states
+```
+
+### Key Features
+
+- Feature-scoped localization (teams.messages.*, matches.messages.*, etc.)
+- Automatic fallback to common messages
+- Promise pattern for loading states (status:creating → success/error)
+- Rich colors (green/red/yellow/blue backgrounds)
+
+### Message Organization
+
+**Feature-Specific** (use without prefix):
+- `teams.messages.*` - Team operations
+- `matches.messages.*` - Match operations and scoring
+- `tournaments.messages.*` - Tournament operations
+- `predictions.messages.*` - Prediction submissions
+- `admin.messages.*` - Admin permissions
+- `profile.messages.*` - Profile updates
+
+**Common** (use with `common:` prefix):
+- `common.messages.success.*` - Generic success (saved, created, updated, deleted)
+- `common.messages.error.*` - Generic errors (generic, networkError, unauthorized)
+- `common.status.*` - Loading states (saving, creating, updating, deleting)
+
+### Full Documentation
+
+📖 See **[TOASTS.md](./TOASTS.md)** for:
+- Complete API reference
+- Promise pattern examples
+- Best practices and guidelines
+- Troubleshooting
+- Examples by feature
+
+## Date and Time Handling
+
+All dates are stored in **UTC** in the database (PostgreSQL `TIMESTAMPTZ` type) and converted to the **user's local timezone** for display.
+
+### Date Utilities
+
+```typescript
+import { formatLocalDate, formatLocalDateTime, formatLocalTime, isPastDate, isFutureDate, getCurrentUTC } from "@/lib/utils/date";
+
+// Display dates (automatic timezone conversion)
+formatLocalDate("2026-06-11T16:00:00Z")        // "Jun 11, 2026"
+formatLocalDateTime("2026-06-11T16:00:00Z")    // "Jun 11, 2026 at 12:00"
+formatLocalTime("2026-06-11T16:00:00Z")        // "12:00"
+
+// Check date status
+isPastDate("2026-06-11T16:00:00Z")             // true/false
+isFutureDate("2026-06-11T16:00:00Z")           // true/false
+
+// Store dates (always use UTC)
+getCurrentUTC()                                 // "2026-01-17T20:30:45.123Z"
+new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
+```
+
+### Rules
+
+1. **Database Storage**: Always store dates as UTC ISO strings (`toISOString()`)
+2. **Display**: Always use format utilities (`formatLocalDate`, etc.)
+3. **Comparisons**: Use `isPastDate` or `isFutureDate` instead of manual `new Date()` comparisons
+4. **Never** manually construct `Date` objects for display - use the utilities
+
+## Supabase Configuration
+
+### Environment Variables
+
+Required in `.env.local` (see `.env.example`):
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+### Client Usage Patterns
+
+**Server Components**:
+```typescript
+import { createClient } from "@/lib/supabase/server";
+const supabase = await createClient();
+```
+
+**Client Components**:
+```typescript
+import { createClient } from "@/lib/supabase/client";
+const supabase = createClient();
+```
+
+**Middleware** (for auth refresh):
+- Uses `lib/supabase/middleware.ts`
+- Configured in `middleware.ts` at root
+
+### Row Level Security (RLS)
+
+All tables have RLS enabled:
+- **Public read**: teams, tournaments, matches, tournament_teams, users, predictions, rankings
+- **Authenticated write**: users can only update their own profile and predictions
+- **Admin operations**: Match scoring requires elevated permissions (implement admin checks)
 
 ## Database Architecture
 
@@ -69,18 +280,14 @@ The application is built around a **tournament-centric architecture** with these
 ```
 /app
   /(auth)                    # Authentication routes
-    /login
-    /signup
   /(app)                     # Main application (requires auth)
-    /tournaments             # Tournament selection page
+    /tournaments             # Tournament selection
     /[tournamentId]          # Tournament-scoped routes
       /matches               # Match listings
       /predictions           # Prediction submission
       /rankings              # Leaderboard
     /profile                 # User profile editor
   /api                       # API routes
-    /predictions             # POST: submit/update predictions
-    /matches/[matchId]/score # POST: update match scores (admin)
 /components
   /ui                        # shadcn/ui base components
   /teams                     # TeamBadge, TeamSelector
@@ -91,12 +298,7 @@ The application is built around a **tournament-centric architecture** with these
   /profile                   # ProfileEditor
 /lib
   /supabase                  # Supabase client utilities
-    /client.ts               # Browser client
-    /server.ts               # Server component client
-    /middleware.ts           # Auth middleware
-  /utils
-    /scoring.ts              # Points calculation logic
-    /image.ts                # Image upload utilities
+  /utils                     # Utility functions (scoring, date, image)
 /types
   /database.ts               # TypeScript types for database models
 /supabase
@@ -106,86 +308,27 @@ The application is built around a **tournament-centric architecture** with these
   /avatars                   # Default avatar images
 ```
 
-## Scoring Logic
+## Authentication Flow
 
-Points are calculated in `lib/utils/scoring.ts` based on prediction accuracy:
+- Supabase Auth handles sign-up, login, session management
+- Middleware refreshes auth tokens automatically
+- User profiles are created in `users` table (extends auth.users)
+- Protected routes should check `auth.getUser()` in Server Components
 
-- **Exact score**: 3 points
-- **Correct winner + goal difference**: 2 points (1 + 1)
-- **Correct winner only**: 1 point
-- **Incorrect**: 0 points
+## Image Uploads
 
-The final score is multiplied by the match's `multiplier` value (default: 1).
+Team logos and user avatars are stored in Supabase Storage buckets:
 
-### Match Scoring Process
+- **team-logos**: Public bucket for team images
+- **user-avatars**: Public bucket for profile pictures
 
-When a match is scored (via `/api/matches/[matchId]/score`):
-1. Match status updates to the provided status (e.g., "completed")
-2. If status is "completed": All predictions for that match are scored
-3. If status changes FROM "completed" TO another status: All prediction scores are reset to 0
-4. Tournament rankings are automatically updated via the database view (no manual update needed)
+Use `lib/utils/image.ts` utilities:
 
-## Supabase Configuration
-
-### Environment Variables
-
-Required in `.env.local` (see `.env.example`):
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-### Client Usage Patterns
-
-**Server Components** (app directory):
 ```typescript
-import { createClient } from "@/lib/supabase/server";
-const supabase = await createClient();
-```
+import { uploadImage, generateImageFilename } from "@/lib/utils/image";
 
-**Client Components**:
-```typescript
-import { createClient } from "@/lib/supabase/client";
-const supabase = createClient();
-```
-
-**Middleware** (for auth refresh):
-- Uses `lib/supabase/middleware.ts`
-- Configured in `middleware.ts` at root
-
-### Row Level Security (RLS)
-
-All tables have RLS enabled:
-- **Public read**: teams, tournaments, matches, tournament_teams, users, predictions, rankings
-- **Authenticated write**: users can only update their own profile and predictions
-- **Admin operations**: Match scoring requires elevated permissions (implement admin checks)
-
-## Component Patterns
-
-### Server Components (Default)
-
-Use for data fetching and static rendering:
-```typescript
-// app/(app)/tournaments/page.tsx
-import { createClient } from "@/lib/supabase/server";
-
-export default async function TournamentsPage() {
-  const supabase = await createClient();
-  const { data: tournaments } = await supabase
-    .from("tournaments")
-    .select("*")
-    .order("start_date", { ascending: false });
-
-  return <TournamentList tournaments={tournaments || []} />;
-}
-```
-
-### Client Components
-
-Use "use client" directive for interactivity:
-```typescript
-// components/predictions/prediction-form.tsx
-"use client";
-import { useState } from "react";
-// Component with form handling, state management
+const filename = generateImageFilename(userId, file);
+const url = await uploadImage(file, "user-avatars", filename);
 ```
 
 ## Theming & Color Scheme
@@ -210,31 +353,36 @@ To update the entire color scheme:
 2. Edit the CSS variables in the `.dark` section (dark mode)
 3. Save - the entire app updates automatically!
 
-See **[THEMING.md](./THEMING.md)** for detailed instructions and color palette resources.
+📖 See **[THEMING.md](./THEMING.md)** for detailed instructions and color palette resources.
 
 ### Using Theme Colors
 
 Colors automatically apply through Tailwind utility classes:
+
 ```jsx
 <Button className="bg-primary text-primary-foreground">Primary</Button>
 <Card className="bg-card border-border">Card</Card>
 <Badge className="bg-accent">Accent</Badge>
 ```
 
-## Image Uploads
+## Scoring Logic
 
-Team logos and user avatars are stored in Supabase Storage buckets:
+Points are calculated in `lib/utils/scoring.ts` based on prediction accuracy:
 
-- **team-logos**: Public bucket for team images
-- **user-avatars**: Public bucket for profile pictures
+- **Exact score**: 3 points
+- **Correct winner + goal difference**: 2 points (1 + 1)
+- **Correct winner only**: 1 point
+- **Incorrect**: 0 points
 
-Use `lib/utils/image.ts` utilities:
-```typescript
-import { uploadImage, generateImageFilename } from "@/lib/utils/image";
+The final score is multiplied by the match's `multiplier` value (default: 1).
 
-const filename = generateImageFilename(userId, file);
-const url = await uploadImage(file, "user-avatars", filename);
-```
+### Match Scoring Process
+
+When a match is scored (via `/api/matches/[matchId]/score`):
+1. Match status updates to the provided status (e.g., "completed")
+2. If status is "completed": All predictions for that match are scored
+3. If status changes FROM "completed" TO another status: All prediction scores are reset to 0
+4. Tournament rankings are automatically updated via the database view (no manual update needed)
 
 ## Extending to New Tournaments
 
@@ -247,43 +395,6 @@ To add a new tournament:
 
 Teams are reusable - no need to recreate "Brazil" for each tournament.
 
-## Authentication Flow
-
-- Supabase Auth handles sign-up, login, session management
-- Middleware refreshes auth tokens automatically
-- User profiles are created in `users` table (extends auth.users)
-- Protected routes should check `auth.getUser()` in Server Components
-
-## Date and Time Handling
-
-All dates are stored in **UTC** in the database (PostgreSQL `TIMESTAMPTZ` type) and converted to the **user's local timezone** for display.
-
-### Date Utilities (`lib/utils/date.ts`)
-
-```typescript
-import { formatLocalDate, formatLocalDateTime, formatLocalTime, isPastDate, getCurrentUTC } from "@/lib/utils/date";
-
-// Display dates
-formatLocalDate("2026-06-11T16:00:00Z")        // "Jun 11, 2026" (local time)
-formatLocalDateTime("2026-06-11T16:00:00Z")    // "Jun 11, 2026 at 12:00" (local time)
-formatLocalTime("2026-06-11T16:00:00Z")        // "12:00" (local time)
-
-// Check date status
-isPastDate("2026-06-11T16:00:00Z")             // true/false (local time)
-isFutureDate("2026-06-11T16:00:00Z")           // true/false (local time)
-
-// Store dates (always use UTC)
-getCurrentUTC()                                 // "2026-01-17T20:30:45.123Z"
-new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
-```
-
-### Rules
-
-1. **Database Storage**: Always store dates as UTC ISO strings (`toISOString()`)
-2. **Display**: Always use `formatLocalDate`, `formatLocalDateTime`, or `formatLocalTime` for displaying to users
-3. **Comparisons**: Use `isPastDate` or `isFutureDate` instead of manual `new Date()` comparisons
-4. **Never** manually construct `Date` objects for display - use the utilities
-
 ## Best Practices
 
 1. **Use Server Components by default** - only add "use client" when needed for interactivity
@@ -291,9 +402,10 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 3. **Component composition** - use shadcn/ui base components, extend with domain components
 4. **Error handling** - API routes should return appropriate status codes and error messages
 5. **Image optimization** - use Next.js `<Image>` component for team logos and avatars
-6. **Date handling** - use `lib/utils/date.ts` utilities for all date operations (see Date and Time Handling section)
-7. **Responsive design** - all components should work on mobile and desktop (Tailwind mobile-first)
-8. **Database bootstrapping** - always generate a database bootstrapping script that includes the latest based on the schema, relationships and access rules defined.
+6. **Date handling** - use `lib/utils/date.ts` utilities for all date operations (see [Date and Time Handling](#date-and-time-handling))
+7. **Toast notifications** - use `useFeatureToast(namespace)` for all user feedback messages (see [TOASTS.md](./TOASTS.md))
+8. **Responsive design** - all components should work on mobile and desktop (Tailwind mobile-first)
+9. **Database bootstrapping** - always generate a database bootstrapping script that includes the latest based on the schema, relationships and access rules defined
 
 ## Code Quality
 
@@ -301,8 +413,9 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 2. **Use concrete types** - avoid using **any** for variables and always favor concrete (well-defined) types.
 3. **Name variables consistently** - variables that refer to same types, values and behaviors should have the same names for consistency.
 4. **Always localize UX strings** - any string that is displayed to a user should be localized to the following languages:
-  - English
-  - Spanish
+   - English
+   - Spanish
+5. **Organize localization by feature area** - messages should be grouped by feature (teams, matches, tournaments) rather than by use case (toast, errors). This keeps related strings together and improves maintainability.
 
 ## Database Bootstrap Script
 

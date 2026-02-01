@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useLocalizedToast } from "@/lib/hooks/use-toast";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { Tournament, TournamentStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,9 +35,9 @@ interface TournamentEditFormProps {
 
 export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const router = useRouter();
-  const t = useTranslations('tournaments');
+  const t = useTranslations('tournaments.management');
   const tCommon = useTranslations('common');
-  const toast = useLocalizedToast();
+  const toast = useFeatureToast('tournaments');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -69,7 +69,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        toast.error('error.failedToUpdate', { item: t('title').toLowerCase() });
+        toast.error('error.failedToUpdate');
         return;
       }
 
@@ -78,7 +78,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
       router.refresh();
     } catch (err) {
       console.error("Error updating tournament:", err);
-      toast.error('error.generic');
+      toast.error('common:error.generic');
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +94,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       if (!response.ok) {
         const data = await response.json();
-        toast.error('error.failedToDelete', { item: t('title').toLowerCase() });
+        toast.error('error.failedToDelete');
         setIsDeleting(false);
         return;
       }
@@ -104,7 +104,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
       router.refresh();
     } catch (err) {
       console.error("Error deleting tournament:", err);
-      toast.error('error.generic');
+      toast.error('common:error.generic');
       setIsDeleting(false);
     }
   };
