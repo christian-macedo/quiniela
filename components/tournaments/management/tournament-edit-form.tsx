@@ -35,7 +35,9 @@ interface TournamentEditFormProps {
 
 export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const router = useRouter();
-  const t = useTranslations('tournaments.management');
+  const t = useTranslations('tournaments.management.edit');
+  const tForm = useTranslations('tournaments.management.form');
+  const tStatus = useTranslations('tournaments.status');
   const tCommon = useTranslations('common');
   const toast = useFeatureToast('tournaments');
 
@@ -114,38 +116,38 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('management.form.tournamentInfo')}</CardTitle>
+          <CardTitle>{tForm('tournamentInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{t('management.form.tournamentName')}</Label>
+            <Label htmlFor="name">{tForm('tournamentName')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder={t('management.form.tournamentNamePlaceholder')}
+              placeholder={tForm('tournamentNamePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sport">{t('management.form.sport')}</Label>
+            <Label htmlFor="sport">{tForm('sport')}</Label>
             <Input
               id="sport"
               value={formData.sport}
               onChange={(e) =>
                 setFormData({ ...formData, sport: e.target.value })
               }
-              placeholder={t('management.form.sportPlaceholder')}
+              placeholder={tForm('sportPlaceholder')}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="start_date">{t('management.form.startDate')}</Label>
+              <Label htmlFor="start_date">{tForm('startDate')}</Label>
               <Input
                 id="start_date"
                 type="date"
@@ -158,7 +160,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="end_date">{t('management.form.endDate')}</Label>
+              <Label htmlFor="end_date">{tForm('endDate')}</Label>
               <Input
                 id="end_date"
                 type="date"
@@ -172,20 +174,20 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">{t('management.form.status')}</Label>
-            <Select 
-              value={formData.status} 
+            <Label htmlFor="status">{tCommon('labels.status')}</Label>
+            <Select
+              value={formData.status}
               onValueChange={(value: TournamentStatus) =>
                 setFormData({ ...formData, status: value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder={t('management.form.selectStatus')} />
+                <SelectValue placeholder={tForm('selectStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="upcoming">{t('status.upcoming')}</SelectItem>
-                <SelectItem value="active">{t('status.active')}</SelectItem>
-                <SelectItem value="completed">{t('status.completed')}</SelectItem>
+                <SelectItem value="upcoming">{tStatus('upcoming')}</SelectItem>
+                <SelectItem value="active">{tStatus('active')}</SelectItem>
+                <SelectItem value="completed">{tStatus('completed')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -202,14 +204,14 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
-              {t('edit.deleteTournament')}
+              {t('deleteTournament')}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{t('edit.deleteConfirmTitle')}</AlertDialogTitle>
+              <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
               <AlertDialogDescription>
-                {t('edit.deleteConfirmDescription', { name: tournament.name })}
+                {t('deleteConfirmDescription', { name: tournament.name })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -227,7 +229,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          {t('edit.saveChanges')}
+          {t('saveChanges')}
         </Button>
       </div>
     </form>
