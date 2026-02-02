@@ -6,10 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Quiniela is a multi-tournament prediction application initially designed for the FIFA World Cup 2026. Users can submit match score predictions, earn points based on accuracy, and compete on tournament-specific leaderboards.
 
+**Target audience**: Soccer fans who want to compete with friends and family in prediction contests across multiple tournaments.
+
 ## Table of Contents
 
 - [Quick Reference](#quick-reference)
 - [Tech Stack](#tech-stack)
+- [Requirements & Compatibility](#requirements--compatibility)
 - [Development Commands](#development-commands)
 - [Component Patterns](#component-patterns)
 - [Toast Notifications](#toast-notifications) → See [TOASTS.md](./TOASTS.md)
@@ -21,9 +24,11 @@ Quiniela is a multi-tournament prediction application initially designed for the
 - [Image Uploads](#image-uploads)
 - [Theming & Color Scheme](#theming--color-scheme) → See [THEMING.md](./THEMING.md)
 - [Scoring Logic](#scoring-logic)
-- [Extending to New Tournaments](#extending-to-new-tournaments)
-- [Best Practices](#best-practices)
-- [Code Quality](#code-quality)
+- [API Routes](#api-routes)
+- [Best Practices & Conventions](#best-practices--conventions)
+- [Common Gotchas](#common-gotchas)
+- [Troubleshooting](#troubleshooting)
+- [Adding New Tournaments](#adding-new-tournaments)
 - [Database Bootstrap Script](#database-bootstrap-script)
 
 ## Quick Reference
@@ -80,12 +85,34 @@ const url = await uploadImage(file, "team-logos", filename);
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15+ (App Router), React 19, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components
-- **Backend**: Next.js API routes (serverless functions)
-- **Database**: Supabase (PostgreSQL with Row Level Security)
-- **Authentication**: Supabase Auth
-- **Storage**: Supabase Storage (for team logos and user avatars)
+**Core:**
+- Next.js 15+ (App Router) + React 19 + TypeScript
+- Tailwind CSS + shadcn/ui components
+
+**Backend:**
+- Supabase (PostgreSQL + Auth + Storage + RLS)
+- Next.js API routes (serverless functions)
+
+**Key Libraries & Patterns:**
+- Date handling: Native JS (UTC storage, local timezone display)
+- Toast notifications: Custom hook with i18n support
+- Image optimization: Next.js Image component
+- Styling: Tailwind utility classes + CSS variables for theming
+
+## Requirements & Compatibility
+
+**Development Requirements:**
+- Node.js 20.x or higher
+- npm 10.x or higher
+- Supabase project (free tier works fine)
+
+**Environment Setup:**
+- `.env.local` with Supabase credentials (see `.env.example`)
+- Supabase storage buckets configured (team-logos, user-avatars)
+
+**Browser Support:**
+- Modern browsers (Chrome, Firefox, Safari, Edge latest versions)
+- Mobile browsers (iOS Safari 14+, Chrome Android)
 
 ## Development Commands
 
@@ -108,7 +135,22 @@ npm run lint
 
 ## Component Patterns
 
-### Server Components (Default)
+### When to Use Server vs Client Components
+
+**Server Component (default):**
+- Data fetching from database
+- Static content rendering
+- No user interaction needed
+- SEO-critical pages
+
+**Client Component ("use client"):**
+- Forms with state management
+- onClick handlers, useState, useEffect hooks
+- Toast notifications
+- Real-time interactions
+- Browser APIs (window, localStorage, etc.)
+
+### Server Components
 
 Use for data fetching and static rendering:
 
@@ -133,7 +175,9 @@ Use "use client" directive for interactivity:
 ```typescript
 "use client";
 import { useState } from "react";
-// Component with form handling, state management
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
+
+// Component with form handling, state management, toast notifications
 ```
 
 ## Toast Notifications
@@ -217,21 +261,25 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 ### Environment Variables
 
 Required in `.env.local` (see `.env.example`):
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key (public) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Optional | For admin operations (keep secret) |
 
 ### Client Usage Patterns
 
 **Server Components**:
 ```typescript
 import { createClient } from "@/lib/supabase/server";
-const supabase = await createClient();
+const supabase = await createClient();  // Note: await is required
 ```
 
 **Client Components**:
 ```typescript
 import { createClient } from "@/lib/supabase/client";
-const supabase = createClient();
+const supabase = createClient();  // No await needed
 ```
 
 **Middleware** (for auth refresh):
@@ -287,9 +335,11 @@ The application is built around a **tournament-centric architecture** with these
       /predictions           # Prediction submission
       /rankings              # Leaderboard
     /profile                 # User profile editor
-  /api                       # API routes
+  /api                       # API routes (serverless functions)
+    /matches/[matchId]       # Match operations (scoring, updates)
+    /predictions             # Prediction submission
 /components
-  /ui                        # shadcn/ui base components
+  /ui                        # shadcn/ui base components (don't edit directly)
   /teams                     # TeamBadge, TeamSelector
   /tournaments               # TournamentCard, TournamentList
   /matches                   # MatchCard, MatchList
@@ -298,11 +348,21 @@ The application is built around a **tournament-centric architecture** with these
   /profile                   # ProfileEditor
 /lib
   /supabase                  # Supabase client utilities
-  /utils                     # Utility functions (scoring, date, image)
+    /server.ts               # Server component client
+    /client.ts               # Client component client
+    /middleware.ts           # Auth refresh middleware
+  /utils                     # Utility functions
+    /scoring.ts              # Points calculation
+    /date.ts                 # Date formatting and utilities
+    /image.ts                # Image upload helpers
+  /hooks                     # Custom React hooks
+    /use-feature-toast.tsx   # Toast notification hook
 /types
   /database.ts               # TypeScript types for database models
 /supabase
+  /bootstrap.sql             # Complete database setup (source of truth)
   /migrations                # SQL migration files
+  /seed.sql                  # Sample data for development
 /public
   /team-logos                # Static team logo assets
   /avatars                   # Default avatar images
@@ -311,9 +371,10 @@ The application is built around a **tournament-centric architecture** with these
 ## Authentication Flow
 
 - Supabase Auth handles sign-up, login, session management
-- Middleware refreshes auth tokens automatically
+- Middleware refreshes auth tokens automatically on route changes
 - User profiles are created in `users` table (extends auth.users)
-- Protected routes should check `auth.getUser()` in Server Components
+- Protected routes check `auth.getUser()` in Server Components
+- Redirect to login if unauthenticated
 
 ## Image Uploads
 
@@ -330,6 +391,8 @@ import { uploadImage, generateImageFilename } from "@/lib/utils/image";
 const filename = generateImageFilename(userId, file);
 const url = await uploadImage(file, "user-avatars", filename);
 ```
+
+**Important**: Both buckets must be configured as public in Supabase Dashboard.
 
 ## Theming & Color Scheme
 
@@ -384,38 +447,107 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 3. If status changes FROM "completed" TO another status: All prediction scores are reset to 0
 4. Tournament rankings are automatically updated via the database view (no manual update needed)
 
-## Extending to New Tournaments
+## Best Practices & Conventions
 
-To add a new tournament:
+### Component Development
 
-1. Insert tournament record in `tournaments` table
-2. Link existing teams via `tournament_teams` table
-3. Create matches for the tournament
-4. Users can then submit predictions and view rankings scoped to that tournament
+- **Use Server Components by default** - only add "use client" when needed for interactivity
+- **Component composition** - use shadcn/ui base components in `/components/ui` (don't edit directly), extend with domain-specific components
+- **Type safety** - import types from `types/database.ts`
+- **Responsive design** - all components should work on mobile and desktop (Tailwind mobile-first approach)
 
-Teams are reusable - no need to recreate "Brazil" for each tournament.
+### Code Quality
 
-## Best Practices
+- **No unused variables** - only declare variables that are needed and used; delete unused variables immediately
+- **Use concrete types** - avoid using `any` for variables; always favor well-defined types
+- **Consistent naming** - variables referring to same types, values and behaviors should have the same names for consistency
+- **Meaningful names** - prefer descriptive names over abbreviations (e.g., `tournament` over `tourn`)
 
-1. **Use Server Components by default** - only add "use client" when needed for interactivity
-2. **Type safety** - import types from `types/database.ts`
-3. **Component composition** - use shadcn/ui base components, extend with domain components
-4. **Error handling** - API routes should return appropriate status codes and error messages
-5. **Image optimization** - use Next.js `<Image>` component for team logos and avatars
-6. **Date handling** - use `lib/utils/date.ts` utilities for all date operations (see [Date and Time Handling](#date-and-time-handling))
-7. **Toast notifications** - use `useFeatureToast(namespace)` for all user feedback messages (see [TOASTS.md](./TOASTS.md))
-8. **Responsive design** - all components should work on mobile and desktop (Tailwind mobile-first)
-9. **Database bootstrapping** - always generate a database bootstrapping script that includes the latest based on the schema, relationships and access rules defined
+### Data Handling
 
-## Code Quality
+- **Date operations** - use `lib/utils/date.ts` utilities for all date handling (see [Date and Time Handling](#date-and-time-handling))
+- **Image optimization** - use Next.js `<Image>` component for team logos and avatars
+- **Error handling** - API routes should return appropriate HTTP status codes and clear error messages
+- **Null checks** - always handle potential null/undefined from database queries
 
-1. **Do not leave unused variables** - only declare variables that are needed and used, if an unused variable is found it should be deleted.
-2. **Use concrete types** - avoid using **any** for variables and always favor concrete (well-defined) types.
-3. **Name variables consistently** - variables that refer to same types, values and behaviors should have the same names for consistency.
-4. **Always localize UX strings** - any string that is displayed to a user should be localized to the following languages:
-   - English
-   - Spanish
-5. **Organize localization by feature area** - messages should be grouped by feature (teams, matches, tournaments) rather than by use case (toast, errors). This keeps related strings together and improves maintainability.
+### User Experience
+
+- **Toast notifications** - use `useFeatureToast(namespace)` for all user feedback messages (see [TOASTS.md](./TOASTS.md))
+- **Loading states** - show loading indicators for async operations (use toast.promise pattern)
+- **Error messages** - provide clear, actionable error messages to users
+- **Confirmation dialogs** - require confirmation for destructive actions (delete, reset scores)
+
+### Localization
+
+- **All user-facing strings must be localized** to English and Spanish
+- **Organize by feature area** - messages should be grouped by feature (teams, matches, tournaments) rather than by use case (toast, errors)
+- **Use namespaced keys** - e.g., `teams.messages.success.created` not just `created`
+- **Keep translations consistent** - use the same terminology across features
+
+### Database Operations
+
+- **Bootstrap script maintenance** - always update `supabase/bootstrap.sql` after ANY schema change (tables, columns, indexes, RLS policies, functions, triggers, views, grants)
+- **RLS awareness** - remember all tables have Row Level Security enabled; test permissions thoroughly
+- **Transactions** - use database transactions for multi-step operations
+- **Query optimization** - use indexes for frequently queried columns
+
+## Common Gotchas
+
+Things that will definitely bite you if you're not careful:
+
+1. **Date handling**: Never use `new Date()` for display or `.toLocaleString()` - always use the format utilities from `lib/utils/date.ts`
+
+2. **Supabase clients**: Server components need `await createClient()`, client components use `createClient()` without await - mixing these up will cause errors
+
+3. **Toast messages**: Use namespace without prefix for feature-specific messages (`toast.success('success.created')`), but use `common:` prefix for shared messages (`toast.error('common:error.generic')`)
+
+4. **Image paths**: Team logos use relative paths stored in database, not absolute URLs - the bucket path is constructed in the Image component
+
+5. **RLS policies**: Admin operations (like scoring matches) need explicit permission checks - just being authenticated isn't enough
+
+6. **shadcn/ui components**: Files in `/components/ui` are generated by shadcn CLI - don't edit them directly; create wrapper components instead
+
+7. **Client/Server imports**: Importing server-only code in client components will cause build errors - keep imports separated by component type
+
+## Troubleshooting
+
+### "Supabase client not initialized"
+→ Check `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`  
+→ Verify environment variables are loaded (restart dev server after changes)
+
+### Toast messages showing translation keys instead of text
+→ Check namespace matches feature area (e.g., `useFeatureToast('teams')` for team operations)  
+→ Verify translation keys exist in `/messages/[locale]/[feature].json`  
+→ For common messages, ensure you're using the `common:` prefix
+
+### Dates showing in UTC instead of local time
+→ Use `formatLocalDateTime()`, `formatLocalDate()`, or `formatLocalTime()` - NOT `.toLocaleString()`  
+→ Verify date is stored as ISO string in database
+
+### Rankings not updating after scoring a match
+→ Rankings should update automatically via database view - check that `tournament_rankings` view exists  
+→ Run query manually to verify: `SELECT * FROM tournament_rankings WHERE tournament_id = '...'`  
+→ Check RLS policies allow reading from the view
+
+### Images not uploading to Supabase Storage
+→ Verify storage buckets exist and are public (team-logos, user-avatars)  
+→ Check bucket policies allow INSERT for authenticated users  
+→ Verify file size is under bucket limits (default 50MB)
+
+### "Module not found" errors in production build
+→ Check imports use aliases correctly (`@/lib/...` not `../../../lib/...`)  
+→ Verify `tsconfig.json` has correct path mappings  
+→ Clear `.next` folder and rebuild
+
+### Middleware not refreshing auth tokens
+→ Ensure `middleware.ts` is at project root (not in `/app`)  
+→ Check matcher config includes protected routes  
+→ Verify Supabase middleware helper is imported correctly
+
+### Client component errors about "use server"
+→ You're likely importing a server action in a client component  
+→ Move server actions to separate files and import them properly  
+→ Check that API routes are being called via fetch, not direct imports
 
 ## Database Bootstrap Script
 
@@ -435,19 +567,35 @@ Update `supabase/bootstrap.sql` after ANY of these changes:
 ### How to Use
 
 To bootstrap a fresh Supabase project:
-1. Create a new Supabase project
+
+1. Create a new Supabase project at [supabase.com](https://supabase.com)
 2. Go to SQL Editor in Supabase Dashboard
 3. Paste and run the contents of `supabase/bootstrap.sql`
-4. Configure storage buckets via Dashboard (team-logos, user-avatars)
-5. Set environment variables in `.env.local`
+4. Configure storage buckets via Dashboard:
+   - Create `team-logos` bucket (public)
+   - Create `user-avatars` bucket (public)
+5. Copy project URL and anon key to `.env.local`
+6. Run `npm run dev` to start development
 
 ### Script Contents
 
-The bootstrap script includes:
-- All table definitions with constraints
-- All indexes for performance
-- The `tournament_rankings` view
-- All functions (admin checks, WebAuthn support, triggers)
-- All triggers (user creation, last login, updated_at)
-- All RLS policies (public read, user writes, admin access)
-- All grants for anon and authenticated roles
+The bootstrap script includes (in order):
+- All table definitions with constraints and relationships
+- All indexes for query performance optimization
+- The `tournament_rankings` view for dynamic leaderboard calculation
+- All functions (admin checks, WebAuthn support, utility functions)
+- All triggers (user creation, last login tracking, updated_at timestamps)
+- All RLS policies (public read access, user write access, admin permissions)
+- All grants for `anon` and `authenticated` roles
+
+### Keeping It Updated
+
+**This is critical**: The bootstrap script is the single source of truth for database structure. When making schema changes:
+
+1. Make the change in your development database
+2. Test thoroughly
+3. Create migration file in `supabase/migrations/`
+4. **Update `supabase/bootstrap.sql`** to reflect the new state
+5. Commit both the migration and updated bootstrap script
+
+This ensures new team members or fresh deployments start with the correct schema.
