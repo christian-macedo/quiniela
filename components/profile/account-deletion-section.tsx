@@ -27,7 +27,7 @@ import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
  */
 export function AccountDeletionSection() {
   const t = useTranslations("profile.deletion");
-  const toast = useFeatureToast("profile");
+  const toast = useFeatureToast("profile.messages");
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 

@@ -34,6 +34,72 @@ npm start
 npm run lint
 ```
 
+## Dependency Management
+
+### Installing External Packages
+
+When adding a new external package:
+
+```bash
+# Install the package
+npm install package-name
+
+# Or for dev dependencies
+npm install -D package-name
+```
+
+**Important:** Always commit both `package.json` AND `package-lock.json` together.
+
+### Verifying Dependencies
+
+Before committing code that imports new packages:
+
+```bash
+# Build check (catches missing imports)
+npm run build
+
+# Lint check (catches code style issues)
+npm run lint
+
+# Clean install (verifies lock file)
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+### Common Dependency Scenarios
+
+| Scenario | Action | Files to Commit |
+|----------|--------|-----------------|
+| Adding shadcn/ui component | `npx shadcn-ui@latest add name` | Component file + package.json + package-lock.json |
+| Adding npm package | `npm install package-name` | package.json + package-lock.json |
+| Removing package | `npm uninstall package-name` | package.json + package-lock.json |
+| Updating all packages | `npm update` | package-lock.json |
+
+### Troubleshooting Build Failures
+
+If you see "Module not found" errors:
+
+1. **Check if package is installed:**
+   ```bash
+   grep "package-name" package.json
+   ```
+
+2. **Install missing package:**
+   ```bash
+   npm install package-name
+   ```
+
+3. **For shadcn/ui components:**
+   ```bash
+   npx shadcn-ui@latest add component-name
+   ```
+
+4. **Verify build succeeds:**
+   ```bash
+   npm run build
+   ```
+
 ## Database Architecture
 
 ### Core Data Model
@@ -188,6 +254,166 @@ import { useState } from "react";
 // Component with form handling, state management
 ```
 
+## Adding New UI Components
+
+This project uses shadcn/ui for base UI components. Follow this workflow when adding new components.
+
+### For shadcn/ui Components
+
+**Before creating a component that uses shadcn/ui primitives:**
+
+1. **Check if component exists:**
+   ```bash
+   ls components/ui/component-name.tsx
+   ```
+
+2. **If component doesn't exist, install it:**
+   ```bash
+   npx shadcn-ui@latest add component-name
+   ```
+
+   This command:
+   - Creates the component file in `components/ui/`
+   - Installs required dependencies (typically @radix-ui packages)
+   - Updates package.json automatically
+
+3. **Verify installation:**
+   ```bash
+   # Check component file created
+   cat components/ui/component-name.tsx
+
+   # Check dependencies added
+   grep "@radix-ui" package.json
+   ```
+
+4. **Test and commit:**
+   ```bash
+   npm run build    # Verify no build errors
+   npm run lint     # Check code quality
+   ```
+
+**Available shadcn/ui components:**
+Visit https://ui.shadcn.com/docs/components/ for the full list.
+
+**Common components already installed:**
+- `button`, `card`, `input`, `label`, `badge`, `avatar`
+- `alert-dialog`, `dropdown-menu`, `select`
+- `dialog`, `sonner` (toast notifications)
+
+### For Custom Domain Components
+
+Create feature-specific components in domain directories:
+
+```
+components/
+  ├── ui/              # shadcn/ui base components (via npx shadcn-ui add)
+  ├── profile/         # Profile-related components
+  ├── tournaments/     # Tournament components
+  ├── matches/         # Match components
+  ├── predictions/     # Prediction components
+  └── rankings/        # Ranking components
+```
+
+**Pattern:**
+```typescript
+"use client";  // If component needs interactivity
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+// Use shadcn/ui components as building blocks
+
+export function DomainComponent() {
+  // Component logic
+}
+```
+
+### Component Creation Checklist
+
+- [ ] Check if shadcn/ui component needed is already installed
+- [ ] If not installed, run `npx shadcn-ui@latest add component-name`
+- [ ] Import from `@/components/ui/component-name`
+- [ ] Add "use client" directive if component uses state/effects
+- [ ] Run `npm run build` to verify imports resolve
+- [ ] Commit both component file and package.json updates
+
+## Creating Custom Hooks
+
+Custom React hooks are located in `lib/hooks/` and follow specific patterns.
+
+### Hook File Structure
+
+```
+lib/
+  └── hooks/
+      ├── use-feature-toast.ts   # Feature-scoped toast notifications
+      └── use-*.ts               # Other custom hooks
+```
+
+### Hook Pattern
+
+```typescript
+"use client";
+
+import { useTranslations } from "next-intl";
+import { externalLibrary } from "external-package";
+
+/**
+ * Feature-scoped hook description
+ *
+ * Explain what the hook does, when to use it, and any important details.
+ *
+ * @param feature - Description of parameter
+ * @returns Description of return value
+ *
+ * @example
+ * ```tsx
+ * const result = useCustomHook("namespace");
+ * result.method();
+ * ```
+ */
+export function useCustomHook(feature: string) {
+  const t = useTranslations(feature);
+
+  return {
+    method: (param: string) => {
+      // Implementation
+    },
+  };
+}
+```
+
+### Hook Guidelines
+
+1. **Naming:** Always prefix with `use` (React convention)
+2. **File location:** `lib/hooks/use-hook-name.ts`
+3. **Client directive:** Add `"use client"` at top if hook uses browser APIs
+4. **Documentation:** Include JSDoc with description, parameters, and examples
+5. **Export:** Use named exports (not default)
+6. **Dependencies:** Install required packages before importing them
+
+### Example: Creating a New Hook
+
+```bash
+# 1. Create the hook file
+touch lib/hooks/use-local-storage.ts
+
+# 2. Implement the hook (with JSDoc)
+# 3. Add any required dependencies
+npm install any-required-packages
+
+# 4. Verify it builds
+npm run build
+
+# 5. Import and use in components
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+```
+
+### Existing Custom Hooks
+
+- **`use-feature-toast`**: Feature-scoped toast notifications with i18n support
+  - Wraps `sonner` library with automatic translation lookup
+  - Usage: `const toast = useFeatureToast("feature.namespace")`
+
 ## Theming & Color Scheme
 
 The application uses a flexible CSS variable-based theming system powered by the **Blue Lagoon** color palette.
@@ -294,6 +520,19 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 6. **Date handling** - use `lib/utils/date.ts` utilities for all date operations (see Date and Time Handling section)
 7. **Responsive design** - all components should work on mobile and desktop (Tailwind mobile-first)
 8. **Database bootstrapping** - always generate a database bootstrapping script that includes the latest based on the schema, relationships and access rules defined.
+9. **Pre-commit verification** - ALWAYS run these commands before committing:
+   ```bash
+   npm run lint     # Check for linting errors and code style issues
+   npm run build    # Verify build succeeds (catches missing imports/dependencies)
+   ```
+
+   **Why this matters:** Build failures in CI/CD delay deployments. Local verification catches:
+   - Missing imports or undefined modules
+   - Uninstalled dependencies
+   - Type errors and unused variables
+   - Configuration issues
+
+   **Make it automatic:** Consider setting up husky pre-commit hooks (see Development Workflow section)
 
 ## Code Quality
 
@@ -303,6 +542,130 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 4. **Always localize UX strings** - any string that is displayed to a user should be localized to the following languages:
   - English
   - Spanish
+5. **Verify builds before committing** - ALWAYS run `npm run build` before committing code. This catches:
+  - Missing dependencies
+  - Undefined imports
+  - Type errors
+  - Configuration issues
+
+  Make this a habit: `npm run lint && npm run build` before every commit.
+
+6. **Install dependencies immediately** - When creating components that need new packages:
+  - For shadcn/ui: `npx shadcn-ui@latest add component-name` (installs component + dependencies)
+  - For npm packages: `npm install package-name`
+  - Commit package.json and package-lock.json along with your code changes
+
+## Development Workflow
+
+### Standard Development Cycle
+
+Follow this workflow when making changes to the codebase:
+
+#### 1. Making Changes
+
+```bash
+# Start development server
+npm run dev
+
+# Make your code changes
+# - Create components, hooks, API routes
+# - Add imports as needed
+# - Test in browser at http://localhost:3000
+```
+
+#### 2. Adding Dependencies
+
+**For shadcn/ui components:**
+```bash
+npx shadcn-ui@latest add component-name
+```
+
+**For other npm packages:**
+```bash
+npm install package-name
+```
+
+**Always verify:**
+```bash
+npm run build    # Must succeed before committing
+```
+
+#### 3. Pre-commit Verification
+
+**Required before every commit:**
+
+```bash
+# Check linting
+npm run lint
+
+# Check build
+npm run build
+```
+
+**Fix any errors before committing.** Common fixes:
+- Missing dependencies: `npm install package-name`
+- Unused variables: Remove or use them
+- Type errors: Fix type definitions
+- Missing imports: Install required packages
+
+#### 4. Committing Changes
+
+```bash
+# Stage your changes
+git add .
+
+# Review what you're committing
+git status
+git diff --staged
+
+# Commit (follow commit message guidelines)
+git commit -m "feat: add new feature"
+
+# Push to remote
+git push
+```
+
+### New Feature Development Checklist
+
+When developing a new feature, follow this checklist:
+
+- [ ] **Plan the feature** - Understand requirements and data flow
+- [ ] **Create necessary files** - Components, API routes, utilities
+- [ ] **Install dependencies** - Run `npx shadcn-ui add` or `npm install` as needed
+- [ ] **Implement functionality** - Write code, add proper types
+- [ ] **Add translations** - Update `messages/en.json` and `messages/es.json`
+- [ ] **Test locally** - Run `npm run dev` and test in browser
+- [ ] **Verify build** - Run `npm run build` (must succeed)
+- [ ] **Check linting** - Run `npm run lint` and fix issues
+- [ ] **Commit changes** - Include all files (code + package.json + translations)
+
+### Setting Up Pre-commit Hooks (Optional but Recommended)
+
+Automate verification with husky:
+
+```bash
+# Install husky
+npm install -D husky
+
+# Initialize husky
+npx husky init
+
+# Add pre-commit hook
+echo "npm run lint && npm run build" > .husky/pre-commit
+chmod +x .husky/pre-commit
+```
+
+This automatically runs lint and build checks before every commit.
+
+### Common Development Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| "Module not found" | Missing dependency | `npm install package-name` |
+| "Cannot find component" | shadcn/ui component not installed | `npx shadcn-ui@latest add name` |
+| Build fails but dev works | Import/type issue not caught locally | Always run `npm run build` |
+| "Unused variable" | ESLint warning | Remove unused variables or use them |
+| Toast not working | Toaster not in layout | Already added to `app/layout.tsx` |
 
 ## Database Bootstrap Script
 

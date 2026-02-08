@@ -31,7 +31,7 @@ interface ScreenNamePromptModalProps {
  */
 export function ScreenNamePromptModal({ userId }: ScreenNamePromptModalProps) {
   const t = useTranslations("profile.screenNamePrompt");
-  const toast = useFeatureToast("profile");
+  const toast = useFeatureToast("profile.messages");
   const router = useRouter();
   const [screenName, setScreenName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
