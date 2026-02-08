@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { User } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +30,8 @@ interface UserManagementListProps {
 
 export function UserManagementList({ initialUsers }: UserManagementListProps) {
   const t = useTranslations('admin');
-  
+  const toast = useFeatureToast('admin');
+
   const [users, setUsers] = useState<UserWithStats[]>(initialUsers);
   const [loading, setLoading] = useState<string | null>(null);
   const [visibleEmails, setVisibleEmails] = useState<Set<string>>(new Set());
@@ -58,12 +60,22 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
       if (!response.ok) throw new Error("Failed to update permissions");
 
       // Update local state
+      const updatedUser = users.find(u => u.id === userId);
+      const userName = updatedUser?.screen_name || updatedUser?.email || t('users.anonymous');
+
       setUsers(users.map(u =>
         u.id === userId ? { ...u, is_admin: !currentStatus } : u
       ));
+
+      // Show success toast
+      if (!currentStatus) {
+        toast.success('success.adminGranted', { name: userName });
+      } else {
+        toast.success('success.adminRevoked', { name: userName });
+      }
     } catch (error) {
       console.error("Error updating admin status:", error);
-      alert("Failed to update admin status");
+      toast.error('error.failedToUpdatePermissions');
     } finally {
       setLoading(null);
     }

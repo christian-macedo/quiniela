@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Team, MatchStatus } from "@/types/database";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 interface MatchCreateFormProps {
   tournamentId: string;
@@ -27,8 +28,8 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
+  const toast = useFeatureToast('matches');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     home_team_id: "",
     away_team_id: "",
@@ -41,7 +42,6 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await fetch("/api/matches", {
@@ -58,10 +58,12 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
         throw new Error(data.error || "Failed to create match");
       }
 
+      toast.success("success.created");
       router.push(`/tournaments/manage/${tournamentId}/matches`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create match");
+      console.error(err);
+      toast.error("error.failedToCreate");
     } finally {
       setIsLoading(false);
     }
@@ -82,12 +84,6 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-              {error}
-            </div>
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="home_team_id">{t("homeTeam")} *</Label>

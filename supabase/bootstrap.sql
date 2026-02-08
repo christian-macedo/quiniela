@@ -594,6 +594,7 @@ CREATE POLICY "Users can insert their own predictions"
     ON public.predictions FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own predictions" ON public.predictions;
 DROP POLICY IF EXISTS "Users can update their own predictions" ON public.predictions;
 CREATE POLICY "Users can update their own predictions"
     ON public.predictions FOR UPDATE

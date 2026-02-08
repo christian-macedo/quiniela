@@ -12,11 +12,12 @@ import { TeamBadge } from "@/components/teams/team-badge";
 import { MatchCard } from "@/components/matches/match-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDate } from "@/lib/utils/date";
-import { 
-  ArrowLeft, 
-  Pencil, 
-  Users, 
-  Calendar, 
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
+import {
+  ArrowLeft,
+  Pencil,
+  Users,
+  Calendar,
   Trophy,
   UserCircle,
   Plus,
@@ -70,14 +71,15 @@ export function TournamentDetailView({
   const router = useRouter();
   const t = useTranslations('tournaments');
   const tCommon = useTranslations('common');
-  
+  const toastTeams = useFeatureToast('teams');
+  const toastTournaments = useFeatureToast('tournaments');
+
   const [isAddingTeam, setIsAddingTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const [removingTeamId, setRemovingTeamId] = useState<string | null>(null);
   const [isAddingParticipant, setIsAddingParticipant] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const availableTeams = allTeams.filter(
     t => !teams.some(existing => existing.id === t.id)
@@ -90,9 +92,8 @@ export function TournamentDetailView({
 
   const handleAddTeam = async () => {
     if (!selectedTeamId) return;
-    
+
     setIsAddingTeam(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/tournaments/${tournament.id}/teams`, {
@@ -106,10 +107,12 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to add team");
       }
 
+      toastTeams.success("success.addedToTournament");
       setSelectedTeamId("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error(err);
+      toastTeams.error("error.failedToAddToTournament");
     } finally {
       setIsAddingTeam(false);
     }
@@ -117,7 +120,6 @@ export function TournamentDetailView({
 
   const handleRemoveTeam = async (teamId: string) => {
     setRemovingTeamId(teamId);
-    setError(null);
 
     try {
       const response = await fetch(
@@ -130,9 +132,11 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to remove team");
       }
 
+      toastTeams.success("success.removedFromTournament");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error(err);
+      toastTeams.error("error.failedToRemoveFromTournament");
     } finally {
       setRemovingTeamId(null);
     }
@@ -142,7 +146,6 @@ export function TournamentDetailView({
     if (!selectedUserId) return;
 
     setIsAddingParticipant(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/tournaments/${tournament.id}/participants`, {
@@ -156,10 +159,12 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to add participant");
       }
 
+      toastTournaments.success("success.participantAdded");
       setSelectedUserId("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error(err);
+      toastTournaments.error("error.failedToAddParticipant");
     } finally {
       setIsAddingParticipant(false);
     }
@@ -167,7 +172,6 @@ export function TournamentDetailView({
 
   const handleRemoveParticipant = async (userId: string) => {
     setRemovingUserId(userId);
-    setError(null);
 
     try {
       const response = await fetch(
@@ -180,9 +184,11 @@ export function TournamentDetailView({
         throw new Error(data.error || "Failed to remove participant");
       }
 
+      toastTournaments.success("success.participantRemoved");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error(err);
+      toastTournaments.error("error.failedToRemoveParticipant");
     } finally {
       setRemovingUserId(null);
     }
@@ -221,12 +227,6 @@ export function TournamentDetailView({
           </Button>
         </Link>
       </div>
-
-      {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-          {error}
-        </div>
-      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

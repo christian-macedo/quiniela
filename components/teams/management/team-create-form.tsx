@@ -10,13 +10,14 @@ import { Label } from "@/components/ui/label";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { Loader2, Save } from "lucide-react";
 import { useTranslations } from 'next-intl';
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 export function TeamCreateForm() {
   const t = useTranslations('teams.form');
   const tCommon = useTranslations('common');
+  const toast = useFeatureToast('teams');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -38,7 +39,6 @@ export function TeamCreateForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await fetch("/api/teams", {
@@ -58,10 +58,12 @@ export function TeamCreateForm() {
       }
 
       const team = await response.json();
+      toast.success('success.created');
       router.push(`/teams/${team.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errorOccurred'));
+      console.error("Error creating team:", err);
+      toast.error('error.failedToCreate');
     } finally {
       setIsLoading(false);
     }
@@ -69,12 +71,6 @@ export function TeamCreateForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-          {error}
-        </div>
-      )}
-
       {/* Preview */}
       <Card>
         <CardHeader>

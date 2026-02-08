@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { Team } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,10 +31,10 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
   const router = useRouter();
   const t = useTranslations('teams');
   const tCommon = useTranslations('common');
-  
+  const toast = useFeatureToast('teams');
+
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     name: team.name,
@@ -52,7 +53,6 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/teams/${team.id}`, {
@@ -67,14 +67,16 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to update team");
+        toast.error('error.failedToUpdate');
+        return;
       }
 
+      toast.success('success.updated');
       router.push(`/teams/${team.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Error updating team:", err);
+      toast.error('common:error.generic');
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +84,6 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    setError(null);
 
     try {
       const response = await fetch(`/api/teams/${team.id}`, {
@@ -90,26 +91,23 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to delete team");
+        toast.error('error.failedToDelete');
+        setIsDeleting(false);
+        return;
       }
 
+      toast.success('success.deleted');
       router.push("/teams");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Error deleting team:", err);
+      toast.error('common:error.generic');
       setIsDeleting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-          {error}
-        </div>
-      )}
-
       {/* Preview */}
       <Card>
         <CardHeader>
