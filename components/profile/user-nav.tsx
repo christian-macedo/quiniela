@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { UserCircle, LogOut, Shield, Sun, Moon } from "lucide-react";
+import { UserCircle, LogOut, Shield, Sun, Moon, Eye, EyeOff } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useState } from "react";
 
 interface UserNavProps {
   user: User;
@@ -27,6 +28,7 @@ export function UserNav({ user }: UserNavProps) {
   const supabase = createClient();
   const t = useTranslations('common');
   const { theme, setTheme, systemTheme } = useTheme();
+  const [showEmail, setShowEmail] = useState(false);
 
   const currentTheme = theme === 'system' ? systemTheme : theme;
   const isDark = currentTheme === 'dark';
@@ -67,9 +69,27 @@ export function UserNav({ user }: UserNavProps) {
                 </Badge>
               )}
             </div>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
+            {showEmail ? (
+              <div className="flex items-center gap-2">
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
+                <button
+                  onClick={() => setShowEmail(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <EyeOff className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowEmail(true)}
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+              >
+                <Eye className="h-3 w-3" />
+                {t('navigation.showEmail')}
+              </button>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

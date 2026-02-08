@@ -65,15 +65,14 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={ranking.user.avatar_url ?? undefined} />
                     <AvatarFallback>
-                      {ranking.user.screen_name?.[0]?.toUpperCase() ??
-                       ranking.user.email[0].toUpperCase()}
+                      {ranking.user.screen_name?.[0]?.toUpperCase() || "?"}
                     </AvatarFallback>
                   </Avatar>
 
                   {/* User Info */}
                   <div className="flex-1">
                     <div className="font-medium hover:underline">
-                      {ranking.user.screen_name ?? ranking.user.email}
+                      {ranking.user.screen_name || t('anonymous')}
                     </div>
                   </div>
 

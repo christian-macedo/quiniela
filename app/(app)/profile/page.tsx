@@ -10,6 +10,8 @@ import { uploadImage, generateImageFilename } from "@/lib/utils/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PasskeyRegisterButton } from "@/components/auth/passkey/passkey-register-button";
 import { PasskeyList } from "@/components/auth/passkey/passkey-list";
+import { AccountDeletionSection } from "@/components/profile/account-deletion-section";
+import { ScreenNamePromptModal } from "@/components/profile/screen-name-prompt-modal";
 import { Fingerprint } from "lucide-react";
 
 export default function ProfilePage() {
@@ -109,6 +111,11 @@ export default function ProfilePage() {
         </p>
       </div>
 
+      {/* Screen Name Prompt for users without screen name */}
+      {!user.screen_name && (
+        <ScreenNamePromptModal userId={user.id} email={user.email} />
+      )}
+
       <div className="space-y-6">
         {/* Profile Editor */}
         <ProfileEditor user={user} onUpdate={handleUpdate} />
@@ -175,6 +182,9 @@ export default function ProfilePage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Account Deletion Section */}
+        <AccountDeletionSection />
       </div>
     </div>
   );

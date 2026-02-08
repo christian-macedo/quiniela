@@ -65,6 +65,9 @@ export interface User {
   avatar_url: string | null
   is_admin: boolean
   last_login: string | null
+  deleted_at: string | null
+  deletion_reason: string | null
+  deleted_by: string | null
   created_at: string
   updated_at: string
 }

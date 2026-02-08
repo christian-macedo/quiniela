@@ -14,7 +14,8 @@
       "signOut": "Sign Out",
       "admin": "Admin",
       "lightMode": "Light Mode",
-      "darkMode": "Dark Mode"
+      "darkMode": "Dark Mode",
+      "showEmail": "Show Email"
     },
     "actions": {
       "save": "Save",
@@ -411,6 +412,7 @@
     "empty": "No rankings available yet.",
     "noRankings": "No rankings available yet.",
     "you": "You",
+    "anonymous": "[Deleted User]",
     "userPredictions": {
       "you": "You",
       "predictionsFor": "Predictions for {tournament}",
@@ -448,6 +450,38 @@
       "title": "Language Preference",
       "subtitle": "Choose your preferred language",
       "note": "Language preference is saved in your browser"
+    },
+    "deletion": {
+      "title": "Delete Account",
+      "description": "Deactivate your account. Your predictions will remain anonymous in leaderboards.",
+      "deactivateButton": "Deactivate Account",
+      "confirmTitle": "Are you sure?",
+      "confirmDescription": "This will deactivate your account immediately:",
+      "consequence1": "You will be logged out and cannot log back in",
+      "consequence2": "Your profile and name will be hidden",
+      "consequence3": "Your predictions remain in leaderboards as '[Deleted User]'",
+      "cancel": "Cancel",
+      "confirmButton": "Yes, Deactivate My Account"
+    },
+    "screenNamePrompt": {
+      "title": "Set Your Display Name",
+      "description": "Choose how other users will see you. Your email will be kept private.",
+      "label": "Display Name",
+      "placeholder": "Enter a display name",
+      "help": "This will be your public username. You can change it later in your profile.",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "messages": {
+      "success": {
+        "accountDeactivated": "Your account has been deactivated",
+        "screenNameSet": "Display name saved successfully"
+      },
+      "error": {
+        "failedToDeactivate": "Failed to deactivate account. Please try again.",
+        "screenNameRequired": "Display name is required",
+        "failedToSetScreenName": "Failed to save display name. Please try again."
+      }
     }
   },
   "admin": {
@@ -461,7 +495,20 @@
       "totalPoints": "Total Points",
       "joined": "Joined",
       "grantAdmin": "Grant Admin",
-      "revokeAdmin": "Revoke Admin"
+      "revokeAdmin": "Revoke Admin",
+      "showEmail": "Show Email",
+      "hideEmail": "Hide Email",
+      "deactivate": "Deactivate User",
+      "reactivate": "Reactivate User",
+      "hardDelete": "Permanently Delete",
+      "deactivated": "Deactivated",
+      "noScreenName": "[No Display Name]",
+      "confirmDeactivate": "Deactivate this user? They can be reactivated later.",
+      "confirmHardDelete1": "PERMANENTLY DELETE this user? This cannot be undone!",
+      "confirmHardDelete2": "Are you absolutely sure? All data will be lost.",
+      "errorDeactivate": "Failed to deactivate user",
+      "errorReactivate": "Failed to reactivate user",
+      "errorDelete": "Failed to delete user"
     },
     "scoring": {
       "title": "Score Match",

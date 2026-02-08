@@ -14,7 +14,8 @@
       "signOut": "Cerrar Sesión",
       "admin": "Admin",
       "lightMode": "Modo Claro",
-      "darkMode": "Modo Oscuro"
+      "darkMode": "Modo Oscuro",
+      "showEmail": "Mostrar Email"
     },
     "actions": {
       "save": "Guardar",
@@ -411,6 +412,7 @@
     "empty": "Aún no hay clasificaciones disponibles.",
     "noRankings": "Aún no hay clasificaciones disponibles.",
     "you": "Tú",
+    "anonymous": "[Usuario Eliminado]",
     "userPredictions": {
       "you": "Tú",
       "predictionsFor": "pronósticos para {tournament}",
@@ -448,6 +450,38 @@
       "title": "Preferencia de Idioma",
       "subtitle": "Elige tu idioma preferido",
       "note": "La preferencia de idioma se guarda en tu navegador"
+    },
+    "deletion": {
+      "title": "Eliminar Cuenta",
+      "description": "Desactiva tu cuenta. Tus predicciones permanecerán anónimas en las clasificaciones.",
+      "deactivateButton": "Desactivar Cuenta",
+      "confirmTitle": "¿Estás seguro?",
+      "confirmDescription": "Esto desactivará tu cuenta inmediatamente:",
+      "consequence1": "Se cerrará tu sesión y no podrás volver a iniciar sesión",
+      "consequence2": "Tu perfil y nombre estarán ocultos",
+      "consequence3": "Tus predicciones permanecen en las clasificaciones como '[Usuario Eliminado]'",
+      "cancel": "Cancelar",
+      "confirmButton": "Sí, Desactivar Mi Cuenta"
+    },
+    "screenNamePrompt": {
+      "title": "Establece Tu Nombre Para Mostrar",
+      "description": "Elige cómo te verán otros usuarios. Tu correo electrónico se mantendrá privado.",
+      "label": "Nombre Para Mostrar",
+      "placeholder": "Ingresa un nombre para mostrar",
+      "help": "Este será tu nombre de usuario público. Puedes cambiarlo más tarde en tu perfil.",
+      "save": "Guardar",
+      "saving": "Guardando..."
+    },
+    "messages": {
+      "success": {
+        "accountDeactivated": "Tu cuenta ha sido desactivada",
+        "screenNameSet": "Nombre para mostrar guardado exitosamente"
+      },
+      "error": {
+        "failedToDeactivate": "Error al desactivar la cuenta. Inténtalo de nuevo.",
+        "screenNameRequired": "El nombre para mostrar es obligatorio",
+        "failedToSetScreenName": "Error al guardar el nombre para mostrar. Inténtalo de nuevo."
+      }
     }
   },
   "admin": {
@@ -461,7 +495,20 @@
       "totalPoints": "Puntos Totales",
       "joined": "Ingresó",
       "grantAdmin": "Otorgar Admin",
-      "revokeAdmin": "Revocar Admin"
+      "revokeAdmin": "Revocar Admin",
+      "showEmail": "Mostrar Email",
+      "hideEmail": "Ocultar Email",
+      "deactivate": "Desactivar Usuario",
+      "reactivate": "Reactivar Usuario",
+      "hardDelete": "Eliminar Permanentemente",
+      "deactivated": "Desactivado",
+      "noScreenName": "[Sin Nombre Para Mostrar]",
+      "confirmDeactivate": "¿Desactivar este usuario? Puede ser reactivado más tarde.",
+      "confirmHardDelete1": "¿ELIMINAR PERMANENTEMENTE este usuario? ¡Esto no se puede deshacer!",
+      "confirmHardDelete2": "¿Estás absolutamente seguro? Se perderán todos los datos.",
+      "errorDeactivate": "Error al desactivar usuario",
+      "errorReactivate": "Error al reactivar usuario",
+      "errorDelete": "Error al eliminar usuario"
     },
     "scoring": {
       "title": "Puntuar Partido",

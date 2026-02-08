@@ -30,7 +30,7 @@ export default async function RankingsPage({
     .from("tournament_rankings")
     .select(`
       *,
-      user:users(*)
+      user:users(id, screen_name, avatar_url)
     `)
     .eq("tournament_id", tournamentId)
     .order("rank", { ascending: true });

@@ -37,8 +37,14 @@ CREATE OR REPLACE VIEW public.tournament_rankings AS
 SELECT
   p.user_id,
   m.tournament_id,
-  u.screen_name,
-  u.avatar_url,
+  CASE
+    WHEN u.deleted_at IS NOT NULL THEN '[Deleted User]'
+    ELSE u.screen_name
+  END AS screen_name,
+  CASE
+    WHEN u.deleted_at IS NOT NULL THEN NULL
+    ELSE u.avatar_url
+  END AS avatar_url,
   COUNT(DISTINCT p.id) as predictions_count,
   COALESCE(SUM(p.points_earned), 0) as total_points,
   RANK() OVER (
@@ -50,7 +56,7 @@ JOIN public.matches m ON p.match_id = m.id
 JOIN public.users u ON p.user_id = u.id
 JOIN public.tournament_participants tp ON tp.tournament_id = m.tournament_id AND tp.user_id = p.user_id
 WHERE m.tournament_id IS NOT NULL
-GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url;
+GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url, u.deleted_at;
 
 -- Grant access
 GRANT SELECT ON public.tournament_participants TO authenticated;

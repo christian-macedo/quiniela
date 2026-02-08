@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.teams (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
     short_name TEXT NOT NULL,
-    country_code TEXT,
+    country_code TEXT UNIQUE,
     logo_url TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -60,9 +60,17 @@ CREATE TABLE IF NOT EXISTS public.users (
     is_admin BOOLEAN DEFAULT FALSE,
     webauthn_user_id TEXT UNIQUE,
     last_login TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ DEFAULT NULL,
+    deletion_reason TEXT DEFAULT NULL,
+    deleted_by UUID REFERENCES public.users(id) DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add comments for deleted user fields
+COMMENT ON COLUMN public.users.deleted_at IS 'When set, user is deactivated. NULL = active user.';
+COMMENT ON COLUMN public.users.deletion_reason IS 'Reason for deletion: self_requested, admin_action, policy_violation, etc.';
+COMMENT ON COLUMN public.users.deleted_by IS 'User ID of admin who performed deletion. NULL = self-deletion.';
 
 -- Tournament Participants table - Controls tournament enrollment
 CREATE TABLE IF NOT EXISTS public.tournament_participants (
@@ -143,6 +151,7 @@ CREATE INDEX IF NOT EXISTS idx_predictions_match ON public.predictions(match_id)
 -- Users indexes
 CREATE INDEX IF NOT EXISTS idx_users_webauthn_user_id ON public.users(webauthn_user_id);
 CREATE INDEX IF NOT EXISTS idx_users_is_admin ON public.users(is_admin) WHERE is_admin = TRUE;
+CREATE INDEX IF NOT EXISTS idx_users_deleted_at ON public.users(deleted_at) WHERE deleted_at IS NULL;
 
 -- WebAuthn indexes
 CREATE INDEX IF NOT EXISTS idx_webauthn_credentials_user ON public.webauthn_credentials(user_id);
@@ -154,6 +163,7 @@ CREATE INDEX IF NOT EXISTS idx_webauthn_challenges_challenge ON public.webauthn_
 -- Tournament participants indexes
 CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament_id ON public.tournament_participants(tournament_id);
 CREATE INDEX IF NOT EXISTS idx_tournament_participants_user_id ON public.tournament_participants(user_id);
+CREATE INDEX IF NOT EXISTS idx_tournament_participants_composite ON public.tournament_participants(tournament_id, user_id);
 
 -- ============================================================================
 -- VIEWS
@@ -164,8 +174,14 @@ CREATE OR REPLACE VIEW public.tournament_rankings AS
 SELECT
     p.user_id,
     m.tournament_id,
-    u.screen_name,
-    u.avatar_url,
+    CASE
+        WHEN u.deleted_at IS NOT NULL THEN '[Deleted User]'
+        ELSE u.screen_name
+    END AS screen_name,
+    CASE
+        WHEN u.deleted_at IS NOT NULL THEN NULL
+        ELSE u.avatar_url
+    END AS avatar_url,
     COUNT(DISTINCT p.id) AS predictions_count,
     COALESCE(SUM(p.points_earned), 0) AS total_points,
     RANK() OVER (
@@ -176,7 +192,7 @@ FROM public.predictions p
 JOIN public.matches m ON p.match_id = m.id
 JOIN public.users u ON p.user_id = u.id
 JOIN public.tournament_participants tp ON tp.tournament_id = m.tournament_id AND tp.user_id = p.user_id
-GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url;
+GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url, u.deleted_at;
 
 -- ============================================================================
 -- FUNCTIONS
@@ -340,6 +356,60 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- User Management: Soft delete (deactivate) user
+CREATE OR REPLACE FUNCTION public.soft_delete_user(
+    target_user_id UUID,
+    reason TEXT DEFAULT 'self_requested'
+)
+RETURNS VOID AS $$
+BEGIN
+    -- Permission check: user can delete themselves, or admin can delete anyone
+    IF auth.uid() != target_user_id AND NOT public.is_admin(auth.uid()) THEN
+        RAISE EXCEPTION 'Unauthorized: Cannot delete other users';
+    END IF;
+
+    -- Prevent double-deletion
+    IF EXISTS (
+        SELECT 1 FROM public.users
+        WHERE id = target_user_id AND deleted_at IS NOT NULL
+    ) THEN
+        RAISE EXCEPTION 'User is already deactivated';
+    END IF;
+
+    -- Soft delete the user
+    UPDATE public.users
+    SET
+        deleted_at = NOW(),
+        deletion_reason = reason,
+        deleted_by = CASE
+            WHEN auth.uid() = target_user_id THEN NULL  -- Self-deletion
+            ELSE auth.uid()                             -- Admin deletion
+        END,
+        updated_at = NOW()
+    WHERE id = target_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- User Management: Reactivate user (admin only)
+CREATE OR REPLACE FUNCTION public.reactivate_user(target_user_id UUID)
+RETURNS VOID AS $$
+BEGIN
+    -- Permission check: admin only
+    IF NOT public.is_admin(auth.uid()) THEN
+        RAISE EXCEPTION 'Unauthorized: Admin access required';
+    END IF;
+
+    -- Reactivate the user by clearing deletion fields
+    UPDATE public.users
+    SET
+        deleted_at = NULL,
+        deletion_reason = NULL,
+        deleted_by = NULL,
+        updated_at = NOW()
+    WHERE id = target_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- ============================================================================
 -- TRIGGERS
 -- ============================================================================
@@ -445,9 +515,14 @@ CREATE POLICY "Tournament teams are deletable by admins"
 -- RLS POLICIES: Users
 -- ============================================================================
 DROP POLICY IF EXISTS "Users are viewable by everyone" ON public.users;
-CREATE POLICY "Users are viewable by everyone"
+DROP POLICY IF EXISTS "Active users are viewable by everyone" ON public.users;
+CREATE POLICY "Active users are viewable by everyone"
     ON public.users FOR SELECT
-    USING (TRUE);
+    USING (
+        deleted_at IS NULL                  -- Active users visible to all
+        OR auth.uid() = id                  -- Deleted users can see their own profile
+        OR public.is_admin(auth.uid())      -- Admins can see all users
+    );
 
 DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
 CREATE POLICY "Users can insert their own profile"
@@ -457,7 +532,13 @@ CREATE POLICY "Users can insert their own profile"
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
 CREATE POLICY "Users can update their own profile"
     ON public.users FOR UPDATE
-    USING (auth.uid() = id OR public.is_admin(auth.uid()));
+    USING (auth.uid() = id OR public.is_admin(auth.uid()))
+    WITH CHECK (auth.uid() = id OR public.is_admin(auth.uid()));
+
+DROP POLICY IF EXISTS "Admins can hard delete users" ON public.users;
+CREATE POLICY "Admins can hard delete users"
+    ON public.users FOR DELETE
+    USING (public.is_admin(auth.uid()));
 
 -- ============================================================================
 -- RLS POLICIES: Tournament Participants
@@ -610,6 +691,8 @@ GRANT EXECUTE ON FUNCTION public.update_credential_counter TO authenticated;
 GRANT EXECUTE ON FUNCTION public.store_auth_challenge TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.get_and_consume_auth_challenge TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.clean_expired_challenges TO authenticated;
+GRANT EXECUTE ON FUNCTION public.soft_delete_user TO authenticated;
+GRANT EXECUTE ON FUNCTION public.reactivate_user TO authenticated;
 
 -- ============================================================================
 -- END OF BOOTSTRAP SCRIPT
