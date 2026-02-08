@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Fingerprint, Loader2 } from "lucide-react";
 import { authenticateWithPasskey, isPasskeySupported } from "@/lib/webauthn/client";
 import { useTranslations } from 'next-intl';
 
 interface PasskeyLoginButtonProps {
+  email: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
   className?: string;
@@ -18,16 +17,16 @@ interface PasskeyLoginButtonProps {
 /**
  * Component for logging in with a passkey
  *
- * Includes email input and passkey authentication button
+ * Receives email from parent (shared with password form) and triggers passkey authentication
  */
 export function PasskeyLoginButton({
+  email,
   onSuccess,
   onError,
   className,
 }: PasskeyLoginButtonProps) {
   const t = useTranslations('auth.passkeys');
   const tCommon = useTranslations('common');
-  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -85,25 +84,7 @@ export function PasskeyLoginButton({
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <div className="space-y-2">
-        <Label htmlFor="passkey-email">{tCommon('labels.emailAddress')}</Label>
-        <Input
-          id="passkey-email"
-          type="email"
-          placeholder="your@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleAuthenticate();
-            }
-          }}
-          disabled={isLoading}
-          autoComplete="email webauthn"
-        />
-      </div>
-
+    <div className={`space-y-3 ${className || ""}`}>
       <Button
         onClick={handleAuthenticate}
         disabled={isLoading || !email}

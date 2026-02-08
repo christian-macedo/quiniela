@@ -55,27 +55,49 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background: same spotlight as landing */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_70%)]" />
+
+      <div className="absolute top-4 right-4 z-10">
+        <div className="backdrop-blur-sm bg-background/50 rounded-lg p-1">
+          <LanguageSwitcher />
+        </div>
       </div>
-      <Card className="w-full max-w-md">
+
+      <Card className="w-full max-w-md relative animate-scale-in">
         <CardHeader>
-          <CardTitle className="text-2xl">{t('title')}</CardTitle>
+          <CardTitle className="font-display text-3xl uppercase tracking-tight">{t('title')}</CardTitle>
           <CardDescription>
             {t('subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Passkey Login Section */}
-          <div className="space-y-4">
-            <PasskeyLoginButton
-              onSuccess={() => {
-                router.push("/tournaments");
-                router.refresh();
-              }}
+          {/* Shared Email Field */}
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium">
+              {t('emailLabel')}
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              required
+              autoComplete="email"
             />
           </div>
+
+          {/* Passkey Login Section */}
+          <PasskeyLoginButton
+            email={email}
+            onSuccess={() => {
+              router.push("/tournaments");
+              router.refresh();
+            }}
+          />
 
           {/* Divider */}
           <div className="relative">
@@ -89,21 +111,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Email/Password Login Section */}
+          {/* Password Login Section */}
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                {t('emailLabel')}
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                required
-              />
-            </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="text-sm font-medium">
