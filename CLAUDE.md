@@ -577,6 +577,58 @@ To bootstrap a fresh Supabase project:
 5. Copy project URL and anon key to `.env.local`
 6. Run `npm run dev` to start development
 
+### Bootstrap vs Migrations Strategy
+
+This project uses a **dual-track approach** for database schema management:
+
+#### Fresh Installations
+Use `supabase/bootstrap.sql` **ONLY**:
+- Contains the complete, consolidated final schema state
+- Skip the `migrations/` directory entirely
+- Fastest path to a working database (single SQL file)
+- Includes all changes from 16 migrations (2024-01-01 through 2026-02-01)
+
+#### Existing Databases
+Use `supabase/migrations/` **ONLY**:
+- Apply new migrations sequentially to upgrade existing installations
+- **Never** run bootstrap.sql on an existing database (will cause conflicts)
+- Old migrations (2024-01-*) are archived in `migrations/archive/` for reference
+- Active migrations (2026-01-19 onwards) should be applied to production
+
+#### Why Keep Both?
+
+- **Bootstrap.sql**: Optimized single-file setup for new team members and test environments
+- **Migrations**: Historical record + incremental upgrade path for production databases
+- **Safety**: Prevents breaking existing production databases with a full schema recreate
+- **Clarity**: Clear separation between "fresh start" and "incremental update" workflows
+
+#### Maintenance Workflow
+
+When adding new schema changes:
+
+1. Create migration file first (`supabase migration new feature_name`)
+2. Test migration on development database
+3. Apply to production via normal migration process
+4. **Update bootstrap.sql** to reflect the new final state
+5. Update the "Last updated" date in bootstrap.sql header
+
+This ensures both fresh and existing installations stay synchronized.
+
+#### What's Included in Bootstrap.sql?
+
+**Current version (2026-02-09)** includes all changes from:
+- ✓ Initial schema (teams, tournaments, matches, predictions, users)
+- ✓ WebAuthn passkey support (tables, functions, authentication flow)
+- ✓ Admin permission system (is_admin flag, first-user promotion, RLS policies)
+- ✓ Tournament participant enrollment
+- ✓ Storage RLS policies (user avatars, team logos)
+- ✓ Automatic triggers (user creation, last login, updated_at timestamps)
+- ✓ All 16 migrations from 20240101000000 through 20260201000000
+
+**Not yet included** (will be added in future updates):
+- Soft delete user functionality (from iakor-hidemails branch)
+- Any migrations created after 2026-02-01
+
 ### Script Contents
 
 The bootstrap script includes (in order):
