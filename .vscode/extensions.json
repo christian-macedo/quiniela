@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // Essential for TypeScript/JavaScript development
+    "dbaeumer.vscode-eslint",
+
+    // Shows errors inline (highly visible)
+    "usernamehw.errorlens",
+
+    // Makes TypeScript errors easier to understand
+    "yoavbls.pretty-ts-errors",
+
+    // Tailwind CSS IntelliSense (autocomplete for classes)
+    "bradlc.vscode-tailwindcss",
+
+    // Better syntax highlighting for TypeScript
+    "ms-vscode.vscode-typescript-next",
+
+    // Git integration
+    "eamodio.gitlens",
+
+    // Format with Prettier (optional - project uses ESLint)
+    "esbenp.prettier-vscode"
+  ],
+  "unwantedRecommendations": []
+}

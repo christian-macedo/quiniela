@@ -592,14 +592,12 @@
     }
   },
   "admin": {
-    "messages": {
-      "success": {
-        "adminGranted": "Admin permissions granted to {name}",
-        "adminRevoked": "Admin permissions revoked from {name}"
-      },
-      "error": {
-        "failedToUpdatePermissions": "Failed to update permissions"
-      }
+    "success": {
+      "adminGranted": "Admin permissions granted",
+      "adminRevoked": "Admin permissions revoked"
+    },
+    "error": {
+      "failedToUpdatePermissions": "Failed to update permissions"
     },
     "users": {
       "title": "User Management",
@@ -624,7 +622,7 @@
       "confirmHardDelete2": "Are you absolutely sure? All data will be lost.",
       "errorDeactivate": "Failed to deactivate user",
       "errorReactivate": "Failed to reactivate user",
-      "errorDelete": "Failed to delete user"
+      "errorDelete": "Failed to delete user",
       "anonymous": "Anonymous",
       "failedToUpdateStatus": "Failed to update admin status"
     },

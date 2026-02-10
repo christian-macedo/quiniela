@@ -60,18 +60,15 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
       if (!response.ok) throw new Error("Failed to update permissions");
 
       // Update local state
-      const updatedUser = users.find(u => u.id === userId);
-      const userName = updatedUser?.screen_name || updatedUser?.email || t('users.anonymous');
-
       setUsers(users.map(u =>
         u.id === userId ? { ...u, is_admin: !currentStatus } : u
       ));
 
       // Show success toast
       if (!currentStatus) {
-        toast.success('success.adminGranted', { name: userName });
+        toast.success('success.adminGranted');
       } else {
-        toast.success('success.adminRevoked', { name: userName });
+        toast.success('success.adminRevoked');
       }
     } catch (error) {
       console.error("Error updating admin status:", error);

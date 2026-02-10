@@ -1,0 +1,45 @@
+{
+  // Format code automatically on save
+  "editor.formatOnSave": true,
+
+  // Run ESLint fixes on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Treat .json files as JSON with Comments (more forgiving)
+  "files.associations": {
+    "*.json": "jsonc"
+  },
+
+  // Enable ESLint for TypeScript/JavaScript files
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // Use workspace TypeScript version
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // Show inline errors more prominently
+  "problems.decorations.enabled": true,
+
+  // Auto-save files after a delay (optional but helpful)
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+
+  // Trim trailing whitespace on save
+  "files.trimTrailingWhitespace": true,
+
+  // Insert final newline in files
+  "files.insertFinalNewline": true,
+
+  // Use tabs for indentation (or spaces if preferred)
+  "editor.detectIndentation": true,
+
+  // Show errors inline in the editor
+  "editor.inlineSuggest.enabled": true
+}

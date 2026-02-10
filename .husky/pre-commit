@@ -1,0 +1,17 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Validate JSON translation files
+npm run validate:json || exit 1
+
+# Run linting
+echo "\n📝 Running linter..."
+npm run lint || exit 1
+
+# Run build to catch TypeScript/import errors
+echo "\n🔨 Running build..."
+npm run build || exit 1
+
+echo "\n✅ All pre-commit checks passed!\n"

@@ -592,14 +592,12 @@
     }
   },
   "admin": {
-    "messages": {
-      "success": {
-        "adminGranted": "Permisos de administrador otorgados a {name}",
-        "adminRevoked": "Permisos de administrador revocados de {name}"
-      },
-      "error": {
-        "failedToUpdatePermissions": "Error al actualizar permisos"
-      }
+    "success": {
+      "adminGranted": "Permisos de administrador otorgados",
+      "adminRevoked": "Permisos de administrador revocados"
+    },
+    "error": {
+      "failedToUpdatePermissions": "Error al actualizar permisos"
     },
     "users": {
       "title": "Gestión de Usuarios",
@@ -624,7 +622,7 @@
       "confirmHardDelete2": "¿Estás absolutamente seguro? Se perderán todos los datos.",
       "errorDeactivate": "Error al desactivar usuario",
       "errorReactivate": "Error al reactivar usuario",
-      "errorDelete": "Error al eliminar usuario"
+      "errorDelete": "Error al eliminar usuario",
       "anonymous": "Anónimo",
       "failedToUpdateStatus": "Error al actualizar estado de administrador"
     },
