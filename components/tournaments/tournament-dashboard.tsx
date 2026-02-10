@@ -13,8 +13,7 @@ import {
   Calendar,
   Trophy,
   UserCircle,
-  Target,
-  TrendingUp
+  Target
 } from "lucide-react";
 
 interface TournamentDashboardProps {
@@ -32,11 +31,18 @@ interface TournamentDashboardProps {
   };
 }
 
-const statusColors = {
-  upcoming: "bg-blue-500",
-  active: "bg-green-500",
-  completed: "bg-gray-500",
+const statusColors: Record<string, string> = {
+  upcoming: "bg-info",
+  active: "bg-success",
+  completed: "bg-muted",
 };
+
+function getRankColor(rank: number | null): string {
+  if (rank === 1) return "text-gold";
+  if (rank === 2) return "text-silver";
+  if (rank === 3) return "text-bronze";
+  return "";
+}
 
 export function TournamentDashboard({
   tournament,
@@ -48,26 +54,39 @@ export function TournamentDashboard({
 }: TournamentDashboardProps) {
   const t = useTranslations('tournaments');
   const tCommon = useTranslations('common');
-  
+
   const upcomingMatches = matches.filter(m => m.status === "scheduled").slice(0, 5);
   const recentMatches = matches.filter(m => m.status === "completed").slice(-5).reverse();
   const topRankings = rankings.slice(0, 10);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <div className={`h-3 w-3 rounded-full ${statusColors[tournament.status]}`} />
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className={`h-3 w-3 rounded-full ${statusColors[tournament.status] || "bg-muted"}`} />
           <Badge variant="outline" className="capitalize">
             {t(`status.${tournament.status}`)}
           </Badge>
           <Badge variant="secondary" className="capitalize">
             {tournament.sport}
           </Badge>
+          {/* Inline tournament stats */}
+          <Badge variant="outline" className="text-muted-foreground">
+            <Calendar className="h-3 w-3 mr-1" />
+            {matches.length} {tCommon(matches.length === 1 ? 'labels.match' : 'labels.matches')}
+          </Badge>
+          <Badge variant="outline" className="text-muted-foreground">
+            <Trophy className="h-3 w-3 mr-1" />
+            {matches.filter(m => m.status === "completed").length} {t('dashboard.stats.completed').toLowerCase()}
+          </Badge>
+          <Badge variant="outline" className="text-muted-foreground">
+            <UserCircle className="h-3 w-3 mr-1" />
+            {tournamentStats?.participantCount || 0} {t('dashboard.stats.participants').toLowerCase()}
+          </Badge>
         </div>
         <div>
-          <h1 className="text-4xl font-bold mb-2">{tournament.name}</h1>
+          <h1 className="font-display text-5xl md:text-6xl font-bold uppercase tracking-tight mb-2">{tournament.name}</h1>
           <p className="text-muted-foreground">
             {formatLocalDate(tournament.start_date)} - {formatLocalDate(tournament.end_date)}
           </p>
@@ -98,19 +117,21 @@ export function TournamentDashboard({
 
       {/* User Stats (if logged in) */}
       {userStats && (
-        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+        <Card className="bg-gradient-to-r from-primary/15 via-primary/10 to-accent/5 border-primary/20">
           <CardContent className="pt-6">
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <p className="text-3xl font-bold">{userStats.rank || "-"}</p>
+              <div className="relative">
+                <p className={`font-display text-4xl font-bold ${getRankColor(userStats.rank)}`}>
+                  {userStats.rank || "-"}
+                </p>
                 <p className="text-sm text-muted-foreground">{t('dashboard.yourRank')}</p>
               </div>
-              <div>
-                <p className="text-3xl font-bold">{userStats.pointsEarned}</p>
+              <div className="relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-px before:bg-border after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-8 after:w-px after:bg-border">
+                <p className="font-display text-4xl font-bold">{userStats.pointsEarned}</p>
                 <p className="text-sm text-muted-foreground">{t('dashboard.totalPoints')}</p>
               </div>
               <div>
-                <p className="text-3xl font-bold">{userStats.totalPredictions}</p>
+                <p className="font-display text-4xl font-bold">{userStats.totalPredictions}</p>
                 <p className="text-sm text-muted-foreground">{t('dashboard.predictions')}</p>
               </div>
             </div>
@@ -141,26 +162,27 @@ export function TournamentDashboard({
               </p>
             ) : (
               <div className="space-y-2">
-                {topRankings.map((ranking) => {
+                {topRankings.map((ranking, index) => {
                   const isCurrentUser = ranking.user_id === currentUserId;
+                  const podiumBorder =
+                    ranking.rank === 1 ? "border-l-4 border-l-gold bg-gradient-to-r from-[hsl(var(--gold)/0.1)] to-transparent" :
+                    ranking.rank === 2 ? "border-l-4 border-l-silver bg-gradient-to-r from-[hsl(var(--silver)/0.08)] to-transparent" :
+                    ranking.rank === 3 ? "border-l-4 border-l-bronze bg-gradient-to-r from-[hsl(var(--bronze)/0.08)] to-transparent" : "";
+
                   return (
                     <div
                       key={ranking.user_id}
-                      className={`flex items-center gap-3 p-2 rounded-lg ${
-                        isCurrentUser ? "bg-primary/10 border border-primary" : ""
+                      className={`flex items-center gap-3 p-2 rounded-lg animate-slide-up ${
+                        index < 5 ? `stagger-${index + 1}` : ""
+                      } ${podiumBorder} ${
+                        isCurrentUser ? "ring-2 ring-primary/30" : ""
                       }`}
                     >
                       {/* Rank */}
-                      <div className="w-6 text-center font-bold text-sm">
-                        {ranking.rank <= 3 ? (
-                          <span className="text-lg">
-                            {ranking.rank === 1 && "🥇"}
-                            {ranking.rank === 2 && "🥈"}
-                            {ranking.rank === 3 && "🥉"}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">{ranking.rank}</span>
-                        )}
+                      <div className="w-8 text-center">
+                        <span className={`font-display text-xl font-bold ${getRankColor(ranking.rank)}`}>
+                          {ranking.rank}
+                        </span>
                       </div>
 
                       {/* Avatar */}
@@ -181,7 +203,8 @@ export function TournamentDashboard({
 
                       {/* Points */}
                       <Badge variant="secondary" className="text-xs">
-                        {ranking.total_points} {tCommon('labels.pts')}
+                        <span className="font-display font-bold">{ranking.total_points}</span>
+                        <span className="ml-1">{tCommon('labels.pts')}</span>
                       </Badge>
                     </div>
                   );
@@ -191,46 +214,6 @@ export function TournamentDashboard({
           </CardContent>
         </Card>
 
-        {/* Tournament Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              {t('dashboard.stats.title')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">{t('dashboard.stats.totalMatches')}</span>
-                </div>
-                <Badge variant="secondary">{matches.length}</Badge>
-              </div>
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Trophy className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">{t('dashboard.stats.completed')}</span>
-                </div>
-                <Badge variant="secondary">
-                  {matches.filter(m => m.status === "completed").length}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <UserCircle className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">{t('dashboard.stats.participants')}</span>
-                </div>
-                <Badge variant="secondary">{tournamentStats?.participantCount || 0}</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Matches Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Matches */}
         <Card>
           <CardHeader>
@@ -260,37 +243,37 @@ export function TournamentDashboard({
             )}
           </CardContent>
         </Card>
-
-        {/* Recent Results */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" />
-                {t('dashboard.recentResults.title')}
-              </CardTitle>
-              <Link href={`/${tournament.id}/matches`}>
-                <Button variant="ghost" size="sm">
-                  {tCommon('actions.viewAll')}
-                </Button>
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {recentMatches.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">
-                {t('dashboard.recentResults.empty')}
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {recentMatches.map((match) => (
-                  <MatchCard key={match.id} match={match} />
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Recent Results */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5" />
+              {t('dashboard.recentResults.title')}
+            </CardTitle>
+            <Link href={`/${tournament.id}/matches`}>
+              <Button variant="ghost" size="sm">
+                {tCommon('actions.viewAll')}
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {recentMatches.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              {t('dashboard.recentResults.empty')}
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {recentMatches.map((match) => (
+                <MatchCard key={match.id} match={match} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

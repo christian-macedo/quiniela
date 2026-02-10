@@ -6,6 +6,7 @@ import { TeamBadge } from "@/components/teams/team-badge";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import { Zap } from "lucide-react";
 import { useTranslations } from 'next-intl';
 
 interface PredictionWithUser extends Prediction {
@@ -32,11 +33,11 @@ export function MatchDetailView({
   const getStatusColor = () => {
     switch (match.status) {
       case "completed":
-        return "bg-blue-500";
+        return "bg-info";
       case "in_progress":
-        return "bg-green-500";
+        return "bg-success";
       case "cancelled":
-        return "bg-red-500";
+        return "bg-destructive";
       default:
         return "";
     }
@@ -50,14 +51,14 @@ export function MatchDetailView({
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Match Summary Card */}
-      <Card className={isLive ? "border-green-500 border-2" : ""}>
+      <Card className={isLive ? "border-success border-2 shadow-[0_0_15px_hsl(var(--success)/0.15)]" : ""}>
         <CardHeader>
           <div className="flex justify-between items-center">
             <Badge
               variant={isLive || isCompleted ? "default" : "outline"}
-              className={getStatusColor()}
+              className={`${getStatusColor()} ${isLive ? "animate-pulse-live" : ""}`}
             >
               {t(`status.${match.status}`)}
             </Badge>
@@ -73,7 +74,7 @@ export function MatchDetailView({
             {isCompleted &&
             match.home_score !== null &&
             match.away_score !== null ? (
-              <div className="flex items-center gap-4 text-4xl font-bold">
+              <div className="flex items-center gap-4 font-display text-4xl font-bold animate-score-pop">
                 <span>{match.home_score}</span>
                 <span className="text-muted-foreground">:</span>
                 <span>{match.away_score}</span>
@@ -107,7 +108,10 @@ export function MatchDetailView({
               <p className="text-sm text-muted-foreground">{t('details.multiplier')}</p>
               <p className="font-medium text-lg">
                 {match.multiplier > 1 ? (
-                  <span className="text-orange-500">{match.multiplier}x</span>
+                  <span className="text-warning flex items-center justify-center gap-1">
+                    <Zap className="h-4 w-4" />
+                    {match.multiplier}x
+                  </span>
                 ) : (
                   `${match.multiplier}x`
                 )}
@@ -150,10 +154,10 @@ export function MatchDetailView({
 
       {/* Scoring Info Card */}
       {match.multiplier > 1 && (
-        <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-900">
+        <Card className="border-warning/30 bg-warning/5">
           <CardContent className="py-4">
-            <div className="flex items-center gap-2 text-orange-700 dark:text-orange-400">
-              <span className="text-lg">⚡</span>
+            <div className="flex items-center gap-2 text-warning">
+              <Zap className="h-5 w-5" />
               <p className="text-sm">
                 {t('details.multiplierNote', { multiplier: match.multiplier })}
               </p>
@@ -228,7 +232,7 @@ function PredictionRow({
         {showPrediction ? (
           <>
             <div className="text-center">
-              <p className="text-lg font-bold">
+              <p className="text-lg font-bold font-display">
                 {prediction.predicted_home_score} :{" "}
                 {prediction.predicted_away_score}
               </p>
@@ -239,9 +243,9 @@ function PredictionRow({
                   variant={prediction.points_earned > 0 ? "default" : "outline"}
                   className={
                     prediction.points_earned >= 3 * match.multiplier
-                      ? "bg-green-500"
+                      ? "bg-success"
                       : prediction.points_earned > 0
-                      ? "bg-blue-500"
+                      ? "bg-info"
                       : ""
                   }
                 >

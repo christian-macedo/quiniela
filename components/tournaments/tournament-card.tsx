@@ -11,20 +11,22 @@ interface TournamentCardProps {
   tournament: Tournament;
 }
 
-const statusColors = {
-  upcoming: "bg-blue-500",
-  active: "bg-green-500",
-  completed: "bg-gray-500",
+const statusColors: Record<string, string> = {
+  upcoming: "bg-info",
+  active: "bg-success",
+  completed: "bg-muted",
 };
 
 export function TournamentCard({ tournament }: TournamentCardProps) {
   const t = useTranslations('tournaments.status');
   return (
     <Link href={`/${tournament.id}`}>
-      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+      <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden">
+        {/* Status stripe at top */}
+        <div className={`h-1 ${statusColors[tournament.status] || "bg-muted"}`} />
         <CardHeader>
           <div className="flex justify-between items-start">
-            <CardTitle>{tournament.name}</CardTitle>
+            <CardTitle className="font-display uppercase tracking-tight">{tournament.name}</CardTitle>
             <Badge variant="outline" className="capitalize">
               {t(tournament.status as 'upcoming' | 'active' | 'completed')}
             </Badge>
@@ -37,7 +39,7 @@ export function TournamentCard({ tournament }: TournamentCardProps) {
         <CardContent>
           <div className="flex items-center gap-2">
             <div
-              className={`h-2 w-2 rounded-full ${statusColors[tournament.status]}`}
+              className={`h-2 w-2 rounded-full ${statusColors[tournament.status] || "bg-muted"}`}
             />
             <span className="text-sm text-muted-foreground capitalize">
               {tournament.sport}

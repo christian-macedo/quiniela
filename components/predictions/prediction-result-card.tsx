@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { formatLocalDateTime } from "@/lib/utils/date";
-import { Trophy, Target, TrendingUp } from "lucide-react";
+import { Trophy, Target, TrendingUp, Sparkles, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface PredictionResultCardProps {
@@ -19,28 +19,24 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
   const multiplier = match.multiplier;
 
   // Determine badge variant and icon based on points
-  let badgeVariant: "default" | "secondary" | "outline" = "outline";
   let PointIcon = Target;
   let badgeClass = "";
 
   if (pointsEarned === 3 * multiplier) {
     // Exact score
-    badgeVariant = "default";
-    PointIcon = Trophy;
-    badgeClass = "bg-green-600 hover:bg-green-700 text-white";
+    PointIcon = Sparkles;
+    badgeClass = "bg-success hover:bg-success text-success-foreground";
   } else if (pointsEarned === 2 * multiplier) {
     // Correct difference
-    badgeVariant = "secondary";
     PointIcon = TrendingUp;
-    badgeClass = "bg-blue-600 hover:bg-blue-700 text-white";
+    badgeClass = "bg-info hover:bg-info text-info-foreground";
   } else if (pointsEarned === 1 * multiplier) {
     // Correct winner
-    badgeVariant = "secondary";
-    PointIcon = Target;
-    badgeClass = "bg-amber-600 hover:bg-amber-700 text-white";
+    PointIcon = Trophy;
+    badgeClass = "bg-warning hover:bg-warning text-warning-foreground";
   } else {
     // No points
-    badgeClass = "bg-gray-500 hover:bg-gray-600 text-white";
+    badgeClass = "bg-muted hover:bg-muted text-muted-foreground";
   }
 
   return (
@@ -52,11 +48,12 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
           </CardTitle>
           <div className="flex items-center gap-2">
             {multiplier > 1 && (
-              <Badge variant="outline" className="text-xs bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-500">
-                ×{multiplier}
+              <Badge variant="outline" className="text-xs text-warning border-warning">
+                <Zap className="h-3 w-3 mr-0.5" />
+                {multiplier}x
               </Badge>
             )}
-            <Badge variant={badgeVariant} className={`flex items-center gap-1 ${badgeClass}`}>
+            <Badge className={`flex items-center gap-1 ${badgeClass}`}>
               <PointIcon className="h-3 w-3" />
               {pointsEarned} pts
             </Badge>
@@ -72,11 +69,11 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-16 text-center font-bold text-lg">
+              <div className="w-16 text-center font-display font-bold text-lg">
                 {match.home_score}
               </div>
               <span className="text-muted-foreground">:</span>
-              <div className="w-16 text-center font-bold text-lg">
+              <div className="w-16 text-center font-display font-bold text-lg">
                 {match.away_score}
               </div>
             </div>
@@ -98,11 +95,11 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-16 text-center text-sm border rounded px-2 py-1 bg-muted/50">
+              <div className="w-16 text-center text-sm border rounded px-2 py-1 bg-surface-sunken">
                 {prediction.predicted_home_score}
               </div>
               <span className="text-muted-foreground text-sm">:</span>
-              <div className="w-16 text-center text-sm border rounded px-2 py-1 bg-muted/50">
+              <div className="w-16 text-center text-sm border rounded px-2 py-1 bg-surface-sunken">
                 {prediction.predicted_away_score}
               </div>
             </div>
@@ -123,7 +120,12 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
         {/* Points explanation */}
         {pointsEarned > 0 && (
           <div className="text-center text-xs text-muted-foreground pt-2 border-t">
-            {pointsEarned === 3 * multiplier && t("exactMatch")}
+            {pointsEarned === 3 * multiplier && (
+              <span className="flex items-center justify-center gap-1">
+                <Sparkles className="h-3 w-3 text-success" />
+                {t("exactMatch")}
+              </span>
+            )}
             {pointsEarned === 2 * multiplier && t("correctDifference")}
             {pointsEarned === 1 * multiplier && t("correctWinner")}
           </div>
