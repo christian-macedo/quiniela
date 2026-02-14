@@ -14,7 +14,12 @@
       "Bash(git add:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_resize"
     ],
     "deny": [],
     "ask": []

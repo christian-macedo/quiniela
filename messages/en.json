@@ -237,6 +237,11 @@
     "description": "Predict match scores, compete with friends, and climb the leaderboard",
     "getStarted": "Get Started",
     "login": "Login",
+    "features": {
+      "predict": "Predict Scores",
+      "compete": "Compete with Friends",
+      "leaderboard": "Climb the Leaderboard"
+    },
     "hero": {
       "title": "Quiniela",
       "subtitle": "Tournament prediction platform for various sports events",
@@ -486,7 +491,9 @@
     "form": {
       "submitPrediction": "Submit Prediction",
       "updatePrediction": "Update Prediction",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "predicted": "Predicted",
+      "locked": "Locked"
     },
     "results": {
       "finalScore": "Final Score",

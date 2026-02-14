@@ -49,13 +49,20 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background: same spotlight as landing */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_70%)]" />
+
+      <div className="absolute top-4 right-4 z-10">
+        <div className="backdrop-blur-sm bg-background/50 rounded-lg p-1">
+          <LanguageSwitcher />
+        </div>
       </div>
-      <Card className="w-full max-w-md">
+
+      <Card className="w-full max-w-md relative animate-scale-in">
         <CardHeader>
-          <CardTitle className="text-2xl">{t('title')}</CardTitle>
+          <CardTitle className="font-display text-3xl uppercase tracking-tight">{t('title')}</CardTitle>
           <CardDescription>
             {t('subtitle')}
           </CardDescription>

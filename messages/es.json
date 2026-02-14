@@ -237,6 +237,11 @@
     "description": "Pronostica resultados de partidos, compite con amigos y escala en la tabla de posiciones",
     "getStarted": "Comenzar",
     "login": "Iniciar Sesión",
+    "features": {
+      "predict": "Pronostica Resultados",
+      "compete": "Compite con Amigos",
+      "leaderboard": "Escala en la Tabla"
+    },
     "hero": {
       "title": "Quiniela",
       "subtitle": "Plataforma de pronósticos de torneos para la Copa del Mundo y más",
@@ -486,7 +491,9 @@
     "form": {
       "submitPrediction": "Enviar Pronóstico",
       "updatePrediction": "Actualizar Pronóstico",
-      "saving": "Guardando..."
+      "saving": "Guardando...",
+      "predicted": "Pronosticado",
+      "locked": "Bloqueado"
     },
     "results": {
       "finalScore": "Resultado Final",
