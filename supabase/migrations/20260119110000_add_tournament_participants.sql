@@ -33,7 +33,8 @@ CREATE POLICY "Admins can delete tournament participants" ON public.tournament_p
 -- Update tournament_rankings view to only include designated participants
 DROP VIEW IF EXISTS public.tournament_rankings;
 
-CREATE OR REPLACE VIEW public.tournament_rankings AS
+CREATE OR REPLACE VIEW public.tournament_rankings
+WITH (security_invoker = true) AS
 SELECT
   p.user_id,
   m.tournament_id,

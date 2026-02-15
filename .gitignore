@@ -29,6 +29,9 @@ yarn-error.log*
 .env*.local
 .env
 
+# Local test configuration (contains credentials)
+supabase/.env.test
+
 # vercel
 .vercel
 

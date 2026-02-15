@@ -186,7 +186,8 @@ CREATE INDEX IF NOT EXISTS idx_tournament_participants_user_id ON public.tournam
 -- ============================================================================
 
 -- Tournament Rankings view - Dynamically calculates rankings from predictions
-CREATE OR REPLACE VIEW public.tournament_rankings AS
+CREATE OR REPLACE VIEW public.tournament_rankings
+WITH (security_invoker = true) AS
 SELECT
     p.user_id,
     m.tournament_id,
@@ -210,18 +211,26 @@ GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url;
 
 -- Admin check function - Used in RLS policies
 CREATE OR REPLACE FUNCTION public.is_admin(user_id UUID)
-RETURNS BOOLEAN AS $$
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     RETURN EXISTS (
         SELECT 1 FROM public.users
         WHERE id = user_id AND is_admin = TRUE
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Handle new user signup - Creates profile and sets first user as admin
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     user_count INTEGER;
 BEGIN
@@ -237,11 +246,15 @@ BEGIN
     );
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Update last login timestamp
 CREATE OR REPLACE FUNCTION public.update_last_login()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     IF NEW.last_sign_in_at IS DISTINCT FROM OLD.last_sign_in_at THEN
         UPDATE public.users
@@ -250,23 +263,31 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Generic updated_at trigger function
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- WebAuthn: Get user credentials for authentication
 CREATE OR REPLACE FUNCTION public.get_user_credentials_for_auth(user_email TEXT)
 RETURNS TABLE (
     credential_id TEXT,
     transports TEXT[]
-) AS $$
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     RETURN QUERY
     SELECT wc.credential_id, wc.transports
@@ -274,7 +295,7 @@ BEGIN
     JOIN public.users u ON wc.user_id = u.id
     WHERE u.email = user_email;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Get credential for verification
 CREATE OR REPLACE FUNCTION public.get_credential_for_verification(user_email TEXT, cred_id TEXT)
@@ -285,7 +306,11 @@ RETURNS TABLE (
     public_key TEXT,
     counter BIGINT,
     transports TEXT[]
-) AS $$
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     RETURN QUERY
     SELECT wc.id, wc.user_id, wc.credential_id, wc.public_key, wc.counter, wc.transports
@@ -293,17 +318,21 @@ BEGIN
     JOIN public.users u ON wc.user_id = u.id
     WHERE u.email = user_email AND wc.credential_id = cred_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Update credential counter after authentication
 CREATE OR REPLACE FUNCTION public.update_credential_counter(cred_id TEXT, new_counter BIGINT)
-RETURNS VOID AS $$
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     UPDATE public.webauthn_credentials
     SET counter = new_counter, last_used_at = NOW(), updated_at = NOW()
     WHERE credential_id = cred_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Store authentication challenge
 CREATE OR REPLACE FUNCTION public.store_auth_challenge(
@@ -311,7 +340,11 @@ CREATE OR REPLACE FUNCTION public.store_auth_challenge(
     p_challenge TEXT,
     p_expires_at TIMESTAMPTZ
 )
-RETURNS VOID AS $$
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     v_user_id UUID;
 BEGIN
@@ -325,11 +358,15 @@ BEGIN
     INSERT INTO public.webauthn_challenges (user_id, challenge, type, expires_at)
     VALUES (v_user_id, p_challenge, 'authentication', p_expires_at);
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Get and consume authentication challenge (single-use)
 CREATE OR REPLACE FUNCTION public.get_and_consume_auth_challenge(p_user_email TEXT)
-RETURNS TEXT AS $$
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     v_challenge TEXT;
     v_user_id UUID;
@@ -352,11 +389,15 @@ BEGIN
 
     RETURN v_challenge;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Clean expired challenges
 CREATE OR REPLACE FUNCTION public.clean_expired_challenges()
-RETURNS INTEGER AS $$
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     deleted_count INTEGER;
 BEGIN
@@ -364,7 +405,7 @@ BEGIN
     GET DIAGNOSTICS deleted_count = ROW_COUNT;
     RETURN deleted_count;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- ============================================================================
 -- TRIGGERS
