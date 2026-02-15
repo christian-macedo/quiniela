@@ -22,14 +22,18 @@ DROP POLICY IF EXISTS "Authenticated users can delete matches" ON matches;
 
 -- Create helper function to check if user is admin
 CREATE OR REPLACE FUNCTION public.is_admin(user_id UUID)
-RETURNS BOOLEAN AS $$
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.users
     WHERE id = user_id AND is_admin = true
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 COMMENT ON FUNCTION public.is_admin IS 'Check if a user has administrator privileges';
 

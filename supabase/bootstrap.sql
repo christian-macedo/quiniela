@@ -7,7 +7,33 @@
 -- IMPORTANT: This script should be updated whenever schema changes are made.
 -- Run this on a fresh Supabase project to bootstrap the entire database.
 --
--- Last updated: 2026-01-24
+-- Last updated: 2026-02-09
+-- Consolidated from migrations: 20240101000000 through 20260201000000 (16 migrations)
+-- ============================================================================
+
+-- ============================================================================
+-- BOOTSTRAP vs MIGRATIONS - READ THIS FIRST
+-- ============================================================================
+--
+-- FOR FRESH INSTALLATIONS (New Supabase Projects):
+--   ✓ Use ONLY this bootstrap.sql script
+--   ✓ Skip the migrations/ directory entirely
+--   ✓ This script contains the complete, final schema state
+--   ✓ Fastest path to a working database (one SQL file)
+--
+-- FOR EXISTING DATABASES (Production or Development with data):
+--   ✓ Use ONLY the migrations/ directory (apply new migrations sequentially)
+--   ✓ DO NOT run this bootstrap script on an existing database
+--   ✓ Migrations provide incremental upgrade path
+--   ✓ Old migrations are archived in migrations/archive/ for reference
+--
+-- MAINTENANCE WORKFLOW:
+--   1. Create new migration file for schema changes
+--   2. Test migration on development database
+--   3. Apply to production via normal migration process
+--   4. Update this bootstrap.sql to reflect the new final state
+--   5. This keeps fresh and existing installations synchronized
+--
 -- ============================================================================
 
 -- ============================================================================
@@ -160,7 +186,8 @@ CREATE INDEX IF NOT EXISTS idx_tournament_participants_user_id ON public.tournam
 -- ============================================================================
 
 -- Tournament Rankings view - Dynamically calculates rankings from predictions
-CREATE OR REPLACE VIEW public.tournament_rankings AS
+CREATE OR REPLACE VIEW public.tournament_rankings
+WITH (security_invoker = true) AS
 SELECT
     p.user_id,
     m.tournament_id,
@@ -184,18 +211,26 @@ GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url;
 
 -- Admin check function - Used in RLS policies
 CREATE OR REPLACE FUNCTION public.is_admin(user_id UUID)
-RETURNS BOOLEAN AS $$
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     RETURN EXISTS (
         SELECT 1 FROM public.users
         WHERE id = user_id AND is_admin = TRUE
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Handle new user signup - Creates profile and sets first user as admin
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     user_count INTEGER;
 BEGIN
@@ -211,11 +246,15 @@ BEGIN
     );
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Update last login timestamp
 CREATE OR REPLACE FUNCTION public.update_last_login()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     IF NEW.last_sign_in_at IS DISTINCT FROM OLD.last_sign_in_at THEN
         UPDATE public.users
@@ -224,23 +263,31 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Generic updated_at trigger function
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- WebAuthn: Get user credentials for authentication
 CREATE OR REPLACE FUNCTION public.get_user_credentials_for_auth(user_email TEXT)
 RETURNS TABLE (
     credential_id TEXT,
     transports TEXT[]
-) AS $$
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     RETURN QUERY
     SELECT wc.credential_id, wc.transports
@@ -248,7 +295,7 @@ BEGIN
     JOIN public.users u ON wc.user_id = u.id
     WHERE u.email = user_email;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Get credential for verification
 CREATE OR REPLACE FUNCTION public.get_credential_for_verification(user_email TEXT, cred_id TEXT)
@@ -259,7 +306,11 @@ RETURNS TABLE (
     public_key TEXT,
     counter BIGINT,
     transports TEXT[]
-) AS $$
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     RETURN QUERY
     SELECT wc.id, wc.user_id, wc.credential_id, wc.public_key, wc.counter, wc.transports
@@ -267,17 +318,21 @@ BEGIN
     JOIN public.users u ON wc.user_id = u.id
     WHERE u.email = user_email AND wc.credential_id = cred_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Update credential counter after authentication
 CREATE OR REPLACE FUNCTION public.update_credential_counter(cred_id TEXT, new_counter BIGINT)
-RETURNS VOID AS $$
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     UPDATE public.webauthn_credentials
     SET counter = new_counter, last_used_at = NOW(), updated_at = NOW()
     WHERE credential_id = cred_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Store authentication challenge
 CREATE OR REPLACE FUNCTION public.store_auth_challenge(
@@ -285,7 +340,11 @@ CREATE OR REPLACE FUNCTION public.store_auth_challenge(
     p_challenge TEXT,
     p_expires_at TIMESTAMPTZ
 )
-RETURNS VOID AS $$
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     v_user_id UUID;
 BEGIN
@@ -299,11 +358,15 @@ BEGIN
     INSERT INTO public.webauthn_challenges (user_id, challenge, type, expires_at)
     VALUES (v_user_id, p_challenge, 'authentication', p_expires_at);
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Get and consume authentication challenge (single-use)
 CREATE OR REPLACE FUNCTION public.get_and_consume_auth_challenge(p_user_email TEXT)
-RETURNS TEXT AS $$
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     v_challenge TEXT;
     v_user_id UUID;
@@ -326,11 +389,15 @@ BEGIN
 
     RETURN v_challenge;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- WebAuthn: Clean expired challenges
 CREATE OR REPLACE FUNCTION public.clean_expired_challenges()
-RETURNS INTEGER AS $$
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     deleted_count INTEGER;
 BEGIN
@@ -338,7 +405,7 @@ BEGIN
     GET DIAGNOSTICS deleted_count = ROW_COUNT;
     RETURN deleted_count;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- ============================================================================
 -- TRIGGERS
@@ -360,6 +427,40 @@ CREATE TRIGGER on_auth_user_login
 DROP TRIGGER IF EXISTS update_webauthn_credentials_updated_at ON public.webauthn_credentials;
 CREATE TRIGGER update_webauthn_credentials_updated_at
     BEFORE UPDATE ON public.webauthn_credentials
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- ============================================================================
+-- ADDITIONAL UPDATED_AT TRIGGERS
+-- ============================================================================
+
+-- Trigger: Update updated_at on teams
+DROP TRIGGER IF EXISTS update_teams_updated_at ON public.teams;
+CREATE TRIGGER update_teams_updated_at
+    BEFORE UPDATE ON public.teams
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Trigger: Update updated_at on tournaments
+DROP TRIGGER IF EXISTS update_tournaments_updated_at ON public.tournaments;
+CREATE TRIGGER update_tournaments_updated_at
+    BEFORE UPDATE ON public.tournaments
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Trigger: Update updated_at on users
+DROP TRIGGER IF EXISTS update_users_updated_at ON public.users;
+CREATE TRIGGER update_users_updated_at
+    BEFORE UPDATE ON public.users
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Trigger: Update updated_at on matches
+DROP TRIGGER IF EXISTS update_matches_updated_at ON public.matches;
+CREATE TRIGGER update_matches_updated_at
+    BEFORE UPDATE ON public.matches
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Trigger: Update updated_at on predictions
+DROP TRIGGER IF EXISTS update_predictions_updated_at ON public.predictions;
+CREATE TRIGGER update_predictions_updated_at
+    BEFORE UPDATE ON public.predictions
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================================
@@ -561,24 +662,80 @@ CREATE POLICY "Users can delete their own challenges"
     USING (auth.uid() = user_id OR user_id IS NULL);
 
 -- ============================================================================
--- STORAGE BUCKETS
+-- STORAGE BUCKETS AND POLICIES
 -- ============================================================================
 
--- Create storage buckets (run these via Supabase Dashboard or API if not available)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('team-logos', 'team-logos', true);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('user-avatars', 'user-avatars', true);
+-- Create storage buckets
+-- Note: These may need to be created via Supabase Dashboard if INSERT fails
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES
+    ('team-logos', 'team-logos', true, 52428800, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']),
+    ('user-avatars', 'user-avatars', true, 10485760, ARRAY['image/jpeg', 'image/png', 'image/webp'])
+ON CONFLICT (id) DO NOTHING;
 
--- Storage policies for team-logos bucket
--- Note: These need to be created via Supabase Dashboard or storage API
--- Policies:
---   - SELECT: public (anyone can view)
---   - INSERT/UPDATE/DELETE: authenticated users (admins typically manage team logos)
+-- Storage RLS Policies for user-avatars bucket
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
+CREATE POLICY "Users can upload their own avatar"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (
+  bucket_id = 'user-avatars' AND
+  auth.uid()::text = (storage.foldername(name))[1]
+);
 
--- Storage policies for user-avatars bucket
--- Policies:
---   - SELECT: public (anyone can view)
---   - INSERT/UPDATE/DELETE: authenticated users for their own avatar
---     (auth.uid()::text = (storage.foldername(name))[1])
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
+CREATE POLICY "Users can update their own avatar"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (
+  bucket_id = 'user-avatars' AND
+  auth.uid()::text = (storage.foldername(name))[1]
+)
+WITH CHECK (
+  bucket_id = 'user-avatars' AND
+  auth.uid()::text = (storage.foldername(name))[1]
+);
+
+DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects;
+CREATE POLICY "Users can delete their own avatar"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (
+  bucket_id = 'user-avatars' AND
+  auth.uid()::text = (storage.foldername(name))[1]
+);
+
+DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
+CREATE POLICY "Anyone can view avatars"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'user-avatars');
+
+-- Storage RLS Policies for team-logos bucket
+DROP POLICY IF EXISTS "Authenticated users can upload team logos" ON storage.objects;
+CREATE POLICY "Authenticated users can upload team logos"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'team-logos');
+
+DROP POLICY IF EXISTS "Authenticated users can update team logos" ON storage.objects;
+CREATE POLICY "Authenticated users can update team logos"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'team-logos')
+WITH CHECK (bucket_id = 'team-logos');
+
+DROP POLICY IF EXISTS "Authenticated users can delete team logos" ON storage.objects;
+CREATE POLICY "Authenticated users can delete team logos"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'team-logos');
+
+DROP POLICY IF EXISTS "Anyone can view team logos" ON storage.objects;
+CREATE POLICY "Anyone can view team logos"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'team-logos');
 
 -- ============================================================================
 -- GRANTS

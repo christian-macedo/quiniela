@@ -47,12 +47,16 @@ CREATE INDEX IF NOT EXISTS idx_webauthn_challenges_challenge ON webauthn_challen
 
 -- Function: Update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Trigger: Auto-update updated_at on webauthn_credentials
 DROP TRIGGER IF EXISTS update_webauthn_credentials_updated_at ON webauthn_credentials;

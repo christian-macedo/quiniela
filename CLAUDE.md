@@ -577,25 +577,6 @@ To bootstrap a fresh Supabase project:
 5. Copy project URL and anon key to `.env.local`
 6. Run `npm run dev` to start development
 
-### Script Contents
+### Bootstrap vs Migrations Strategy
 
-The bootstrap script includes (in order):
-- All table definitions with constraints and relationships
-- All indexes for query performance optimization
-- The `tournament_rankings` view for dynamic leaderboard calculation
-- All functions (admin checks, WebAuthn support, utility functions)
-- All triggers (user creation, last login tracking, updated_at timestamps)
-- All RLS policies (public read access, user write access, admin permissions)
-- All grants for `anon` and `authenticated` roles
-
-### Keeping It Updated
-
-**This is critical**: The bootstrap script is the single source of truth for database structure. When making schema changes:
-
-1. Make the change in your development database
-2. Test thoroughly
-3. Create migration file in `supabase/migrations/`
-4. **Update `supabase/bootstrap.sql`** to reflect the new state
-5. Commit both the migration and updated bootstrap script
-
-This ensures new team members or fresh deployments start with the correct schema.
+Use `supabase/bootstrap.sql` for fresh database installations (fastest, single-file setup). Use `supabase/migrations/` for upgrading existing databases (incremental migrations). When adding schema changes, create a migration file and update bootstrap.sql to reflect the final state.

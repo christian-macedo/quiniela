@@ -9,7 +9,11 @@ CREATE INDEX IF NOT EXISTS idx_users_is_admin ON users(is_admin) WHERE is_admin 
 
 -- Update the user creation trigger to check if this is the first user
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   user_count INTEGER;
 BEGIN
@@ -28,7 +32,7 @@ BEGIN
   );
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Comment for documentation
 COMMENT ON COLUMN users.is_admin IS 'Whether the user has administrator privileges. First user is automatically admin.';
