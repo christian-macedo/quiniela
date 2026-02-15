@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { AppNav } from "@/components/layout/app-nav";
+import { redirect } from "next/navigation";
 
 export default async function AppLayout({
   children,
@@ -32,6 +33,12 @@ export default async function AppLayout({
       userProfile = newProfile;
     } else {
       userProfile = data;
+    }
+
+    // Check if user is deactivated and sign them out
+    if (userProfile?.status === 'deactivated') {
+      await supabase.auth.signOut();
+      redirect('/login?error=account_deactivated');
     }
   }
 

@@ -65,3 +65,32 @@ export async function updateUserAdminStatus(
 
   if (error) throw error;
 }
+
+/**
+ * Updates user account status (active/deactivated)
+ *
+ * Deactivated users:
+ * - Cannot log in
+ * - Cannot submit predictions
+ * - Are excluded from rankings
+ * - Preserve all historical data
+ *
+ * @param userId - User ID to update
+ * @param status - New status ('active' or 'deactivated')
+ */
+export async function updateUserStatus(
+  userId: string,
+  status: 'active' | 'deactivated'
+): Promise<void> {
+  const adminClient = createAdminClient();
+
+  const { error } = await adminClient
+    .from("users")
+    .update({
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", userId);
+
+  if (error) throw error;
+}

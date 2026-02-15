@@ -532,11 +532,32 @@
     "subtitle": "Manage your account settings and preferences",
     "messages": {
       "success": {
-        "profileUpdated": "Profile updated successfully"
+        "profileUpdated": "Profile updated successfully",
+        "accountDeactivated": "Account deactivated successfully"
       },
       "error": {
-        "failedToUpdate": "Failed to update profile"
+        "failedToUpdate": "Failed to update profile",
+        "failedToDeactivate": "Failed to deactivate account"
       }
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "subtitle": "Irreversible account actions"
+    },
+    "deactivation": {
+      "buttonText": "Deactivate Account",
+      "title": "Deactivate Your Account?",
+      "description": "This will immediately deactivate your account and sign you out.",
+      "consequences": {
+        "title": "What happens when you deactivate:",
+        "hiddenProfile": "Your profile will be hidden from other users",
+        "noLeaderboards": "You won't appear on leaderboards or rankings",
+        "cannotLogin": "You won't be able to log in or make predictions",
+        "dataPreserved": "Your predictions and data will be preserved"
+      },
+      "reactivationNote": "To reactivate your account, contact an administrator.",
+      "deactivating": "Deactivating...",
+      "confirm": "Yes, Deactivate My Account"
     },
     "edit": {
       "title": "Edit Profile",
@@ -568,10 +589,13 @@
     "messages": {
       "success": {
         "adminGranted": "Admin permissions granted to {name}",
-        "adminRevoked": "Admin permissions revoked from {name}"
+        "adminRevoked": "Admin permissions revoked from {name}",
+        "userDeactivated": "User {name} deactivated successfully",
+        "userActivated": "User {name} activated successfully"
       },
       "error": {
-        "failedToUpdatePermissions": "Failed to update permissions"
+        "failedToUpdatePermissions": "Failed to update permissions",
+        "failedToUpdateStatus": "Failed to update user status"
       }
     },
     "users": {
@@ -579,6 +603,11 @@
       "subtitle": "Manage users and grant admin permissions",
       "admin": "Admin",
       "user": "User",
+      "active": "Active",
+      "deactivated": "Deactivated",
+      "all": "All Users",
+      "activate": "Activate User",
+      "deactivate": "Deactivate User",
       "tournaments": "Tournaments",
       "predictions": "Predictions",
       "totalPoints": "Total Points",

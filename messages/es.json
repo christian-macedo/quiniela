@@ -532,11 +532,32 @@
     "subtitle": "Administra la configuración y preferencias de tu cuenta",
     "messages": {
       "success": {
-        "profileUpdated": "Perfil actualizado exitosamente"
+        "profileUpdated": "Perfil actualizado exitosamente",
+        "accountDeactivated": "Cuenta desactivada exitosamente"
       },
       "error": {
-        "failedToUpdate": "Error al actualizar perfil"
+        "failedToUpdate": "Error al actualizar perfil",
+        "failedToDeactivate": "Error al desactivar cuenta"
       }
+    },
+    "dangerZone": {
+      "title": "Zona de Peligro",
+      "subtitle": "Acciones irreversibles de la cuenta"
+    },
+    "deactivation": {
+      "buttonText": "Desactivar Cuenta",
+      "title": "¿Desactivar Tu Cuenta?",
+      "description": "Esto desactivará inmediatamente tu cuenta y cerrará tu sesión.",
+      "consequences": {
+        "title": "Qué sucede cuando desactivas:",
+        "hiddenProfile": "Tu perfil estará oculto para otros usuarios",
+        "noLeaderboards": "No aparecerás en las tablas de clasificación",
+        "cannotLogin": "No podrás iniciar sesión ni hacer pronósticos",
+        "dataPreserved": "Tus pronósticos y datos se conservarán"
+      },
+      "reactivationNote": "Para reactivar tu cuenta, contacta a un administrador.",
+      "deactivating": "Desactivando...",
+      "confirm": "Sí, Desactivar Mi Cuenta"
     },
     "edit": {
       "title": "Editar Perfil",
@@ -568,10 +589,13 @@
     "messages": {
       "success": {
         "adminGranted": "Permisos de administrador otorgados a {name}",
-        "adminRevoked": "Permisos de administrador revocados de {name}"
+        "adminRevoked": "Permisos de administrador revocados de {name}",
+        "userDeactivated": "Usuario {name} desactivado exitosamente",
+        "userActivated": "Usuario {name} activado exitosamente"
       },
       "error": {
-        "failedToUpdatePermissions": "Error al actualizar permisos"
+        "failedToUpdatePermissions": "Error al actualizar permisos",
+        "failedToUpdateStatus": "Error al actualizar estado del usuario"
       }
     },
     "users": {
@@ -579,6 +603,11 @@
       "subtitle": "Administra usuarios y otorga permisos de administrador",
       "admin": "Admin",
       "user": "Usuario",
+      "active": "Activo",
+      "deactivated": "Desactivado",
+      "all": "Todos los Usuarios",
+      "activate": "Activar Usuario",
+      "deactivate": "Desactivar Usuario",
       "tournaments": "Torneos",
       "predictions": "pronósticos",
       "totalPoints": "Puntos Totales",
