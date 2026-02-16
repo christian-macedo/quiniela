@@ -6,7 +6,7 @@ import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { User } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff } from "lucide-react";
+import { Shield, ShieldOff, UserCheck, UserX } from "lucide-react";
 import { formatLocalDate } from "@/lib/utils/date";
 
 interface UserWithStats extends User {
@@ -27,6 +27,12 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
 
   const [users, setUsers] = useState<UserWithStats[]>(initialUsers);
   const [loading, setLoading] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'deactivated'>('all');
+
+  const filteredUsers = users.filter(user => {
+    if (filterStatus === 'all') return true;
+    return user.status === filterStatus;
+  });
 
   async function toggleAdminStatus(userId: string, currentStatus: boolean) {
     setLoading(userId);
@@ -61,9 +67,65 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
     }
   }
 
+  async function toggleUserStatus(userId: string, currentStatus: string) {
+    setLoading(userId);
+    try {
+      const newStatus = currentStatus === 'active' ? 'deactivated' : 'active';
+
+      const response = await fetch(`/api/admin/users/${userId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update status");
+
+      const userName = users.find(u => u.id === userId)?.screen_name ||
+                       users.find(u => u.id === userId)?.email ||
+                       t('users.anonymous');
+
+      setUsers(users.map(u =>
+        u.id === userId ? { ...u, status: newStatus as 'active' | 'deactivated' } : u
+      ));
+
+      const messageKey = newStatus === 'deactivated'
+        ? 'success.userDeactivated'
+        : 'success.userActivated';
+      toast.success(messageKey, { name: userName });
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      toast.error('error.failedToUpdateStatus');
+    } finally {
+      setLoading(null);
+    }
+  }
+
   return (
     <div className="space-y-4">
-      {users.map((user) => (
+      <div className="mb-4 flex gap-2">
+        <Button
+          variant={filterStatus === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilterStatus('all')}
+        >
+          {t('users.all')}
+        </Button>
+        <Button
+          variant={filterStatus === 'active' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilterStatus('active')}
+        >
+          {t('users.active')}
+        </Button>
+        <Button
+          variant={filterStatus === 'deactivated' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilterStatus('deactivated')}
+        >
+          {t('users.deactivated')}
+        </Button>
+      </div>
+      {filteredUsers.map((user) => (
         <div
           key={user.id}
           className="border rounded-lg p-4 flex items-center justify-between gap-4"
@@ -81,6 +143,11 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
                 </Badge>
               ) : (
                 <Badge variant="outline">{t('users.user')}</Badge>
+              )}
+              {user.status === 'deactivated' && (
+                <Badge variant="destructive" className="ml-2">
+                  {t('users.deactivated')}
+                </Badge>
               )}
             </div>
             <div className="text-sm">
@@ -100,7 +167,7 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
               <p className="font-medium">{formatLocalDate(user.created_at)}</p>
             </div>
           </div>
-          <div>
+          <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -116,6 +183,24 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
                 <>
                   <Shield className="h-4 w-4 mr-1" />
                   {t('users.grantAdmin')}
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleUserStatus(user.id, user.status)}
+              disabled={loading === user.id}
+            >
+              {user.status === 'active' ? (
+                <>
+                  <UserX className="h-4 w-4 mr-1" />
+                  {t('users.deactivate')}
+                </>
+              ) : (
+                <>
+                  <UserCheck className="h-4 w-4 mr-1" />
+                  {t('users.activate')}
                 </>
               )}
             </Button>

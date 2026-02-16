@@ -8,6 +8,7 @@ export type Json =
 
 export type MatchStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled'
 export type TournamentStatus = 'upcoming' | 'active' | 'completed'
+export type UserStatus = 'active' | 'deactivated'
 
 export interface Team {
   id: string
@@ -64,6 +65,7 @@ export interface User {
   screen_name: string | null
   avatar_url: string | null
   is_admin: boolean
+  status: UserStatus
   last_login: string | null
   created_at: string
   updated_at: string

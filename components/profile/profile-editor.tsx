@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDate, formatLocalTime } from "@/lib/utils/date";
+import { AccountDeactivationDialog } from "@/components/profile/account-deactivation-dialog";
 
 interface ProfileEditorProps {
   user: User;
@@ -168,6 +169,19 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
               </code>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone Card */}
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">{t('dangerZone.title')}</CardTitle>
+          <CardDescription>
+            {t('dangerZone.subtitle')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AccountDeactivationDialog />
         </CardContent>
       </Card>
     </div>

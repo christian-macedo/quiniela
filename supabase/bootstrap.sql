@@ -7,8 +7,8 @@
 -- IMPORTANT: This script should be updated whenever schema changes are made.
 -- Run this on a fresh Supabase project to bootstrap the entire database.
 --
--- Last updated: 2026-02-09
--- Consolidated from migrations: 20240101000000 through 20260201000000 (16 migrations)
+-- Last updated: 2026-02-15
+-- Consolidated from migrations: 20240101000000 through 20260215000000 (17 migrations)
 -- ============================================================================
 
 -- ============================================================================
@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     screen_name TEXT,
     avatar_url TEXT,
     is_admin BOOLEAN DEFAULT FALSE,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'deactivated')),
     webauthn_user_id TEXT UNIQUE,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -169,6 +170,7 @@ CREATE INDEX IF NOT EXISTS idx_predictions_match ON public.predictions(match_id)
 -- Users indexes
 CREATE INDEX IF NOT EXISTS idx_users_webauthn_user_id ON public.users(webauthn_user_id);
 CREATE INDEX IF NOT EXISTS idx_users_is_admin ON public.users(is_admin) WHERE is_admin = TRUE;
+CREATE INDEX IF NOT EXISTS idx_users_status ON public.users(status) WHERE status = 'deactivated';
 
 -- WebAuthn indexes
 CREATE INDEX IF NOT EXISTS idx_webauthn_credentials_user ON public.webauthn_credentials(user_id);
@@ -202,7 +204,10 @@ SELECT
 FROM public.predictions p
 JOIN public.matches m ON p.match_id = m.id
 JOIN public.users u ON p.user_id = u.id
-JOIN public.tournament_participants tp ON tp.tournament_id = m.tournament_id AND tp.user_id = p.user_id
+JOIN public.tournament_participants tp
+    ON tp.tournament_id = m.tournament_id
+    AND tp.user_id = p.user_id
+WHERE u.status = 'active'  -- Exclude deactivated users from rankings
 GROUP BY p.user_id, m.tournament_id, u.screen_name, u.avatar_url;
 
 -- ============================================================================
@@ -612,13 +617,28 @@ CREATE POLICY "Predictions are viewable by everyone"
 DROP POLICY IF EXISTS "Users can insert their own predictions" ON public.predictions;
 CREATE POLICY "Users can insert their own predictions"
     ON public.predictions FOR INSERT
-    WITH CHECK (auth.uid() = user_id);
+    WITH CHECK (
+        auth.uid() = user_id
+        AND EXISTS (
+            SELECT 1 FROM public.users
+            WHERE id = auth.uid() AND status = 'active'
+        )
+    );
 
 DROP POLICY IF EXISTS "Users can update own predictions" ON public.predictions;
 DROP POLICY IF EXISTS "Users can update their own predictions" ON public.predictions;
 CREATE POLICY "Users can update their own predictions"
     ON public.predictions FOR UPDATE
-    USING (auth.uid() = user_id OR public.is_admin(auth.uid()));
+    USING (
+        auth.uid() = user_id OR public.is_admin(auth.uid())
+    )
+    WITH CHECK (
+        (auth.uid() = user_id AND EXISTS (
+            SELECT 1 FROM public.users
+            WHERE id = auth.uid() AND status = 'active'
+        ))
+        OR public.is_admin(auth.uid())
+    );
 
 -- ============================================================================
 -- RLS POLICIES: WebAuthn Credentials

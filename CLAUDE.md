@@ -303,9 +303,12 @@ The application is built around a **tournament-centric architecture** with these
 2. **tournaments**: Competition containers (name, sport, dates, status, scoring_rules)
 3. **tournament_teams**: Many-to-many junction table linking teams to tournaments
 4. **matches**: Individual games within a tournament (references home/away teams, scores, status)
-5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url)
+5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url, is_admin, **status**)
+   - **Status field**: Soft delete mechanism - values: 'active' (default) or 'deactivated'
+   - Deactivated users are excluded from rankings and cannot submit predictions
 6. **predictions**: User predictions for matches (predicted scores, points_earned)
 7. **tournament_rankings**: Database VIEW that dynamically calculates rankings from predictions (total_points, rank)
+   - Filters out deactivated users: `WHERE u.status = 'active'`
 
 ### Key Relationships
 
@@ -394,6 +397,52 @@ const url = await uploadImage(file, "user-avatars", filename);
 
 **Important**: Both buckets must be configured as public in Supabase Dashboard.
 
+## User Status and Deactivation
+
+Users can be in one of two states: `active` or `deactivated`.
+
+### User Self-Deactivation
+
+Users can deactivate their own accounts from profile settings:
+- Immediate status change to 'deactivated'
+- Automatic logout
+- All predictions and data preserved
+- Must contact admin to reactivate
+
+### Admin User Management
+
+Admins can activate/deactivate any user:
+```typescript
+import { updateUserStatus } from "@/lib/utils/admin";
+await updateUserStatus(userId, 'deactivated');
+```
+
+### Effects of Deactivation
+
+When a user is deactivated:
+- Cannot log in (blocked at app layout level)
+- Cannot submit or update predictions (RLS policy blocks)
+- Excluded from tournament rankings (VIEW filter: `WHERE u.status = 'active'`)
+- Profile hidden or returns 404
+- All historical data preserved
+
+### Checking User Status
+
+In API routes:
+```typescript
+import { checkUserActive } from "@/lib/middleware/user-status-check";
+
+const statusError = await checkUserActive();
+if (statusError) return statusError;
+```
+
+In components (user is already loaded):
+```typescript
+if (user.status === 'deactivated') {
+  // Handle deactivated user
+}
+```
+
 ## Theming & Color Scheme
 
 The application uses a flexible CSS variable-based theming system powered by the **Blue Lagoon** color palette.
@@ -446,6 +495,20 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 2. If status is "completed": All predictions for that match are scored
 3. If status changes FROM "completed" TO another status: All prediction scores are reset to 0
 4. Tournament rankings are automatically updated via the database view (no manual update needed)
+
+## API Routes
+
+### User Management
+- `POST /api/account/deactivate` - User self-deactivation (signs out user immediately)
+- `PATCH /api/admin/users/[userId]/status` - Admin activate/deactivate user
+- `GET /api/admin/users` - Get all users with stats (includes status)
+- `PATCH /api/admin/users/[userId]/permissions` - Toggle admin permissions
+
+### Match Operations
+- `POST /api/matches/[matchId]/score` - Score match and calculate prediction points
+
+### Predictions
+- `POST /api/predictions` - Submit or update prediction (checks user is active)
 
 ## Best Practices & Conventions
 
@@ -509,6 +572,8 @@ Things that will definitely bite you if you're not careful:
 
 7. **Client/Server imports**: Importing server-only code in client components will cause build errors - keep imports separated by component type
 
+8. **User status checks**: Deactivated users are blocked at multiple levels (app layout, RLS policies, API routes) - ensure all checks are in place when adding new user-facing features
+
 ## Troubleshooting
 
 ### "Supabase client not initialized"
@@ -561,8 +626,9 @@ Update `supabase/bootstrap.sql` after ANY of these changes:
 - Adding, modifying, or removing indexes
 - Adding, modifying, or removing RLS policies
 - Adding, modifying, or removing functions or triggers
-- Adding, modifying, or removing views
+- Adding, modifying, or removing views (e.g., tournament_rankings filter)
 - Changing grants or permissions
+- Adding status/state columns to existing tables
 
 ### How to Use
 

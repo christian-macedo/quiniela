@@ -1,9 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUTC } from "@/lib/utils/date";
+import { checkUserActive } from "@/lib/middleware/user-status-check";
 
 export async function POST(request: NextRequest) {
   try {
+    // Check user is active
+    const statusError = await checkUserActive();
+    if (statusError) return statusError;
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
