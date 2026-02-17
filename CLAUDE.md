@@ -495,7 +495,7 @@ The application implements strict privacy controls to protect user PII.
 
 **Protected fields** (never exposed in public UI/APIs):
 
-- Email address (masked even in admin views: `j***@example.com`)
+- Email address (users see their own full email; masked in admin views: `j***@example.com`)
 - Admin status flag
 - WebAuthn credentials
 - Last login timestamp
@@ -519,12 +519,20 @@ const displayName = getPublicUserDisplay(user);
 // Avatar initials (uses screen_name first letter or "P")
 const initials = getPublicUserInitials(user);
 
-// Masked email (for admin views and user's own profile)
+// Masked email (for admin views when viewing OTHER users' emails)
 const maskedEmail = maskEmail(user.email); // "j***@example.com"
 
 // Strip sensitive fields for public APIs
 const publicUser = sanitizeUserForPublic(user);
 ```
+
+**When to mask emails**:
+
+- ✅ Admin viewing other users' emails → use `maskEmail()`
+- ✅ Tournament participants list (admin view) → use `maskEmail()`
+- ✅ Any context where viewing another user's email → use `maskEmail()`
+- ❌ User viewing their own email in menu/profile → show full email
+- ❌ Public contexts (rankings, leaderboards) → don't include email at all
 
 ### API Response Filtering
 

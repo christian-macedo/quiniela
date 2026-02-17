@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDate, formatLocalTime } from "@/lib/utils/date";
-import { getPublicUserInitials, maskEmail } from "@/lib/utils/privacy";
+import { getPublicUserInitials } from "@/lib/utils/privacy";
 import { AccountDeactivationDialog } from "@/components/profile/account-deactivation-dialog";
 
 interface ProfileEditorProps {
@@ -99,8 +99,8 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
             {/* Email (read-only, masked for privacy) */}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("edit.emailAddress")}</label>
-              <Input value={maskEmail(user.email)} disabled className="bg-muted" />
-              <p className="text-xs text-muted-foreground">{t("edit.emailMasked")}</p>
+              <Input value={user.email} disabled className="bg-muted" />
+              <p className="text-xs text-muted-foreground">{t("edit.emailReadOnly")}</p>
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -569,6 +569,7 @@
       "displayNameHelp": "Así es como otros usuarios verán tu nombre",
       "emailAddress": "Correo Electrónico",
       "emailMasked": "El correo está enmascarado para proteger la privacidad",
+      "emailReadOnly": "El correo electrónico es administrado por la configuración de tu cuenta y no se puede cambiar aquí.",
       "saveChanges": "Guardar Cambios",
       "saving": "Guardando..."
     },
