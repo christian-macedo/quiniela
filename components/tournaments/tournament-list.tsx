@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { Tournament } from "@/types/database";
 import { TournamentCard } from "./tournament-card";
 
@@ -9,12 +9,12 @@ interface TournamentListProps {
 }
 
 export function TournamentList({ tournaments }: TournamentListProps) {
-  const t = useTranslations('tournaments');
+  const t = useTranslations("tournaments");
 
   if (tournaments.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('noTournaments')}</p>
+        <p className="text-muted-foreground">{t("noTournaments")}</p>
       </div>
     );
   }

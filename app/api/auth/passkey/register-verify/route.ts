@@ -39,10 +39,7 @@ export async function POST(request: Request) {
     );
 
     if (!verification.verified) {
-      return NextResponse.json(
-        { error: "Registration verification failed" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Registration verification failed" }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -53,8 +50,7 @@ export async function POST(request: Request) {
     console.error("Error verifying registration:", error);
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "Failed to verify registration",
+        error: error instanceof Error ? error.message : "Failed to verify registration",
       },
       { status: 500 }
     );

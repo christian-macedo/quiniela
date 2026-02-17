@@ -13,7 +13,8 @@ export async function GET(
 
     const { data: tournamentParticipants, error } = await supabase
       .from("tournament_participants")
-      .select(`
+      .select(
+        `
         user_id,
         joined_at,
         users (
@@ -22,21 +23,19 @@ export async function GET(
           screen_name,
           avatar_url
         )
-      `)
+      `
+      )
       .eq("tournament_id", tournamentId)
       .order("joined_at", { ascending: true });
 
     if (error) throw error;
 
-    const participants = tournamentParticipants?.map(tp => tp.users).filter(Boolean) || [];
+    const participants = tournamentParticipants?.map((tp) => tp.users).filter(Boolean) || [];
 
     return NextResponse.json(participants);
   } catch (error) {
     console.error("Error fetching tournament participants:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch tournament participants" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch tournament participants" }, { status: 500 });
   }
 }
 
@@ -56,10 +55,7 @@ export async function POST(
     const { user_id } = body;
 
     if (!user_id) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
     // Check if user exists
@@ -70,10 +66,7 @@ export async function POST(
       .single();
 
     if (!userExists) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Check if user is already a participant
@@ -105,10 +98,7 @@ export async function POST(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error adding participant to tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to add participant to tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to add participant to tournament" }, { status: 500 });
   }
 }
 
@@ -129,10 +119,7 @@ export async function DELETE(
     const userId = searchParams.get("userId");
 
     if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
     // Check if user has predictions in this tournament
@@ -141,7 +128,7 @@ export async function DELETE(
       .select("id")
       .eq("tournament_id", tournamentId);
 
-    const matchIds = matches?.map(m => m.id) || [];
+    const matchIds = matches?.map((m) => m.id) || [];
 
     if (matchIds.length > 0) {
       const { data: predictions } = await supabase

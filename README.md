@@ -24,6 +24,7 @@ A modern web application for tournament predictions, initially designed for FIFA
 1. Clone the repository
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -34,12 +35,15 @@ npm install
    - Optionally run `supabase/seed.sql` for sample data
 
 4. Configure environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
+
 Edit `.env.local` and add your Supabase credentials from Project Settings > API
 
 5. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -87,6 +91,7 @@ This application is optimized for deployment on Vercel's free tier.
 For detailed deployment instructions, including environment variable configuration and Supabase setup, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 **Quick steps:**
+
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the repository in [Vercel](https://vercel.com)
 3. Add environment variables:

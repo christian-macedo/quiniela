@@ -68,10 +68,7 @@ export async function POST(
         );
       }
 
-      await supabase
-        .from("predictions")
-        .update({ points_earned: points })
-        .eq("id", prediction.id);
+      await supabase.from("predictions").update({ points_earned: points }).eq("id", prediction.id);
     }
 
     // No need to update tournament rankings - they are calculated dynamically via view
@@ -79,9 +76,6 @@ export async function POST(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating match score:", error);
-    return NextResponse.json(
-      { error: "Failed to update match score" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update match score" }, { status: 500 });
   }
 }

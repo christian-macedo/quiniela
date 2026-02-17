@@ -43,9 +43,7 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">
-            {formatLocalDateTime(match.match_date)}
-          </CardTitle>
+          <CardTitle className="text-base">{formatLocalDateTime(match.match_date)}</CardTitle>
           <div className="flex items-center gap-2">
             {multiplier > 1 && (
               <Badge variant="outline" className="text-xs text-warning border-warning">
@@ -104,17 +102,13 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
               </div>
             </div>
 
-            <div className="flex-1">
-              {/* Empty space for alignment */}
-            </div>
+            <div className="flex-1">{/* Empty space for alignment */}</div>
           </div>
         </div>
 
         {/* Round info */}
         {match.round && (
-          <div className="text-center text-sm text-muted-foreground">
-            {match.round}
-          </div>
+          <div className="text-center text-sm text-muted-foreground">{match.round}</div>
         )}
 
         {/* Points explanation */}

@@ -10,7 +10,9 @@ export async function POST(request: NextRequest) {
     if (statusError) return statusError;
 
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -86,9 +88,6 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("Error creating/updating prediction:", error);
-    return NextResponse.json(
-      { error: "Failed to save prediction" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to save prediction" }, { status: 500 });
   }
 }

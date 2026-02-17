@@ -12,24 +12,23 @@ export async function GET(
 
     const { data: tournamentTeams, error } = await supabase
       .from("tournament_teams")
-      .select(`
+      .select(
+        `
         team_id,
         created_at,
         teams (*)
-      `)
+      `
+      )
       .eq("tournament_id", tournamentId);
 
     if (error) throw error;
 
-    const teams = tournamentTeams?.map(tt => tt.teams).filter(Boolean) || [];
+    const teams = tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || [];
 
     return NextResponse.json(teams);
   } catch (error) {
     console.error("Error fetching tournament teams:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch tournament teams" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch tournament teams" }, { status: 500 });
   }
 }
 
@@ -41,7 +40,9 @@ export async function POST(
   try {
     const { tournamentId } = await params;
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -59,10 +60,7 @@ export async function POST(
       .single();
 
     if (existing) {
-      return NextResponse.json(
-        { error: "Team is already in this tournament" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Team is already in this tournament" }, { status: 400 });
     }
 
     const { data, error } = await supabase
@@ -79,10 +77,7 @@ export async function POST(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error adding team to tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to add team to tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to add team to tournament" }, { status: 500 });
   }
 }
 
@@ -94,7 +89,9 @@ export async function DELETE(
   try {
     const { tournamentId } = await params;
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -104,10 +101,7 @@ export async function DELETE(
     const teamId = searchParams.get("teamId");
 
     if (!teamId) {
-      return NextResponse.json(
-        { error: "Team ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Team ID is required" }, { status: 400 });
     }
 
     // Check if team has matches in this tournament
@@ -136,9 +130,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error removing team from tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to remove team from tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to remove team from tournament" }, { status: 500 });
   }
 }

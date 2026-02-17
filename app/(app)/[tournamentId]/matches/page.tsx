@@ -3,18 +3,20 @@ import { MatchList } from "@/components/matches/match-list";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 export default async function MatchesPage({
   params,
 }: {
   params: Promise<{ tournamentId: string }>;
 }) {
-  const t = await getTranslations('matches');
+  const t = await getTranslations("matches");
   const { tournamentId } = await params;
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -28,11 +30,13 @@ export default async function MatchesPage({
 
   const { data: matches } = await supabase
     .from("matches")
-    .select(`
+    .select(
+      `
       *,
       home_team:teams!matches_home_team_id_fkey(*),
       away_team:teams!matches_away_team_id_fkey(*)
-    `)
+    `
+    )
     .eq("tournament_id", tournamentId)
     .order("match_date", { ascending: true });
 
@@ -41,12 +45,12 @@ export default async function MatchesPage({
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">{tournament?.name}</h1>
-          <p className="text-muted-foreground">{t('subtitle')}</p>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex gap-2">
-        <Link href={`/${tournamentId}`}>
-          <Button variant="outline">{t('backToTournament')}</Button>
-        </Link>
+          <Link href={`/${tournamentId}`}>
+            <Button variant="outline">{t("backToTournament")}</Button>
+          </Link>
         </div>
       </div>
       <MatchList matches={matches || []} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +13,7 @@ import { PasskeyMigrationPrompt } from "@/components/auth/passkey/passkey-migrat
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function LoginPage() {
-  const t = useTranslations('auth.login');
+  const t = useTranslations("auth.login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,16 +68,16 @@ export default function LoginPage() {
 
       <Card className="w-full max-w-md relative animate-scale-in">
         <CardHeader>
-          <CardTitle className="font-display text-3xl uppercase tracking-tight">{t('title')}</CardTitle>
-          <CardDescription>
-            {t('subtitle')}
-          </CardDescription>
+          <CardTitle className="font-display text-3xl uppercase tracking-tight">
+            {t("title")}
+          </CardTitle>
+          <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Shared Email Field */}
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
-              {t('emailLabel')}
+              {t("emailLabel")}
             </label>
             <Input
               id="email"
@@ -105,9 +105,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                {t('orContinueWith')}
-              </span>
+              <span className="bg-card px-2 text-muted-foreground">{t("orContinueWith")}</span>
             </div>
           </div>
 
@@ -116,10 +114,10 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="text-sm font-medium">
-                  {t('passwordLabel')}
+                  {t("passwordLabel")}
                 </label>
                 <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                  {t('forgotPassword')}
+                  {t("forgotPassword")}
                 </Link>
               </div>
               <Input
@@ -131,17 +129,15 @@ export default function LoginPage() {
                 required
               />
             </div>
-            {error && (
-              <div className="text-sm text-destructive">{error}</div>
-            )}
+            {error && <div className="text-sm text-destructive">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('loggingIn') : t('loginButton')}
+              {loading ? t("loggingIn") : t("loginButton")}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            {t('noAccount')}{" "}
+            {t("noAccount")}{" "}
             <Link href="/signup" className="text-primary hover:underline">
-              {t('signUpLink')}
+              {t("signUpLink")}
             </Link>
           </div>
         </CardContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { RankingWithUser } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,9 +14,12 @@ interface RankingsTableProps {
 }
 
 function getPodiumStyle(rank: number): string {
-  if (rank === 1) return "border-l-4 border-l-gold bg-gradient-to-r from-[hsl(var(--gold)/0.15)] to-transparent";
-  if (rank === 2) return "border-l-4 border-l-silver bg-gradient-to-r from-[hsl(var(--silver)/0.1)] to-transparent";
-  if (rank === 3) return "border-l-4 border-l-bronze bg-gradient-to-r from-[hsl(var(--bronze)/0.1)] to-transparent";
+  if (rank === 1)
+    return "border-l-4 border-l-gold bg-gradient-to-r from-[hsl(var(--gold)/0.15)] to-transparent";
+  if (rank === 2)
+    return "border-l-4 border-l-silver bg-gradient-to-r from-[hsl(var(--silver)/0.1)] to-transparent";
+  if (rank === 3)
+    return "border-l-4 border-l-bronze bg-gradient-to-r from-[hsl(var(--bronze)/0.1)] to-transparent";
   return "";
 }
 
@@ -28,13 +31,13 @@ function getRankColor(rank: number): string {
 }
 
 export function RankingsTable({ rankings, currentUserId, tournamentId }: RankingsTableProps) {
-  const t = useTranslations('rankings');
-  const tCommon = useTranslations('common');
+  const t = useTranslations("rankings");
+  const tCommon = useTranslations("common");
 
   if (rankings.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('noRankings')}</p>
+        <p className="text-muted-foreground">{t("noRankings")}</p>
       </div>
     );
   }
@@ -42,15 +45,15 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Column Headers */}
         <div className="flex items-center gap-4 px-3 pb-3 mb-2 border-b text-xs uppercase tracking-wider text-muted-foreground font-medium">
-          <div className="w-8 text-center">{tCommon('labels.rank')}</div>
+          <div className="w-8 text-center">{tCommon("labels.rank")}</div>
           <div className="w-10" />
-          <div className="flex-1">{tCommon('labels.name')}</div>
-          <div>{tCommon('labels.points')}</div>
+          <div className="flex-1">{tCommon("labels.name")}</div>
+          <div>{tCommon("labels.points")}</div>
         </div>
 
         <div className="space-y-2">
@@ -59,10 +62,7 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
             const displayRank = ranking.rank ?? index + 1;
 
             return (
-              <Link
-                key={ranking.user_id}
-                href={`/${tournamentId}/rankings/${ranking.user_id}`}
-              >
+              <Link key={ranking.user_id} href={`/${tournamentId}/rankings/${ranking.user_id}`}>
                 <div
                   className={`flex items-center gap-4 p-3 rounded-lg transition-colors cursor-pointer ${
                     index < 5 ? `animate-slide-up stagger-${Math.min(index + 1, 5)}` : ""
@@ -74,7 +74,9 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                 >
                   {/* Rank */}
                   <div className="w-8 text-center">
-                    <span className={`font-display text-2xl font-bold ${getRankColor(displayRank)}`}>
+                    <span
+                      className={`font-display text-2xl font-bold ${getRankColor(displayRank)}`}
+                    >
                       {displayRank}
                     </span>
                   </div>
@@ -84,7 +86,7 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                     <AvatarImage src={ranking.user.avatar_url ?? undefined} />
                     <AvatarFallback>
                       {ranking.user.screen_name?.[0]?.toUpperCase() ??
-                       ranking.user.email[0].toUpperCase()}
+                        ranking.user.email[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
@@ -99,11 +101,9 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">
                       <span className="font-display font-bold">{ranking.total_points}</span>
-                      <span className="ml-1">{tCommon('labels.pts')}</span>
+                      <span className="ml-1">{tCommon("labels.pts")}</span>
                     </Badge>
-                    {isCurrentUser && (
-                      <Badge variant="outline">{t('you')}</Badge>
-                    )}
+                    {isCurrentUser && <Badge variant="outline">{t("you")}</Badge>}
                   </div>
                 </div>
               </Link>

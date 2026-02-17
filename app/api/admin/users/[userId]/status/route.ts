@@ -29,7 +29,7 @@ export async function PATCH(
     const body = await request.json();
     const { status } = body;
 
-    if (!['active', 'deactivated'].includes(status)) {
+    if (!["active", "deactivated"].includes(status)) {
       return NextResponse.json(
         { error: "Invalid status. Must be 'active' or 'deactivated'." },
         { status: 400 }
@@ -41,9 +41,6 @@ export async function PATCH(
     return NextResponse.json({ success: true, status });
   } catch (error) {
     console.error("Error updating user status:", error);
-    return NextResponse.json(
-      { error: "Failed to update user status" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update user status" }, { status: 500 });
   }
 }

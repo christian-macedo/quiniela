@@ -35,15 +35,15 @@ interface TournamentEditFormProps {
 
 export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
   const router = useRouter();
-  const t = useTranslations('tournaments.management.edit');
-  const tForm = useTranslations('tournaments.management.form');
-  const tStatus = useTranslations('tournaments.status');
-  const tCommon = useTranslations('common');
-  const toast = useFeatureToast('tournaments');
+  const t = useTranslations("tournaments.management.edit");
+  const tForm = useTranslations("tournaments.management.form");
+  const tStatus = useTranslations("tournaments.status");
+  const tCommon = useTranslations("common");
+  const toast = useFeatureToast("tournaments");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: tournament.name,
     sport: tournament.sport,
@@ -70,16 +70,16 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
       });
 
       if (!response.ok) {
-        toast.error('error.failedToUpdate');
+        toast.error("error.failedToUpdate");
         return;
       }
 
-      toast.success('success.updated');
+      toast.success("success.updated");
       router.push(`/tournaments/manage/${tournament.id}`);
       router.refresh();
     } catch (err) {
       console.error("Error updating tournament:", err);
-      toast.error('common:error.generic');
+      toast.error("common:error.generic");
     } finally {
       setIsLoading(false);
     }
@@ -94,85 +94,76 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
       });
 
       if (!response.ok) {
-        toast.error('error.failedToDelete');
+        toast.error("error.failedToDelete");
         setIsDeleting(false);
         return;
       }
 
-      toast.success('success.deleted');
+      toast.success("success.deleted");
       router.push("/tournaments/manage");
       router.refresh();
     } catch (err) {
       console.error("Error deleting tournament:", err);
-      toast.error('common:error.generic');
+      toast.error("common:error.generic");
       setIsDeleting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-
       <Card>
         <CardHeader>
-          <CardTitle>{tForm('tournamentInfo')}</CardTitle>
+          <CardTitle>{tForm("tournamentInfo")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{tForm('tournamentName')}</Label>
+            <Label htmlFor="name">{tForm("tournamentName")}</Label>
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder={tForm('tournamentNamePlaceholder')}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder={tForm("tournamentNamePlaceholder")}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sport">{tForm('sport')}</Label>
+            <Label htmlFor="sport">{tForm("sport")}</Label>
             <Input
               id="sport"
               value={formData.sport}
-              onChange={(e) =>
-                setFormData({ ...formData, sport: e.target.value })
-              }
-              placeholder={tForm('sportPlaceholder')}
+              onChange={(e) => setFormData({ ...formData, sport: e.target.value })}
+              placeholder={tForm("sportPlaceholder")}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="start_date">{tForm('startDate')}</Label>
+              <Label htmlFor="start_date">{tForm("startDate")}</Label>
               <Input
                 id="start_date"
                 type="date"
                 value={formData.start_date}
-                onChange={(e) =>
-                  setFormData({ ...formData, start_date: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="end_date">{tForm('endDate')}</Label>
+              <Label htmlFor="end_date">{tForm("endDate")}</Label>
               <Input
                 id="end_date"
                 type="date"
                 value={formData.end_date}
-                onChange={(e) =>
-                  setFormData({ ...formData, end_date: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">{tCommon('labels.status')}</Label>
+            <Label htmlFor="status">{tCommon("labels.status")}</Label>
             <Select
               value={formData.status}
               onValueChange={(value: TournamentStatus) =>
@@ -180,12 +171,12 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder={tForm('selectStatus')} />
+                <SelectValue placeholder={tForm("selectStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="upcoming">{tStatus('upcoming')}</SelectItem>
-                <SelectItem value="active">{tStatus('active')}</SelectItem>
-                <SelectItem value="completed">{tStatus('completed')}</SelectItem>
+                <SelectItem value="upcoming">{tStatus("upcoming")}</SelectItem>
+                <SelectItem value="active">{tStatus("active")}</SelectItem>
+                <SelectItem value="completed">{tStatus("completed")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -202,20 +193,20 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
-              {t('deleteTournament')}
+              {t("deleteTournament")}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
+              <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
               <AlertDialogDescription>
-                {t('deleteConfirmDescription', { name: tournament.name })}
+                {t("deleteConfirmDescription", { name: tournament.name })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>{tCommon('actions.cancel')}</AlertDialogCancel>
+              <AlertDialogCancel>{tCommon("actions.cancel")}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>
-                {tCommon('actions.delete')}
+                {tCommon("actions.delete")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -227,7 +218,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          {t('saveChanges')}
+          {t("saveChanges")}
         </Button>
       </div>
     </form>

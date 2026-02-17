@@ -28,7 +28,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
-  const toast = useFeatureToast('matches');
+  const toast = useFeatureToast("matches");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     home_team_id: "",
@@ -70,12 +70,8 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
   };
 
   // Filter available teams based on selection
-  const availableHomeTeams = teams.filter(
-    (team) => team.id !== formData.away_team_id
-  );
-  const availableAwayTeams = teams.filter(
-    (team) => team.id !== formData.home_team_id
-  );
+  const availableHomeTeams = teams.filter((team) => team.id !== formData.away_team_id);
+  const availableAwayTeams = teams.filter((team) => team.id !== formData.home_team_id);
 
   return (
     <Card>
@@ -89,9 +85,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
               <Label htmlFor="home_team_id">{t("homeTeam")} *</Label>
               <Select
                 value={formData.home_team_id}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, home_team_id: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, home_team_id: value })}
                 required
               >
                 <SelectTrigger>
@@ -111,9 +105,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
               <Label htmlFor="away_team_id">{t("awayTeam")} *</Label>
               <Select
                 value={formData.away_team_id}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, away_team_id: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, away_team_id: value })}
                 required
               >
                 <SelectTrigger>
@@ -137,9 +129,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                 id="match_date"
                 type="datetime-local"
                 value={formData.match_date}
-                onChange={(e) =>
-                  setFormData({ ...formData, match_date: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, match_date: e.target.value })}
                 required
               />
             </div>
@@ -149,9 +139,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
               <Input
                 id="round"
                 value={formData.round}
-                onChange={(e) =>
-                  setFormData({ ...formData, round: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, round: e.target.value })}
                 placeholder={t("roundPlaceholder")}
               />
             </div>
@@ -195,9 +183,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                 }
                 placeholder="1"
               />
-              <p className="text-xs text-muted-foreground">
-                {t("multiplierHelp")}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("multiplierHelp")}</p>
             </div>
           </div>
 

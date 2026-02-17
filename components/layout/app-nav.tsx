@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { UserNav } from "@/components/profile/user-nav";
 import { MobileNav } from "./mobile-nav";
 import { LanguageSwitcher } from "./language-switcher";
@@ -15,7 +15,7 @@ interface AppNavProps {
 }
 
 export function AppNav({ user }: AppNavProps) {
-  const t = useTranslations('common');
+  const t = useTranslations("common");
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
@@ -31,8 +31,11 @@ export function AppNav({ user }: AppNavProps) {
   return (
     <nav className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/tournaments" className="font-display text-2xl font-bold uppercase tracking-tight">
-          {t('appName')}
+        <Link
+          href="/tournaments"
+          className="font-display text-2xl font-bold uppercase tracking-tight"
+        >
+          {t("appName")}
         </Link>
 
         {/* Desktop Navigation */}
@@ -46,7 +49,7 @@ export function AppNav({ user }: AppNavProps) {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t('navigation.tournaments')}
+            {t("navigation.tournaments")}
           </Link>
           {user?.is_admin && (
             <div className="flex items-center gap-1 ml-2 bg-muted/50 rounded-lg px-1 py-0.5">
@@ -59,7 +62,7 @@ export function AppNav({ user }: AppNavProps) {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t('navigation.manageTournaments')}
+                {t("navigation.manageTournaments")}
               </Link>
               <Link
                 href="/teams"
@@ -69,7 +72,7 @@ export function AppNav({ user }: AppNavProps) {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t('navigation.manageTeams')}
+                {t("navigation.manageTeams")}
               </Link>
               <Link
                 href="/admin/users"
@@ -79,7 +82,7 @@ export function AppNav({ user }: AppNavProps) {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {t('navigation.userManagement')}
+                {t("navigation.userManagement")}
               </Link>
             </div>
           )}

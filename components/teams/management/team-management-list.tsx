@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 interface Tournament {
   id: string;
@@ -28,32 +28,30 @@ interface TeamManagementListProps {
   countryCodes: string[];
 }
 
-export function TeamManagementList({ 
-  teams, 
-  tournaments, 
-  teamTournamentMap, 
-  countryCodes 
+export function TeamManagementList({
+  teams,
+  tournaments,
+  teamTournamentMap,
+  countryCodes,
 }: TeamManagementListProps) {
-  const t = useTranslations('teams');
-  const tCommon = useTranslations('common');
+  const t = useTranslations("teams");
+  const tCommon = useTranslations("common");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [selectedTournament, setSelectedTournament] = useState<string>("all");
 
   const filteredTeams = teams.filter((team) => {
     // Search filter
-    const matchesSearch = 
+    const matchesSearch =
       team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       team.short_name.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     // Country filter
-    const matchesCountry = 
-      selectedCountry === "all" || team.country_code === selectedCountry;
-    
+    const matchesCountry = selectedCountry === "all" || team.country_code === selectedCountry;
+
     // Tournament filter
-    const matchesTournament = 
-      selectedTournament === "all" || 
-      teamTournamentMap[team.id]?.includes(selectedTournament);
+    const matchesTournament =
+      selectedTournament === "all" || teamTournamentMap[team.id]?.includes(selectedTournament);
 
     return matchesSearch && matchesCountry && matchesTournament;
   });
@@ -69,7 +67,7 @@ export function TeamManagementList({
   if (teams.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('empty')}</p>
+        <p className="text-muted-foreground">{t("empty")}</p>
       </div>
     );
   }
@@ -83,7 +81,7 @@ export function TeamManagementList({
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder={t('searchPlaceholder')}
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -93,10 +91,12 @@ export function TeamManagementList({
           {/* Country Filter */}
           <Select value={selectedCountry} onValueChange={setSelectedCountry}>
             <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder={tCommon('filters.filterBy', { field: tCommon('filters.country') })} />
+              <SelectValue
+                placeholder={tCommon("filters.filterBy", { field: tCommon("filters.country") })}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{tCommon('filters.allCountries')}</SelectItem>
+              <SelectItem value="all">{tCommon("filters.allCountries")}</SelectItem>
               {countryCodes.map((code) => (
                 <SelectItem key={code} value={code}>
                   {code}
@@ -108,10 +108,12 @@ export function TeamManagementList({
           {/* Tournament Filter */}
           <Select value={selectedTournament} onValueChange={setSelectedTournament}>
             <SelectTrigger className="w-full sm:w-[220px]">
-              <SelectValue placeholder={tCommon('filters.filterBy', { field: tCommon('filters.tournament') })} />
+              <SelectValue
+                placeholder={tCommon("filters.filterBy", { field: tCommon("filters.tournament") })}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{tCommon('filters.allTournaments')}</SelectItem>
+              <SelectItem value="all">{tCommon("filters.allTournaments")}</SelectItem>
               {tournaments.map((tournament) => (
                 <SelectItem key={tournament.id} value={tournament.id}>
                   {tournament.name}
@@ -124,10 +126,12 @@ export function TeamManagementList({
         {/* Active Filters Display */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-muted-foreground">{tCommon('filters.activeFilters')}:</span>
+            <span className="text-sm text-muted-foreground">
+              {tCommon("filters.activeFilters")}:
+            </span>
             {selectedCountry !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                {tCommon('filters.country')}: {selectedCountry}
+                {tCommon("filters.country")}: {selectedCountry}
                 <button
                   onClick={() => setSelectedCountry("all")}
                   className="ml-1 hover:text-destructive"
@@ -138,7 +142,8 @@ export function TeamManagementList({
             )}
             {selectedTournament !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                {tCommon('filters.tournament')}: {tournaments.find(t => t.id === selectedTournament)?.name}
+                {tCommon("filters.tournament")}:{" "}
+                {tournaments.find((t) => t.id === selectedTournament)?.name}
                 <button
                   onClick={() => setSelectedTournament("all")}
                   className="ml-1 hover:text-destructive"
@@ -148,22 +153,26 @@ export function TeamManagementList({
               </Badge>
             )}
             <Button variant="ghost" size="sm" onClick={clearFilters}>
-              {tCommon('actions.clearAll')}
+              {tCommon("actions.clearAll")}
             </Button>
           </div>
         )}
 
         {/* Results count */}
         <div className="text-sm text-muted-foreground">
-          {tCommon('filters.showingOf', { showing: filteredTeams.length, total: teams.length, item: t('item') })}
+          {tCommon("filters.showingOf", {
+            showing: filteredTeams.length,
+            total: teams.length,
+            item: t("item"),
+          })}
         </div>
       </div>
 
       {filteredTeams.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">{t('noMatch')}</p>
+          <p className="text-muted-foreground">{t("noMatch")}</p>
           <Button variant="link" onClick={clearFilters}>
-            {tCommon('actions.clearFilters')}
+            {tCommon("actions.clearFilters")}
           </Button>
         </div>
       ) : (

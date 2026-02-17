@@ -37,8 +37,14 @@ export function TeamManagementCard({ team }: TeamManagementCardProps) {
       <CardContent>
         <CardTitle className="mb-2">{team.name}</CardTitle>
         <div className="text-sm text-muted-foreground space-y-1">
-          <p>{t("shortName")}: {team.short_name}</p>
-          {team.country_code && <p>{t("country")}: {team.country_code}</p>}
+          <p>
+            {t("shortName")}: {team.short_name}
+          </p>
+          {team.country_code && (
+            <p>
+              {t("country")}: {team.country_code}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

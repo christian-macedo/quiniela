@@ -15,10 +15,7 @@ export async function PATCH(
     const { is_admin } = body;
 
     if (typeof is_admin !== "boolean") {
-      return NextResponse.json(
-        { error: "is_admin must be a boolean" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "is_admin must be a boolean" }, { status: 400 });
     }
 
     await updateUserAdminStatus(userId, is_admin);
@@ -26,9 +23,6 @@ export async function PATCH(
     return NextResponse.json({ success: true, is_admin });
   } catch (error) {
     console.error("Error updating user permissions:", error);
-    return NextResponse.json(
-      { error: "Failed to update user permissions" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update user permissions" }, { status: 500 });
   }
 }

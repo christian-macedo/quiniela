@@ -11,7 +11,9 @@ export default async function TeamDetailPage({ params }: TeamDetailPageProps) {
   const { teamId } = await params;
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -41,34 +43,39 @@ export default async function TeamDetailPage({ params }: TeamDetailPageProps) {
     .eq("team_id", teamId);
 
   // Fetch tournament details separately
-  const tournamentIds = tournamentTeams?.map(tt => tt.tournament_id) || [];
-  const { data: tournamentsData } = tournamentIds.length > 0 
-    ? await supabase
-        .from("tournaments")
-        .select("id, name, sport, start_date, end_date, status")
-        .in("id", tournamentIds)
-    : { data: [] };
+  const tournamentIds = tournamentTeams?.map((tt) => tt.tournament_id) || [];
+  const { data: tournamentsData } =
+    tournamentIds.length > 0
+      ? await supabase
+          .from("tournaments")
+          .select("id, name, sport, start_date, end_date, status")
+          .in("id", tournamentIds)
+      : { data: [] };
 
   // Fetch matches for this team
   const { data: homeMatches } = await supabase
     .from("matches")
-    .select(`
+    .select(
+      `
       *,
       home_team:teams!matches_home_team_id_fkey(*),
       away_team:teams!matches_away_team_id_fkey(*),
       tournament:tournaments(id, name)
-    `)
+    `
+    )
     .eq("home_team_id", teamId)
     .order("match_date", { ascending: true });
 
   const { data: awayMatches } = await supabase
     .from("matches")
-    .select(`
+    .select(
+      `
       *,
       home_team:teams!matches_home_team_id_fkey(*),
       away_team:teams!matches_away_team_id_fkey(*),
       tournament:tournaments(id, name)
-    `)
+    `
+    )
     .eq("away_team_id", teamId)
     .order("match_date", { ascending: true });
 
@@ -78,27 +85,33 @@ export default async function TeamDetailPage({ params }: TeamDetailPageProps) {
   );
 
   // Group matches by tournament
-  const matchesByTournament = allMatches.reduce((acc, match) => {
-    const tournamentId = match.tournament_id;
-    const tournamentName = match.tournament?.name || "Unknown Tournament";
-    
-    if (!acc[tournamentId]) {
-      acc[tournamentId] = {
-        tournamentId,
-        tournamentName,
-        matches: [],
-      };
-    }
-    acc[tournamentId].matches.push(match);
-    return acc;
-  }, {} as Record<string, { tournamentId: string; tournamentName: string; matches: typeof allMatches }>);
+  const matchesByTournament = allMatches.reduce(
+    (acc, match) => {
+      const tournamentId = match.tournament_id;
+      const tournamentName = match.tournament?.name || "Unknown Tournament";
+
+      if (!acc[tournamentId]) {
+        acc[tournamentId] = {
+          tournamentId,
+          tournamentName,
+          matches: [],
+        };
+      }
+      acc[tournamentId].matches.push(match);
+      return acc;
+    },
+    {} as Record<
+      string,
+      { tournamentId: string; tournamentName: string; matches: typeof allMatches }
+    >
+  );
 
   const tournaments = tournamentsData || [];
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <TeamDetailView 
-        team={team} 
+      <TeamDetailView
+        team={team}
         matchesByTournament={Object.values(matchesByTournament)}
         tournaments={tournaments}
       />

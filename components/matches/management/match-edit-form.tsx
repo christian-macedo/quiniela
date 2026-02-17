@@ -55,14 +55,15 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
   const t = useTranslations("matches.form");
   const tCommon = useTranslations("common");
   const tStatus = useTranslations("matches.status");
-  const toast = useFeatureToast('matches');
+  const toast = useFeatureToast("matches");
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     tournament_id: match.tournament_id,
     home_team_id: match.home_team_id,
     away_team_id: match.away_team_id,
-    match_date: match.match_date.split("T")[0] + "T" + match.match_date.split("T")[1]?.substring(0, 5) || "",
+    match_date:
+      match.match_date.split("T")[0] + "T" + match.match_date.split("T")[1]?.substring(0, 5) || "",
     round: match.round || "",
     status: match.status,
     multiplier: match.multiplier || 1,
@@ -119,12 +120,8 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
   };
 
   // Filter available teams based on selection
-  const availableHomeTeams = teams.filter(
-    (team) => team.id !== formData.away_team_id
-  );
-  const availableAwayTeams = teams.filter(
-    (team) => team.id !== formData.home_team_id
-  );
+  const availableHomeTeams = teams.filter((team) => team.id !== formData.away_team_id);
+  const availableAwayTeams = teams.filter((team) => team.id !== formData.home_team_id);
 
   return (
     <Card>
@@ -138,9 +135,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
               <Label htmlFor="home_team_id">{t("homeTeam")} *</Label>
               <Select
                 value={formData.home_team_id}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, home_team_id: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, home_team_id: value })}
                 required
               >
                 <SelectTrigger>
@@ -160,9 +155,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
               <Label htmlFor="away_team_id">{t("awayTeam")} *</Label>
               <Select
                 value={formData.away_team_id}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, away_team_id: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, away_team_id: value })}
                 required
               >
                 <SelectTrigger>
@@ -186,9 +179,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
                 id="match_date"
                 type="datetime-local"
                 value={formData.match_date}
-                onChange={(e) =>
-                  setFormData({ ...formData, match_date: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, match_date: e.target.value })}
                 required
               />
             </div>
@@ -198,9 +189,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
               <Input
                 id="round"
                 value={formData.round}
-                onChange={(e) =>
-                  setFormData({ ...formData, round: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, round: e.target.value })}
                 placeholder={t("roundPlaceholder")}
               />
             </div>
@@ -244,9 +233,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
                 }
                 placeholder="1"
               />
-              <p className="text-xs text-muted-foreground">
-                {t("multiplierHelp")}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("multiplierHelp")}</p>
             </div>
           </div>
 
@@ -280,11 +267,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
               {/* Delete Button */}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    disabled={isLoading || isDeleting}
-                  >
+                  <Button type="button" variant="destructive" disabled={isLoading || isDeleting}>
                     {isDeleting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (

@@ -29,13 +29,13 @@ interface TeamEditFormProps {
 
 export function TeamEditForm({ team }: TeamEditFormProps) {
   const router = useRouter();
-  const t = useTranslations('teams');
-  const tCommon = useTranslations('common');
-  const toast = useFeatureToast('teams');
+  const t = useTranslations("teams");
+  const tCommon = useTranslations("common");
+  const toast = useFeatureToast("teams");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: team.name,
     short_name: team.short_name,
@@ -67,16 +67,16 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       });
 
       if (!response.ok) {
-        toast.error('error.failedToUpdate');
+        toast.error("error.failedToUpdate");
         return;
       }
 
-      toast.success('success.updated');
+      toast.success("success.updated");
       router.push(`/teams/${team.id}`);
       router.refresh();
     } catch (err) {
       console.error("Error updating team:", err);
-      toast.error('common:error.generic');
+      toast.error("common:error.generic");
     } finally {
       setIsLoading(false);
     }
@@ -91,17 +91,17 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       });
 
       if (!response.ok) {
-        toast.error('error.failedToDelete');
+        toast.error("error.failedToDelete");
         setIsDeleting(false);
         return;
       }
 
-      toast.success('success.deleted');
+      toast.success("success.deleted");
       router.push("/teams");
       router.refresh();
     } catch (err) {
       console.error("Error deleting team:", err);
-      toast.error('common:error.generic');
+      toast.error("common:error.generic");
       setIsDeleting(false);
     }
   };
@@ -111,7 +111,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       {/* Preview */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('form.preview')}</CardTitle>
+          <CardTitle>{t("form.preview")}</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-6">
           <TeamBadge team={previewTeam} size="lg" showName={true} />
@@ -121,69 +121,57 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
       {/* Form Fields */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('form.teamInfo')}</CardTitle>
+          <CardTitle>{t("form.teamInfo")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{t('form.teamName')}</Label>
+            <Label htmlFor="name">{t("form.teamName")}</Label>
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder={t('form.teamNamePlaceholder')}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder={t("form.teamNamePlaceholder")}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="short_name">{t('form.shortName')}</Label>
+            <Label htmlFor="short_name">{t("form.shortName")}</Label>
             <Input
               id="short_name"
               value={formData.short_name}
-              onChange={(e) =>
-                setFormData({ ...formData, short_name: e.target.value })
-              }
-              placeholder={t('form.shortNamePlaceholder')}
+              onChange={(e) => setFormData({ ...formData, short_name: e.target.value })}
+              placeholder={t("form.shortNamePlaceholder")}
               maxLength={10}
               required
             />
-            <p className="text-xs text-muted-foreground">
-              {t('form.shortNameHelp')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("form.shortNameHelp")}</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country_code">{t('form.countryCode')}</Label>
+            <Label htmlFor="country_code">{t("form.countryCode")}</Label>
             <Input
               id="country_code"
               value={formData.country_code}
               onChange={(e) =>
                 setFormData({ ...formData, country_code: e.target.value.toUpperCase() })
               }
-              placeholder={t('form.countryCodePlaceholder')}
+              placeholder={t("form.countryCodePlaceholder")}
               maxLength={3}
             />
-            <p className="text-xs text-muted-foreground">
-              {t('form.countryCodeHelp')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("form.countryCodeHelp")}</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="logo_url">{t('form.logoUrl')}</Label>
+            <Label htmlFor="logo_url">{t("form.logoUrl")}</Label>
             <Input
               id="logo_url"
               type="url"
               value={formData.logo_url}
-              onChange={(e) =>
-                setFormData({ ...formData, logo_url: e.target.value })
-              }
-              placeholder={t('form.logoUrlPlaceholder')}
+              onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+              placeholder={t("form.logoUrlPlaceholder")}
             />
-            <p className="text-xs text-muted-foreground">
-              {t('form.logoUrlHelp')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("form.logoUrlHelp")}</p>
           </div>
         </CardContent>
       </Card>
@@ -198,20 +186,20 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
-              {t('edit.deleteTeam')}
+              {t("edit.deleteTeam")}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{t('edit.deleteConfirmTitle')}</AlertDialogTitle>
+              <AlertDialogTitle>{t("edit.deleteConfirmTitle")}</AlertDialogTitle>
               <AlertDialogDescription>
-                {t('edit.deleteConfirmDescription', { name: team.name })}
+                {t("edit.deleteConfirmDescription", { name: team.name })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>{tCommon('actions.cancel')}</AlertDialogCancel>
+              <AlertDialogCancel>{tCommon("actions.cancel")}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>
-                {tCommon('actions.delete')}
+                {tCommon("actions.delete")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -223,7 +211,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          {t('edit.saveChanges')}
+          {t("edit.saveChanges")}
         </Button>
       </div>
     </form>

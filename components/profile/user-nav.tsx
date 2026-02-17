@@ -25,11 +25,11 @@ interface UserNavProps {
 export function UserNav({ user }: UserNavProps) {
   const router = useRouter();
   const supabase = createClient();
-  const t = useTranslations('common');
+  const t = useTranslations("common");
   const { theme, setTheme, systemTheme } = useTheme();
 
-  const currentTheme = theme === 'system' ? systemTheme : theme;
-  const isDark = currentTheme === 'dark';
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isDark = currentTheme === "dark";
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -50,9 +50,7 @@ export function UserNav({ user }: UserNavProps) {
             <AvatarImage src={user.avatar_url ?? undefined} alt={displayName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          <span className="hidden md:inline-block font-medium text-sm">
-            {displayName}
-          </span>
+          <span className="hidden md:inline-block font-medium text-sm">{displayName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -63,30 +61,25 @@ export function UserNav({ user }: UserNavProps) {
               {user.is_admin && (
                 <Badge variant="default" className="text-xs gap-1">
                   <Shield className="h-3 w-3" />
-                  {t('navigation.admin')}
+                  {t("navigation.admin")}
                 </Badge>
               )}
             </div>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          onClick={() => setTheme(isDark ? "light" : "dark")}
           className="cursor-pointer"
         >
           {isDark ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
-          <span>{isDark ? t('navigation.lightMode') : t('navigation.darkMode')}</span>
+          <span>{isDark ? t("navigation.lightMode") : t("navigation.darkMode")}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => router.push("/profile")}
-          className="cursor-pointer"
-        >
+        <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer">
           <UserCircle className="mr-2 h-4 w-4" />
-          <span>{t('navigation.account')}</span>
+          <span>{t("navigation.account")}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -94,7 +87,7 @@ export function UserNav({ user }: UserNavProps) {
           className="cursor-pointer text-destructive focus:text-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>{t('navigation.signOut')}</span>
+          <span>{t("navigation.signOut")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

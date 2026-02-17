@@ -44,10 +44,12 @@ export default async function NewMatchPage({
   // Fetch teams registered in this tournament
   const { data: tournamentTeams } = await supabase
     .from("tournament_teams")
-    .select(`
+    .select(
+      `
       team_id,
       teams (*)
-    `)
+    `
+    )
     .eq("tournament_id", tournamentId);
 
   const teams = (tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || []) as unknown as Team[];

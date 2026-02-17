@@ -83,9 +83,7 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
                 <Link key={tournament.id} href={`/${tournament.id}/matches`}>
                   <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
                     {tournament.name}
-                    <span className="ml-2 text-xs opacity-70">
-                      ({tournament.status})
-                    </span>
+                    <span className="ml-2 text-xs opacity-70">({tournament.status})</span>
                   </Badge>
                 </Link>
               ))}
@@ -104,9 +102,7 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
         {matchesByTournament.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">
-                {t("noMatchesYet")}
-              </p>
+              <p className="text-muted-foreground">{t("noMatchesYet")}</p>
             </CardContent>
           </Card>
         ) : (
@@ -114,10 +110,7 @@ export function TeamDetailView({ team, matchesByTournament, tournaments }: TeamD
             <Card key={tournamentId}>
               <CardHeader>
                 <CardTitle className="text-lg">
-                  <Link 
-                    href={`/${tournamentId}/matches`}
-                    className="hover:underline"
-                  >
+                  <Link href={`/${tournamentId}/matches`} className="hover:underline">
                     {tournamentName}
                   </Link>
                   <Badge variant="outline" className="ml-2">

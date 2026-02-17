@@ -43,9 +43,9 @@ Add the following environment variables in the Vercel project settings:
 
 ### Required Variables
 
-| Variable Name | Description | Where to Find |
-|--------------|-------------|---------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Supabase Dashboard > Project Settings > API > Project URL |
+| Variable Name                   | Description                 | Where to Find                                                                    |
+| ------------------------------- | --------------------------- | -------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL   | Supabase Dashboard > Project Settings > API > Project URL                        |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous key | Supabase Dashboard > Project Settings > API > Project API keys > `anon` `public` |
 
 To add these in Vercel:
@@ -58,6 +58,7 @@ To add these in Vercel:
 3. Repeat for `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 Alternatively, add them after deployment:
+
 1. Go to your project in Vercel
 2. Click **Settings** > **Environment Variables**
 3. Add each variable for all environments (Production, Preview, Development)

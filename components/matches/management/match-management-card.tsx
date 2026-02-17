@@ -37,17 +37,15 @@ const statusColors: Record<MatchStatus, string> = {
 };
 
 export function MatchManagementCard({ match }: MatchManagementCardProps) {
-  const t = useTranslations('matches');
-  const tCommon = useTranslations('common');
-  
+  const t = useTranslations("matches");
+  const tCommon = useTranslations("common");
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2 flex-wrap">
-            <div
-              className={`h-2 w-2 rounded-full ${statusColors[match.status]}`}
-            />
+            <div className={`h-2 w-2 rounded-full ${statusColors[match.status]}`} />
             <Badge variant="outline">{t(`status.${match.status}`)}</Badge>
             {match.round && (
               <Badge variant="secondary" className="text-xs">
@@ -71,17 +69,15 @@ export function MatchManagementCard({ match }: MatchManagementCardProps) {
                 currentAwayScore={match.away_score}
                 multiplier={match.multiplier}
               >
-                <Button variant="ghost" size="icon" title={t('management.scoreMatch')}>
+                <Button variant="ghost" size="icon" title={t("management.scoreMatch")}>
                   <Trophy className="h-4 w-4" />
                 </Button>
               </ScoreMatchDialog>
             )}
 
             {/* Edit button always available */}
-            <Link
-              href={`/tournaments/manage/${match.tournament_id}/matches/${match.id}/edit`}
-            >
-              <Button variant="ghost" size="icon" title={t('management.editMatch')}>
+            <Link href={`/tournaments/manage/${match.tournament_id}/matches/${match.id}/edit`}>
+              <Button variant="ghost" size="icon" title={t("management.editMatch")}>
                 <Edit className="h-4 w-4" />
               </Button>
             </Link>
@@ -92,28 +88,24 @@ export function MatchManagementCard({ match }: MatchManagementCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex-1 text-right">
             <div className="font-semibold">{match.home_team.name}</div>
-            <div className="text-sm text-muted-foreground">
-              {match.home_team.short_name}
-            </div>
+            <div className="text-sm text-muted-foreground">{match.home_team.short_name}</div>
           </div>
 
           <div className="px-6 text-center">
-            {match.status === "completed" && match.home_score !== null && match.away_score !== null ? (
+            {match.status === "completed" &&
+            match.home_score !== null &&
+            match.away_score !== null ? (
               <div className="text-2xl font-bold">
                 {match.home_score} - {match.away_score}
               </div>
             ) : (
-              <div className="text-xl font-semibold text-muted-foreground">
-                {tCommon('vs')}
-              </div>
+              <div className="text-xl font-semibold text-muted-foreground">{tCommon("vs")}</div>
             )}
           </div>
 
           <div className="flex-1 text-left">
             <div className="font-semibold">{match.away_team.name}</div>
-            <div className="text-sm text-muted-foreground">
-              {match.away_team.short_name}
-            </div>
+            <div className="text-sm text-muted-foreground">{match.away_team.short_name}</div>
           </div>
         </div>
 

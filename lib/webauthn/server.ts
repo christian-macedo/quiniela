@@ -55,10 +55,7 @@ export async function generateUserRegistrationOptions(userId: string, userEmail:
     // Generate a new WebAuthn user ID (random base64url string)
     webauthnUserId = isoBase64URL.fromBuffer(crypto.getRandomValues(new Uint8Array(32)));
 
-    await supabase
-      .from("users")
-      .update({ webauthn_user_id: webauthnUserId })
-      .eq("id", userId);
+    await supabase.from("users").update({ webauthn_user_id: webauthnUserId }).eq("id", userId);
   }
 
   // Get user's existing credentials to exclude
@@ -158,12 +155,7 @@ export async function verifyUserRegistrationResponse(
   }
 
   const { registrationInfo } = verification;
-  const {
-    credential,
-    credentialDeviceType,
-    credentialBackedUp,
-    aaguid,
-  } = registrationInfo;
+  const { credential, credentialDeviceType, credentialBackedUp, aaguid } = registrationInfo;
 
   // Store the credential
   const credentialInsert: WebAuthnCredentialInsert = {
@@ -198,8 +190,10 @@ export async function generateUserAuthenticationOptions(userEmail: string) {
   const rpConfig = getRPConfig();
 
   // Get user's credentials using secure database function
-  const { data: credentials, error: credError } = await supabase
-    .rpc("get_user_credentials_for_auth", { user_email: userEmail });
+  const { data: credentials, error: credError } = await supabase.rpc(
+    "get_user_credentials_for_auth",
+    { user_email: userEmail }
+  );
 
   if (credError) {
     if (credError.message.includes("User not found")) {
@@ -212,11 +206,13 @@ export async function generateUserAuthenticationOptions(userEmail: string) {
     throw new Error("No passkeys registered for this user");
   }
 
-  const allowCredentials = credentials.map((cred: { credential_id: string; transports: string[] }) => ({
-    id: cred.credential_id,
-    type: "public-key" as const,
-    transports: cred.transports as AuthenticatorTransport[] | undefined,
-  }));
+  const allowCredentials = credentials.map(
+    (cred: { credential_id: string; transports: string[] }) => ({
+      id: cred.credential_id,
+      type: "public-key" as const,
+      transports: cred.transports as AuthenticatorTransport[] | undefined,
+    })
+  );
 
   // Generate authentication options
   const opts: GenerateAuthenticationOptionsOpts = {
@@ -231,12 +227,11 @@ export async function generateUserAuthenticationOptions(userEmail: string) {
   // Store challenge using secure database function
   const expiresAt = new Date(Date.now() + CHALLENGE_TIMEOUT_MINUTES * 60 * 1000);
 
-  const { error: challengeError } = await supabase
-    .rpc("store_auth_challenge", {
-      p_user_email: userEmail,
-      p_challenge: options.challenge,
-      p_expires_at: expiresAt.toISOString(),
-    });
+  const { error: challengeError } = await supabase.rpc("store_auth_challenge", {
+    p_user_email: userEmail,
+    p_challenge: options.challenge,
+    p_expires_at: expiresAt.toISOString(),
+  });
 
   if (challengeError) {
     throw new Error("Failed to store challenge");
@@ -257,8 +252,10 @@ export async function verifyUserAuthenticationResponse(
   const rpConfig = getRPConfig();
 
   // Get and consume the challenge using secure database function
-  const { data: challengeData, error: challengeError } = await supabase
-    .rpc("get_and_consume_auth_challenge", { p_user_email: userEmail });
+  const { data: challengeData, error: challengeError } = await supabase.rpc(
+    "get_and_consume_auth_challenge",
+    { p_user_email: userEmail }
+  );
 
   if (challengeError) {
     if (challengeError.message.includes("User not found")) {
@@ -274,11 +271,13 @@ export async function verifyUserAuthenticationResponse(
 
   // Get the credential using secure database function
   const credentialID = response.id;
-  const { data: credentials, error: credError } = await supabase
-    .rpc("get_credential_for_verification", {
+  const { data: credentials, error: credError } = await supabase.rpc(
+    "get_credential_for_verification",
+    {
       user_email: userEmail,
       cred_id: credentialID,
-    });
+    }
+  );
 
   if (credError || !credentials || credentials.length === 0) {
     throw new Error("Credential not found");
@@ -308,11 +307,10 @@ export async function verifyUserAuthenticationResponse(
   }
 
   // Update counter using secure database function
-  await supabase
-    .rpc("update_credential_counter", {
-      cred_id: credentialID,
-      new_counter: verification.authenticationInfo.newCounter,
-    });
+  await supabase.rpc("update_credential_counter", {
+    cred_id: credentialID,
+    new_counter: verification.authenticationInfo.newCounter,
+  });
 
   return { verified: true, userId: credential.user_id };
 }
@@ -323,8 +321,5 @@ export async function verifyUserAuthenticationResponse(
 export async function cleanupExpiredChallenges() {
   const supabase = await createClient();
 
-  await supabase
-    .from("webauthn_challenges")
-    .delete()
-    .lt("expires_at", new Date().toISOString());
+  await supabase.from("webauthn_challenges").delete().lt("expires_at", new Date().toISOString());
 }

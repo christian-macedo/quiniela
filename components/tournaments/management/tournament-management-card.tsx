@@ -21,10 +21,10 @@ const statusColors = {
   completed: "bg-gray-500",
 };
 
-export function TournamentManagementCard({ 
-  tournament, 
-  teamCount, 
-  matchCount 
+export function TournamentManagementCard({
+  tournament,
+  teamCount,
+  matchCount,
 }: TournamentManagementCardProps) {
   const t = useTranslations("tournaments.card");
   const tStatus = useTranslations("tournaments.status");
@@ -62,11 +62,15 @@ export function TournamentManagementCard({
         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
-            <span>{teamCount} {teamCount === 1 ? t("team") : t("teams")}</span>
+            <span>
+              {teamCount} {teamCount === 1 ? t("team") : t("teams")}
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            <span>{matchCount} {matchCount === 1 ? tLabels("match") : tLabels("matches")}</span>
+            <span>
+              {matchCount} {matchCount === 1 ? tLabels("match") : tLabels("matches")}
+            </span>
           </div>
           <Badge variant="secondary" className="capitalize">
             {tournament.sport}

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Fingerprint, Loader2 } from "lucide-react";
 import { authenticateWithPasskey, isPasskeySupported } from "@/lib/webauthn/client";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 interface PasskeyLoginButtonProps {
   email: string;
@@ -25,8 +25,8 @@ export function PasskeyLoginButton({
   onError,
   className,
 }: PasskeyLoginButtonProps) {
-  const t = useTranslations('auth.passkeys');
-  const tCommon = useTranslations('common');
+  const t = useTranslations("auth.passkeys");
+  const tCommon = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -36,7 +36,7 @@ export function PasskeyLoginButton({
 
   const handleAuthenticate = async () => {
     if (!email) {
-      setError(t('enterEmailFirst'));
+      setError(t("enterEmailFirst"));
       return;
     }
 
@@ -56,14 +56,14 @@ export function PasskeyLoginButton({
         }
       } else {
         // Handle error
-        const errorMessage = result.error || t('authFailed');
+        const errorMessage = result.error || t("authFailed");
         setError(errorMessage);
         if (onError) {
           onError(errorMessage);
         }
       }
     } catch {
-      const errorMessage = t('unexpectedError');
+      const errorMessage = t("unexpectedError");
       setError(errorMessage);
       if (onError) {
         onError(errorMessage);
@@ -76,29 +76,23 @@ export function PasskeyLoginButton({
   if (!passkeySupported) {
     return (
       <div className={className}>
-        <p className="text-sm text-muted-foreground text-center">
-          {t('notSupported')}
-        </p>
+        <p className="text-sm text-muted-foreground text-center">{t("notSupported")}</p>
       </div>
     );
   }
 
   return (
     <div className={`space-y-3 ${className || ""}`}>
-      <Button
-        onClick={handleAuthenticate}
-        disabled={isLoading || !email}
-        className="w-full"
-      >
+      <Button onClick={handleAuthenticate} disabled={isLoading || !email} className="w-full">
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {tCommon('status.authenticating')}
+            {tCommon("status.authenticating")}
           </>
         ) : (
           <>
             <Fingerprint className="mr-2 h-4 w-4" />
-            {t('signInWithPasskey')}
+            {t("signInWithPasskey")}
           </>
         )}
       </Button>
@@ -109,9 +103,7 @@ export function PasskeyLoginButton({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground text-center">
-        {t('biometricHint')}
-      </p>
+      <p className="text-xs text-muted-foreground text-center">{t("biometricHint")}</p>
     </div>
   );
 }

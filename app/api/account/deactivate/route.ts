@@ -16,13 +16,12 @@ import { getCurrentUTC } from "@/lib/utils/date";
 export async function POST() {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Update status to deactivated
@@ -41,13 +40,10 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: "Account deactivated successfully"
+      message: "Account deactivated successfully",
     });
   } catch (error) {
     console.error("Error deactivating account:", error);
-    return NextResponse.json(
-      { error: "Failed to deactivate account" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to deactivate account" }, { status: 500 });
   }
 }

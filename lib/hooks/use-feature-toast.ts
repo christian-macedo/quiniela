@@ -46,7 +46,7 @@ export function useFeatureToast(namespace: string) {
     sonnerToast[type](translatedMessage);
   };
 
-  const promiseToast = <T,>(
+  const promiseToast = <T>(
     promise: Promise<T> | (() => Promise<T>),
     messages: {
       loading: string;
@@ -59,8 +59,8 @@ export function useFeatureToast(namespace: string) {
     const loadingMsg = messages.loading.startsWith("status:")
       ? tStatus(messages.loading.replace("status:", ""), values)
       : messages.loading.startsWith("common:")
-      ? tCommon(messages.loading.replace("common:", ""), values)
-      : tFeature(messages.loading, values);
+        ? tCommon(messages.loading.replace("common:", ""), values)
+        : tFeature(messages.loading, values);
 
     // Translate success message
     const successMsg = messages.success.startsWith("common:")

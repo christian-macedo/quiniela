@@ -22,7 +22,7 @@ import {
   UserCircle,
   Plus,
   X,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import {
   Select,
@@ -66,13 +66,13 @@ export function TournamentDetailView({
   allTeams,
   matches,
   participants,
-  allUsers
+  allUsers,
 }: TournamentDetailViewProps) {
   const router = useRouter();
-  const t = useTranslations('tournaments');
-  const tCommon = useTranslations('common');
-  const toastTeams = useFeatureToast('teams');
-  const toastTournaments = useFeatureToast('tournaments');
+  const t = useTranslations("tournaments");
+  const tCommon = useTranslations("common");
+  const toastTeams = useFeatureToast("teams");
+  const toastTournaments = useFeatureToast("tournaments");
 
   const [isAddingTeam, setIsAddingTeam] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
@@ -81,14 +81,10 @@ export function TournamentDetailView({
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
-  const availableTeams = allTeams.filter(
-    t => !teams.some(existing => existing.id === t.id)
-  );
+  const availableTeams = allTeams.filter((t) => !teams.some((existing) => existing.id === t.id));
 
-  const participantUserIds = participants.map(p => p.user?.id).filter(Boolean);
-  const availableUsers = allUsers.filter(
-    u => !participantUserIds.includes(u.id)
-  );
+  const participantUserIds = participants.map((p) => p.user?.id).filter(Boolean);
+  const availableUsers = allUsers.filter((u) => !participantUserIds.includes(u.id));
 
   const handleAddTeam = async () => {
     if (!selectedTeamId) return;
@@ -122,10 +118,9 @@ export function TournamentDetailView({
     setRemovingTeamId(teamId);
 
     try {
-      const response = await fetch(
-        `/api/tournaments/${tournament.id}/teams?teamId=${teamId}`,
-        { method: "DELETE" }
-      );
+      const response = await fetch(`/api/tournaments/${tournament.id}/teams?teamId=${teamId}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         const data = await response.json();
@@ -223,7 +218,7 @@ export function TournamentDetailView({
         <Link href={`/tournaments/manage/${tournament.id}/edit`}>
           <Button>
             <Pencil className="h-4 w-4 mr-2" />
-            {t('detail.editTournament')}
+            {t("detail.editTournament")}
           </Button>
         </Link>
       </div>
@@ -236,7 +231,7 @@ export function TournamentDetailView({
               <Users className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{teams.length}</p>
-                <p className="text-sm text-muted-foreground">{t('detail.teams')}</p>
+                <p className="text-sm text-muted-foreground">{t("detail.teams")}</p>
               </div>
             </div>
           </CardContent>
@@ -247,7 +242,7 @@ export function TournamentDetailView({
               <Calendar className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{matches.length}</p>
-                <p className="text-sm text-muted-foreground">{t('detail.matches')}</p>
+                <p className="text-sm text-muted-foreground">{t("detail.matches")}</p>
               </div>
             </div>
           </CardContent>
@@ -258,7 +253,7 @@ export function TournamentDetailView({
               <UserCircle className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-2xl font-bold">{participants.length}</p>
-                <p className="text-sm text-muted-foreground">{t('detail.participants')}</p>
+                <p className="text-sm text-muted-foreground">{t("detail.participants")}</p>
               </div>
             </div>
           </CardContent>
@@ -271,7 +266,7 @@ export function TournamentDetailView({
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5" />
-              {t('detail.participatingTeams')}
+              {t("detail.participatingTeams")}
             </CardTitle>
           </div>
         </CardHeader>
@@ -280,12 +275,12 @@ export function TournamentDetailView({
           <div className="flex gap-2">
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
               <SelectTrigger className="flex-1">
-                <SelectValue placeholder={t('detail.selectTeamToAdd')} />
+                <SelectValue placeholder={t("detail.selectTeamToAdd")} />
               </SelectTrigger>
               <SelectContent>
                 {availableTeams.length === 0 ? (
                   <SelectItem value="none" disabled>
-                    {t('detail.noTeamsAvailable')}
+                    {t("detail.noTeamsAvailable")}
                   </SelectItem>
                 ) : (
                   availableTeams.map((team) => (
@@ -296,10 +291,7 @@ export function TournamentDetailView({
                 )}
               </SelectContent>
             </Select>
-            <Button 
-              onClick={handleAddTeam} 
-              disabled={!selectedTeamId || isAddingTeam}
-            >
+            <Button onClick={handleAddTeam} disabled={!selectedTeamId || isAddingTeam}>
               {isAddingTeam ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -310,14 +302,12 @@ export function TournamentDetailView({
 
           {/* Team List */}
           {teams.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              {t('detail.noTeamsYet')}
-            </p>
+            <p className="text-muted-foreground text-center py-4">{t("detail.noTeamsYet")}</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {teams.map((team) => (
-                <div 
-                  key={team.id} 
+                <div
+                  key={team.id}
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
                   <Link href={`/teams/${team.id}`}>
@@ -348,7 +338,7 @@ export function TournamentDetailView({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserCircle className="h-5 w-5" />
-            {t('detail.participatingUsers')}
+            {t("detail.participatingUsers")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -356,12 +346,12 @@ export function TournamentDetailView({
           <div className="flex gap-2">
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
               <SelectTrigger className="flex-1">
-                <SelectValue placeholder={t('detail.selectUserToAdd')} />
+                <SelectValue placeholder={t("detail.selectUserToAdd")} />
               </SelectTrigger>
               <SelectContent>
                 {availableUsers.length === 0 ? (
                   <SelectItem value="none" disabled>
-                    {t('detail.noUsersAvailable')}
+                    {t("detail.noUsersAvailable")}
                   </SelectItem>
                 ) : (
                   availableUsers.map((user) => (
@@ -387,58 +377,60 @@ export function TournamentDetailView({
           {/* Participant List */}
           {participants.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              {t('detail.noParticipantsYet')}
+              {t("detail.noParticipantsYet")}
             </p>
           ) : (
             <div className="space-y-2">
-              {participants.map((participant) => (
-                participant.user && (
-                  <div
-                    key={participant.user.id}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      {participant.rank && (
-                        <span className="text-lg font-bold text-muted-foreground w-8">
-                          #{participant.rank}
-                        </span>
-                      )}
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={participant.user.avatar_url || undefined} />
-                        <AvatarFallback>
-                          {participant.user.screen_name?.[0] || participant.user.email[0].toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">
-                          {participant.user.screen_name || participant.user.email}
-                        </p>
-                        {participant.user.screen_name && (
-                          <p className="text-xs text-muted-foreground">
-                            {participant.user.email}
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant="secondary">
-                        {participant.total_points} {tCommon('labels.pts')}
-                      </Badge>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveParticipant(participant.user!.id)}
-                      disabled={removingUserId === participant.user.id}
-                      title={t('detail.removeFromTournament')}
+              {participants.map(
+                (participant) =>
+                  participant.user && (
+                    <div
+                      key={participant.user.id}
+                      className="flex items-center justify-between p-3 border rounded-lg"
                     >
-                      {removingUserId === participant.user.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <X className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                )
-              ))}
+                      <div className="flex items-center gap-3">
+                        {participant.rank && (
+                          <span className="text-lg font-bold text-muted-foreground w-8">
+                            #{participant.rank}
+                          </span>
+                        )}
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={participant.user.avatar_url || undefined} />
+                          <AvatarFallback>
+                            {participant.user.screen_name?.[0] ||
+                              participant.user.email[0].toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">
+                            {participant.user.screen_name || participant.user.email}
+                          </p>
+                          {participant.user.screen_name && (
+                            <p className="text-xs text-muted-foreground">
+                              {participant.user.email}
+                            </p>
+                          )}
+                        </div>
+                        <Badge variant="secondary">
+                          {participant.total_points} {tCommon("labels.pts")}
+                        </Badge>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveParticipant(participant.user!.id)}
+                        disabled={removingUserId === participant.user.id}
+                        title={t("detail.removeFromTournament")}
+                      >
+                        {removingUserId === participant.user.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <X className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  )
+              )}
             </div>
           )}
         </CardContent>
@@ -450,21 +442,19 @@ export function TournamentDetailView({
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              {t('detail.matches')}
+              {t("detail.matches")}
             </CardTitle>
             <Link href={`/tournaments/manage/${tournament.id}/matches`}>
               <Button variant="outline" size="sm">
                 <Pencil className="h-4 w-4 mr-2" />
-                {t('detail.manageMatches')}
+                {t("detail.manageMatches")}
               </Button>
             </Link>
           </div>
         </CardHeader>
         <CardContent>
           {matches.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              {t('detail.noMatchesYet')}
-            </p>
+            <p className="text-muted-foreground text-center py-4">{t("detail.noMatchesYet")}</p>
           ) : (
             <div className="grid gap-4">
               {matches.map((match) => (

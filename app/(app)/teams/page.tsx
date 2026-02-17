@@ -5,13 +5,15 @@ import { TeamManagementList } from "@/components/teams/management/team-managemen
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 export default async function TeamsPage() {
-  const t = await getTranslations('teams');
+  const t = await getTranslations("teams");
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -47,28 +49,26 @@ export default async function TeamsPage() {
   });
 
   // Get unique country codes from teams
-  const countryCodes = [...new Set(
-    teams?.map((t) => t.country_code).filter(Boolean) as string[]
-  )].sort();
+  const countryCodes = [
+    ...new Set(teams?.map((t) => t.country_code).filter(Boolean) as string[]),
+  ].sort();
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
-          <p className="text-muted-foreground">
-            {t('subtitle')}
-          </p>
+          <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Link href="/teams/new">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            {t('addTeam')}
+            {t("addTeam")}
           </Button>
         </Link>
       </div>
-      <TeamManagementList 
-        teams={teams || []} 
+      <TeamManagementList
+        teams={teams || []}
         tournaments={tournaments || []}
         teamTournamentMap={teamTournamentMap}
         countryCodes={countryCodes}

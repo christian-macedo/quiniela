@@ -21,7 +21,7 @@ interface PredictionFormProps {
 }
 
 export function PredictionForm({ match, existingPrediction, onSubmit }: PredictionFormProps) {
-  const t = useTranslations('predictions');
+  const t = useTranslations("predictions");
 
   const [homeScore, setHomeScore] = useState(
     existingPrediction?.predicted_home_score?.toString() ?? ""
@@ -51,23 +51,23 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
     <Card className={isLocked ? "opacity-60" : ""}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">
-            {formatLocalDateTime(match.match_date)}
-          </CardTitle>
+          <CardTitle className="text-base">{formatLocalDateTime(match.match_date)}</CardTitle>
           <div className="flex items-center gap-2">
             {match.round && (
-              <Badge variant="outline" className="text-xs">{match.round}</Badge>
+              <Badge variant="outline" className="text-xs">
+                {match.round}
+              </Badge>
             )}
             {existingPrediction && !isLocked && (
               <Badge variant="outline" className="text-success border-success">
                 <Check className="h-3 w-3 mr-1" />
-                {t('form.predicted')}
+                {t("form.predicted")}
               </Badge>
             )}
             {isLocked && (
               <Badge variant="outline" className="text-muted-foreground">
                 <Lock className="h-3 w-3 mr-1" />
-                {t('form.locked')}
+                {t("form.locked")}
               </Badge>
             )}
           </div>
@@ -116,7 +116,11 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
               className="w-full transition-colors"
               disabled={!homeScore || !awayScore || isSubmitting}
             >
-              {isSubmitting ? t('form.saving') : existingPrediction ? t('form.updatePrediction') : t('form.submitPrediction')}
+              {isSubmitting
+                ? t("form.saving")
+                : existingPrediction
+                  ? t("form.updatePrediction")
+                  : t("form.submitPrediction")}
             </Button>
           </CardFooter>
         )}

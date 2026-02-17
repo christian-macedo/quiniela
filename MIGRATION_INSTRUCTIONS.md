@@ -7,6 +7,7 @@ This document explains how to migrate from table-based `tournament_rankings` to 
 Previously, tournament rankings were stored in a `tournament_rankings` table that needed to be updated every time predictions were scored. Now, rankings are calculated dynamically from the `predictions` table using a database view.
 
 ### Benefits:
+
 - **Always up-to-date**: Rankings are calculated in real-time from prediction data
 - **Simpler code**: No need to manually update rankings after scoring
 - **Data consistency**: Rankings can never be out of sync with predictions

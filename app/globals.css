@@ -54,10 +54,10 @@
 
     /* Chart colors using Blue Lagoon palette */
     --chart-1: 200 100% 49%; /* #00A6FB */
-    --chart-2: 202 95% 41%;  /* #0582CA */
+    --chart-2: 202 95% 41%; /* #0582CA */
     --chart-3: 199 100% 29%; /* #006494 */
     --chart-4: 202 100% 16%; /* #003554 */
-    --chart-5: 200 75% 8%;   /* #051923 */
+    --chart-5: 200 75% 8%; /* #051923 */
 
     /* Semantic status colors - Light Mode */
     --success: 142 71% 45%;
@@ -109,10 +109,10 @@
 
     /* Chart colors for dark mode */
     --chart-1: 200 100% 49%; /* #00A6FB */
-    --chart-2: 202 95% 41%;  /* #0582CA */
+    --chart-2: 202 95% 41%; /* #0582CA */
     --chart-3: 199 100% 29%; /* #006494 */
     --chart-4: 202 100% 16%; /* #003554 */
-    --chart-5: 200 75% 8%;   /* #051923 */
+    --chart-5: 200 75% 8%; /* #051923 */
 
     /* Semantic status colors - Dark Mode */
     --success: 142 71% 45%;
@@ -154,7 +154,9 @@
   }
 
   /* Typography: display font for headings */
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display), sans-serif;
   }
 }
@@ -183,37 +185,76 @@
   }
 
   /* Stagger delays for cascading entrance */
-  .stagger-1 { animation-delay: 0.05s; }
-  .stagger-2 { animation-delay: 0.10s; }
-  .stagger-3 { animation-delay: 0.15s; }
-  .stagger-4 { animation-delay: 0.20s; }
-  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-1 {
+    animation-delay: 0.05s;
+  }
+  .stagger-2 {
+    animation-delay: 0.1s;
+  }
+  .stagger-3 {
+    animation-delay: 0.15s;
+  }
+  .stagger-4 {
+    animation-delay: 0.2s;
+  }
+  .stagger-5 {
+    animation-delay: 0.25s;
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes score-pop {
-  from { opacity: 0; transform: scale(0.5); }
-  60%  { transform: scale(1.1); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes pulse-live {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Mobile: disable background-attachment fixed if used */

@@ -21,7 +21,7 @@ export function AccountDeactivationDialog() {
   const router = useRouter();
   const t = useTranslations("profile.deactivation");
   const tCommon = useTranslations("common");
-  const toast = useFeatureToast('profile');
+  const toast = useFeatureToast("profile");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -63,9 +63,7 @@ export function AccountDeactivationDialog() {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t("title")}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("description")}
-          </AlertDialogDescription>
+          <AlertDialogDescription>{t("description")}</AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="space-y-4 py-4">
@@ -86,11 +84,7 @@ export function AccountDeactivationDialog() {
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>{tCommon("cancel")}</AlertDialogCancel>
-          <Button
-            variant="destructive"
-            onClick={handleDeactivate}
-            disabled={isLoading}
-          >
+          <Button variant="destructive" onClick={handleDeactivate} disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading ? t("deactivating") : t("confirm")}
           </Button>

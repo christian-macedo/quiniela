@@ -15,16 +15,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Save } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 export function TournamentCreateForm() {
-  const t = useTranslations('tournaments.management.form');
-  const tCommon = useTranslations('common');
-  const tStatus = useTranslations('tournaments.status');
+  const t = useTranslations("tournaments.management.form");
+  const tCommon = useTranslations("common");
+  const tStatus = useTranslations("tournaments.status");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     sport: "",
@@ -53,14 +53,14 @@ export function TournamentCreateForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || t('createFailed'));
+        throw new Error(data.error || t("createFailed"));
       }
 
       const tournament = await response.json();
       router.push(`/tournaments/manage/${tournament.id}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errorOccurred'));
+      setError(err instanceof Error ? err.message : t("errorOccurred"));
     } finally {
       setIsLoading(false);
     }
@@ -69,85 +69,75 @@ export function TournamentCreateForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
-          {error}
-        </div>
+        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">{error}</div>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('tournamentInfo')}</CardTitle>
+          <CardTitle>{t("tournamentInfo")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{t('tournamentName')}</Label>
+            <Label htmlFor="name">{t("tournamentName")}</Label>
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder={t('tournamentNamePlaceholder')}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder={t("tournamentNamePlaceholder")}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sport">{t('sport')}</Label>
+            <Label htmlFor="sport">{t("sport")}</Label>
             <Input
               id="sport"
               value={formData.sport}
-              onChange={(e) =>
-                setFormData({ ...formData, sport: e.target.value })
-              }
-              placeholder={t('sportPlaceholder')}
+              onChange={(e) => setFormData({ ...formData, sport: e.target.value })}
+              placeholder={t("sportPlaceholder")}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="start_date">{t('startDate')}</Label>
+              <Label htmlFor="start_date">{t("startDate")}</Label>
               <Input
                 id="start_date"
                 type="date"
                 value={formData.start_date}
-                onChange={(e) =>
-                  setFormData({ ...formData, start_date: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="end_date">{t('endDate')}</Label>
+              <Label htmlFor="end_date">{t("endDate")}</Label>
               <Input
                 id="end_date"
                 type="date"
                 value={formData.end_date}
-                onChange={(e) =>
-                  setFormData({ ...formData, end_date: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">{tCommon('labels.status')}</Label>
-            <Select 
-              value={formData.status} 
+            <Label htmlFor="status">{tCommon("labels.status")}</Label>
+            <Select
+              value={formData.status}
               onValueChange={(value: TournamentStatus) =>
                 setFormData({ ...formData, status: value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder={t('selectStatus')} />
+                <SelectValue placeholder={t("selectStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="upcoming">{tStatus('upcoming')}</SelectItem>
-                <SelectItem value="active">{tStatus('active')}</SelectItem>
-                <SelectItem value="completed">{tStatus('completed')}</SelectItem>
+                <SelectItem value="upcoming">{tStatus("upcoming")}</SelectItem>
+                <SelectItem value="active">{tStatus("active")}</SelectItem>
+                <SelectItem value="completed">{tStatus("completed")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -162,15 +152,10 @@ export function TournamentCreateForm() {
           ) : (
             <Save className="h-4 w-4 mr-2" />
           )}
-          {t('createTournament')}
+          {t("createTournament")}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.back()}
-          disabled={isLoading}
-        >
-          {tCommon('actions.cancel')}
+        <Button type="button" variant="outline" onClick={() => router.back()} disabled={isLoading}>
+          {tCommon("actions.cancel")}
         </Button>
       </div>
     </form>

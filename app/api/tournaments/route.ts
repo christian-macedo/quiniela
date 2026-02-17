@@ -15,17 +15,16 @@ export async function GET() {
     return NextResponse.json(tournaments);
   } catch (error) {
     console.error("Error fetching tournaments:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch tournaments" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch tournaments" }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -52,9 +51,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error creating tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to create tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create tournament" }, { status: 500 });
   }
 }

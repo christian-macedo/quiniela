@@ -22,10 +22,7 @@ export async function GET(
     return NextResponse.json(team);
   } catch (error) {
     console.error("Error fetching team:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch team" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch team" }, { status: 500 });
   }
 }
 
@@ -61,10 +58,7 @@ export async function PUT(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error updating team:", error);
-    return NextResponse.json(
-      { error: "Failed to update team" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update team" }, { status: 500 });
   }
 }
 
@@ -99,7 +93,10 @@ export async function DELETE(
 
     if ((homeMatches && homeMatches.length > 0) || (awayMatches && awayMatches.length > 0)) {
       return NextResponse.json(
-        { error: "Cannot delete team: This team has participated in matches. Remove the team from all matches first." },
+        {
+          error:
+            "Cannot delete team: This team has participated in matches. Remove the team from all matches first.",
+        },
         { status: 400 }
       );
     }
@@ -115,24 +112,21 @@ export async function DELETE(
 
     if (tournamentTeams && tournamentTeams.length > 0) {
       return NextResponse.json(
-        { error: "Cannot delete team: This team is registered in tournaments. Remove the team from all tournaments first." },
+        {
+          error:
+            "Cannot delete team: This team is registered in tournaments. Remove the team from all tournaments first.",
+        },
         { status: 400 }
       );
     }
 
-    const { error } = await supabase
-      .from("teams")
-      .delete()
-      .eq("id", teamId);
+    const { error } = await supabase.from("teams").delete().eq("id", teamId);
 
     if (error) throw error;
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting team:", error);
-    return NextResponse.json(
-      { error: "Failed to delete team" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete team" }, { status: 500 });
   }
 }

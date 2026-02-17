@@ -21,10 +21,7 @@ export async function GET(
     return NextResponse.json(tournament);
   } catch (error) {
     console.error("Error fetching tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch tournament" }, { status: 500 });
   }
 }
 
@@ -35,7 +32,9 @@ export async function PUT(
   try {
     const { tournamentId } = await params;
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -64,10 +63,7 @@ export async function PUT(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error updating tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to update tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update tournament" }, { status: 500 });
   }
 }
 
@@ -78,7 +74,9 @@ export async function DELETE(
   try {
     const { tournamentId } = await params;
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -95,7 +93,9 @@ export async function DELETE(
 
     if (matches && matches.length > 0) {
       return NextResponse.json(
-        { error: "Cannot delete tournament: This tournament has matches. Remove all matches first." },
+        {
+          error: "Cannot delete tournament: This tournament has matches. Remove all matches first.",
+        },
         { status: 400 }
       );
     }
@@ -125,19 +125,13 @@ export async function DELETE(
     if (teamDeleteError) throw teamDeleteError;
 
     // Delete tournament
-    const { error } = await supabase
-      .from("tournaments")
-      .delete()
-      .eq("id", tournamentId);
+    const { error } = await supabase.from("tournaments").delete().eq("id", tournamentId);
 
     if (error) throw error;
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting tournament:", error);
-    return NextResponse.json(
-      { error: "Failed to delete tournament" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete tournament" }, { status: 500 });
   }
 }

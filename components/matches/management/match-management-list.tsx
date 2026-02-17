@@ -36,9 +36,9 @@ interface MatchManagementListProps {
 }
 
 export function MatchManagementList({ matches }: MatchManagementListProps) {
-  const t = useTranslations('matches');
-  const tCommon = useTranslations('common');
-  
+  const t = useTranslations("matches");
+  const tCommon = useTranslations("common");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [roundFilter, setRoundFilter] = useState<string>("all");
@@ -98,7 +98,7 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={t('management.searchTeams')}
+              placeholder={t("management.searchTeams")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -107,24 +107,24 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder={t('management.filterByStatus')} />
+              <SelectValue placeholder={t("management.filterByStatus")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{tCommon('filters.allStatuses')}</SelectItem>
-              <SelectItem value="scheduled">{t('status.scheduled')}</SelectItem>
-              <SelectItem value="in_progress">{t('status.in_progress')}</SelectItem>
-              <SelectItem value="completed">{t('status.completed')}</SelectItem>
-              <SelectItem value="cancelled">{t('status.cancelled')}</SelectItem>
+              <SelectItem value="all">{tCommon("filters.allStatuses")}</SelectItem>
+              <SelectItem value="scheduled">{t("status.scheduled")}</SelectItem>
+              <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
+              <SelectItem value="completed">{t("status.completed")}</SelectItem>
+              <SelectItem value="cancelled">{t("status.cancelled")}</SelectItem>
             </SelectContent>
           </Select>
 
           {rounds.length > 0 && (
             <Select value={roundFilter} onValueChange={setRoundFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder={t('management.filterByRound')} />
+                <SelectValue placeholder={t("management.filterByRound")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('management.allRounds')}</SelectItem>
+                <SelectItem value="all">{t("management.allRounds")}</SelectItem>
                 {rounds.map((round) => (
                   <SelectItem key={round} value={round}>
                     {round}
@@ -138,10 +138,12 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
         {/* Active filters */}
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-muted-foreground">{tCommon('filters.activeFilters')}:</span>
+            <span className="text-sm text-muted-foreground">
+              {tCommon("filters.activeFilters")}:
+            </span>
             {searchQuery && (
               <Badge variant="secondary" className="gap-1">
-                {tCommon('filters.search')}: {searchQuery}
+                {tCommon("filters.search")}: {searchQuery}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -154,7 +156,7 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
             )}
             {statusFilter !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                {tCommon('labels.status')}: {t(`status.${statusFilter}`)}
+                {tCommon("labels.status")}: {t(`status.${statusFilter}`)}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -167,7 +169,7 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
             )}
             {roundFilter !== "all" && (
               <Badge variant="secondary" className="gap-1">
-                {t('details.round')}: {roundFilter}
+                {t("details.round")}: {roundFilter}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -178,20 +180,18 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
                 </Button>
               </Badge>
             )}
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto p-0 text-sm"
-              onClick={clearFilters}
-            >
-              {tCommon('actions.clearAll')}
+            <Button variant="link" size="sm" className="h-auto p-0 text-sm" onClick={clearFilters}>
+              {tCommon("actions.clearAll")}
             </Button>
           </div>
         )}
 
         {/* Results counter */}
         <p className="text-sm text-muted-foreground">
-          {t('management.showingMatches', { showing: filteredMatches.length, total: matches.length })}
+          {t("management.showingMatches", {
+            showing: filteredMatches.length,
+            total: matches.length,
+          })}
         </p>
       </div>
 
@@ -205,9 +205,7 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
-            {hasActiveFilters
-              ? t('management.noMatchesFiltered')
-              : t('management.noMatchesYet')}
+            {hasActiveFilters ? t("management.noMatchesFiltered") : t("management.noMatchesYet")}
           </p>
         </div>
       )}

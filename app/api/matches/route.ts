@@ -9,11 +9,13 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from("matches")
-      .select(`
+      .select(
+        `
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*)
-      `)
+      `
+      )
       .order("match_date", { ascending: true });
 
     if (tournamentId) {
@@ -27,10 +29,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data || []);
   } catch (error) {
     console.error("Error fetching matches:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch matches" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch matches" }, { status: 500 });
   }
 }
 
@@ -61,18 +60,12 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!tournament_id || !home_team_id || !away_team_id || !match_date) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Validate teams are different
     if (home_team_id === away_team_id) {
-      return NextResponse.json(
-        { error: "Home and away teams must be different" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Home and away teams must be different" }, { status: 400 });
     }
 
     // Validate multiplier
@@ -111,11 +104,13 @@ export async function POST(request: NextRequest) {
         home_score: null,
         away_score: null,
       })
-      .select(`
+      .select(
+        `
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*)
-      `)
+      `
+      )
       .single();
 
     if (error) throw error;
@@ -123,9 +118,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error creating match:", error);
-    return NextResponse.json(
-      { error: "Failed to create match" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create match" }, { status: 500 });
   }
 }

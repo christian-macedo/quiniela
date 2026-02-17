@@ -5,14 +5,14 @@ import { PasskeyListItem } from "./passkey-list-item";
 import { listPasskeys, renamePasskey, deletePasskey } from "@/lib/webauthn/client";
 import { Loader2, AlertCircle } from "lucide-react";
 import type { PasskeyCredentialSummary } from "@/types/webauthn";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 interface PasskeyListProps {
   onPasskeysChange?: () => void;
 }
 
 export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
-  const t = useTranslations('auth.passkeys');
+  const t = useTranslations("auth.passkeys");
   const [passkeys, setPasskeys] = useState<PasskeyCredentialSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
     if (result.success && result.passkeys) {
       setPasskeys(result.passkeys);
     } else {
-      setError(result.error || t('loadFailed'));
+      setError(result.error || t("loadFailed"));
     }
 
     setLoading(false);
@@ -42,12 +42,10 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
 
     if (result.success) {
       // Update local state
-      setPasskeys((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, credentialName: newName } : p))
-      );
+      setPasskeys((prev) => prev.map((p) => (p.id === id ? { ...p, credentialName: newName } : p)));
       onPasskeysChange?.();
     } else {
-      setError(result.error || t('renameFailed'));
+      setError(result.error || t("renameFailed"));
     }
   };
 
@@ -60,7 +58,7 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
       setPasskeys((prev) => prev.filter((p) => p.id !== id));
       onPasskeysChange?.();
     } else {
-      setError(result.error || t('deleteFailed'));
+      setError(result.error || t("deleteFailed"));
     }
 
     setDeletingId(null);
@@ -86,7 +84,7 @@ export function PasskeyList({ onPasskeysChange }: PasskeyListProps) {
   if (passkeys.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        <p>{t('noPasskeysYet')}</p>
+        <p>{t("noPasskeysYet")}</p>
       </div>
     );
   }
