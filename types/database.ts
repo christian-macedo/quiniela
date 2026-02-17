@@ -102,3 +102,38 @@ export interface RankingWithUser extends TournamentRanking {
 export interface TournamentWithTeams extends Tournament {
   teams: Team[];
 }
+
+// Partial User Types for Privacy Protection
+
+/**
+ * Public user profile - safe for public display in leaderboards, rankings, profiles
+ * Excludes all sensitive fields (email, is_admin, last_login, status)
+ */
+export type PublicUserProfile = Pick<
+  User,
+  "id" | "screen_name" | "avatar_url" | "created_at" | "updated_at"
+>;
+
+/**
+ * Privacy-protected user - includes status for internal checks but no other sensitive data
+ * Used in contexts where we need to check user status but still protect PII
+ */
+export type PrivacyProtectedUser = Pick<
+  User,
+  "id" | "screen_name" | "avatar_url" | "status" | "created_at" | "updated_at"
+>;
+
+/**
+ * Admin view user - extends PublicUserProfile with masked email for admin displays
+ * Email is masked (e.g., "j***@example.com") for enhanced privacy
+ */
+export type AdminUserView = PublicUserProfile & {
+  email: string; // Masked email string
+};
+
+/**
+ * Ranking with public user data - used in tournament leaderboards
+ */
+export type RankingWithPublicUser = TournamentRanking & {
+  user: PublicUserProfile;
+};

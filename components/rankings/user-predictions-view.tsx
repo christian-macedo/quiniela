@@ -1,12 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { User, TournamentRanking, Prediction, MatchWithTeams } from "@/types/database";
+import {
+  PrivacyProtectedUser,
+  TournamentRanking,
+  Prediction,
+  MatchWithTeams,
+} from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import Link from "next/link";
 
 interface PredictionWithMatch extends Prediction {
@@ -14,7 +20,7 @@ interface PredictionWithMatch extends Prediction {
 }
 
 interface UserPredictionsViewProps {
-  user: User;
+  user: PrivacyProtectedUser;
   predictions: PredictionWithMatch[];
   ranking: TournamentRanking | null;
   isCurrentUser: boolean;
@@ -29,18 +35,6 @@ export function UserPredictionsView({
   const t = useTranslations("rankings");
   const tPredictions = useTranslations("predictions");
   const tCommon = useTranslations("common");
-
-  const getInitials = (name: string | null, email: string) => {
-    if (name) {
-      return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    return email[0].toUpperCase();
-  };
 
   // Sort predictions by match date (most recent first)
   const sortedPredictions = [...predictions].sort((a, b) => {
@@ -58,16 +52,11 @@ export function UserPredictionsView({
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage
-                src={user.avatar_url || undefined}
-                alt={user.screen_name || user.email}
-              />
-              <AvatarFallback className="text-xl">
-                {getInitials(user.screen_name, user.email)}
-              </AvatarFallback>
+              <AvatarImage src={user.avatar_url || undefined} alt={getPublicUserDisplay(user)} />
+              <AvatarFallback className="text-xl">{getPublicUserInitials(user)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold">{user.screen_name || user.email}</h2>
+              <h2 className="text-2xl font-bold">{getPublicUserDisplay(user)}</h2>
               {ranking && (
                 <div className="flex items-center gap-3 mt-2">
                   <Badge variant="secondary" className="text-lg px-3 py-1">

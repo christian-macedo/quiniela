@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Tournament, MatchWithTeams, RankingWithUser } from "@/types/database";
+import { Tournament, MatchWithTeams, RankingWithPublicUser } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MatchCard } from "@/components/matches/match-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDate } from "@/lib/utils/date";
+import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import { Calendar, Trophy, UserCircle, Target } from "lucide-react";
 
 interface TournamentDashboardProps {
   tournament: Tournament;
   matches: MatchWithTeams[];
-  rankings: RankingWithUser[];
+  rankings: RankingWithPublicUser[];
   currentUserId?: string;
   userStats?: {
     totalPredictions: number;
@@ -194,16 +195,13 @@ export function TournamentDashboard({
                       {/* Avatar */}
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={ranking.user.avatar_url ?? undefined} />
-                        <AvatarFallback>
-                          {ranking.user.screen_name?.[0]?.toUpperCase() ??
-                            ranking.user.email[0].toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback>{getPublicUserInitials(ranking.user)}</AvatarFallback>
                       </Avatar>
 
                       {/* User Info */}
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate text-sm">
-                          {ranking.user.screen_name ?? ranking.user.email}
+                          {getPublicUserDisplay(ranking.user)}
                         </div>
                       </div>
 

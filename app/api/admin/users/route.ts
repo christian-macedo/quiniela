@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { checkAdminPermission } from "@/lib/middleware/admin-check";
+import { maskEmail } from "@/lib/utils/privacy";
 
 export async function GET() {
   const adminError = await checkAdminPermission();
@@ -9,6 +10,7 @@ export async function GET() {
   try {
     const supabase = await createClient();
 
+    // Admin endpoint - emails are masked for privacy
     // Get all users
     const { data: users, error: usersError } = await supabase
       .from("users")
@@ -37,6 +39,7 @@ export async function GET() {
 
         return {
           ...user,
+          email: maskEmail(user.email), // Mask email for enhanced privacy
           stats: {
             prediction_count: predictionCount || 0,
             tournament_count: tournamentCount,

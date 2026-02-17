@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { RankingsTable } from "@/components/rankings/rankings-table";
+import { RankingWithPublicUser } from "@/types/database";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,7 @@ export default async function RankingsPage({
     .select(
       `
       *,
-      user:users(*)
+      user:users(id, screen_name, avatar_url, created_at, updated_at)
     `
     )
     .eq("tournament_id", tournamentId)
@@ -53,7 +54,7 @@ export default async function RankingsPage({
         </div>
       </div>
       <RankingsTable
-        rankings={rankings || []}
+        rankings={(rankings || []) as RankingWithPublicUser[]}
         currentUserId={user?.id}
         tournamentId={tournamentId}
       />

@@ -19,9 +19,10 @@ export async function GET(
         joined_at,
         users (
           id,
-          email,
           screen_name,
-          avatar_url
+          avatar_url,
+          created_at,
+          updated_at
         )
       `
       )

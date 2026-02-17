@@ -1,14 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { RankingWithUser } from "@/types/database";
+import { RankingWithPublicUser } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import Link from "next/link";
 
 interface RankingsTableProps {
-  rankings: RankingWithUser[];
+  rankings: RankingWithPublicUser[];
   currentUserId?: string;
   tournamentId: string;
 }
@@ -84,16 +85,13 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                   {/* Avatar */}
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={ranking.user.avatar_url ?? undefined} />
-                    <AvatarFallback>
-                      {ranking.user.screen_name?.[0]?.toUpperCase() ??
-                        ranking.user.email[0].toUpperCase()}
-                    </AvatarFallback>
+                    <AvatarFallback>{getPublicUserInitials(ranking.user)}</AvatarFallback>
                   </Avatar>
 
                   {/* User Info */}
                   <div className="flex-1">
                     <div className="font-medium hover:underline">
-                      {ranking.user.screen_name ?? ranking.user.email}
+                      {getPublicUserDisplay(ranking.user)}
                     </div>
                   </div>
 

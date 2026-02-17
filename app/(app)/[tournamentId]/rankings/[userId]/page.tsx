@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserPredictionsView } from "@/components/rankings/user-predictions-view";
+import { getPublicUserDisplay } from "@/lib/utils/privacy";
 import { getTranslations } from "next-intl/server";
 
 export default async function UserRankingDetailPage({
@@ -33,8 +34,12 @@ export default async function UserRankingDetailPage({
     redirect(`/${tournamentId}/rankings`);
   }
 
-  // Fetch the user being viewed
-  const { data: viewedUser } = await supabase.from("users").select("*").eq("id", userId).single();
+  // Fetch the user being viewed (explicit field selection for privacy)
+  const { data: viewedUser } = await supabase
+    .from("users")
+    .select("id, screen_name, avatar_url, status, created_at, updated_at")
+    .eq("id", userId)
+    .single();
 
   if (!viewedUser) {
     redirect(`/${tournamentId}/rankings`);
@@ -72,7 +77,7 @@ export default async function UserRankingDetailPage({
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">
-            {viewedUser.screen_name || viewedUser.email}
+            {getPublicUserDisplay(viewedUser)}
             {isCurrentUser && (
               <span className="ml-2 text-lg text-muted-foreground">
                 ({t("userPredictions.you")})
