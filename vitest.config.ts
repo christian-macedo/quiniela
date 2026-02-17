@@ -15,5 +15,18 @@ export default defineConfig({
     globals: true,
     css: false,
     include: ["**/__tests__/**/*.test.{ts,tsx}", "**/*.test.{ts,tsx}"],
+    coverage: {
+      provider: "v8",
+      include: ["lib/**/*.ts", "app/**/*.{ts,tsx}"],
+      exclude: [
+        "**/__tests__/**",
+        "**/components/ui/**",
+        "app/globals.css",
+        "app/layout.tsx",
+        "**/*.d.ts",
+      ],
+      reporter: ["text", "html"],
+      reportsDirectory: "./coverage",
+    },
   },
 });
