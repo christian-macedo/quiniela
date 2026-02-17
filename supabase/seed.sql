@@ -97,7 +97,11 @@ INSERT INTO auth.users (
   raw_app_meta_data,
   raw_user_meta_data,
   aud,
-  role
+  role,
+  confirmation_token,
+  recovery_token,
+  email_change_token_new,
+  email_change_token_current
 )
 VALUES
   (
@@ -111,7 +115,11 @@ VALUES
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{"screen_name":"Admin User"}'::jsonb,
     'authenticated',
-    'authenticated'
+    'authenticated',
+    '',
+    '',
+    '',
+    ''
   ),
   (
     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'::uuid,
@@ -124,7 +132,11 @@ VALUES
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{"screen_name":"Soccer Fan"}'::jsonb,
     'authenticated',
-    'authenticated'
+    'authenticated',
+    '',
+    '',
+    '',
+    ''
   ),
   (
     'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33'::uuid,
@@ -137,9 +149,70 @@ VALUES
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{"screen_name":"World Cup Expert"}'::jsonb,
     'authenticated',
-    'authenticated'
+    'authenticated',
+    '',
+    '',
+    '',
+    ''
   )
 ON CONFLICT (id) DO NOTHING;
+
+-- GoTrue cannot scan NULL string columns — ensure all token fields are empty strings
+UPDATE auth.users SET
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change_token_current = COALESCE(email_change_token_current, ''),
+  email_change = COALESCE(email_change, ''),
+  phone_change = COALESCE(phone_change, ''),
+  phone_change_token = COALESCE(phone_change_token, ''),
+  reauthentication_token = COALESCE(reauthentication_token, ''),
+  email_change_confirm_status = COALESCE(email_change_confirm_status, 0)
+WHERE email IN ('admin@quiniela.test', 'player1@quiniela.test', 'player2@quiniela.test');
+
+-- Create identity records (required by Supabase Auth for email/password login)
+INSERT INTO auth.identities (
+  id,
+  user_id,
+  provider_id,
+  provider,
+  identity_data,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+VALUES
+  (
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::uuid,
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::uuid,
+    'admin@quiniela.test',
+    'email',
+    '{"sub":"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11","email":"admin@quiniela.test","email_verified":true}'::jsonb,
+    now(),
+    now(),
+    now()
+  ),
+  (
+    'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'::uuid,
+    'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'::uuid,
+    'player1@quiniela.test',
+    'email',
+    '{"sub":"b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22","email":"player1@quiniela.test","email_verified":true}'::jsonb,
+    now(),
+    now(),
+    now()
+  ),
+  (
+    'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33'::uuid,
+    'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33'::uuid,
+    'player2@quiniela.test',
+    'email',
+    '{"sub":"c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33","email":"player2@quiniela.test","email_verified":true}'::jsonb,
+    now(),
+    now(),
+    now()
+  )
+ON CONFLICT (provider_id, provider) DO NOTHING;
 
 -- Create corresponding profiles in public.users
 -- The trigger handle_new_user() normally does this, but for seed data we do it manually
@@ -170,6 +243,10 @@ VALUES
     now()
   )
 ON CONFLICT (id) DO NOTHING;
+
+-- Ensure admin flag is set correctly (the handle_new_user trigger may have
+-- already created these rows with is_admin=false before the explicit INSERT above)
+UPDATE public.users SET is_admin = true WHERE email = 'admin@quiniela.test';
 
 -- ============================================================================
 -- TOURNAMENT TEAMS

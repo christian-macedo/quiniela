@@ -32,6 +32,10 @@ yarn-error.log*
 # Local test configuration (contains credentials)
 supabase/.env.test
 
+# Supabase CLI artifacts
+supabase/.branches
+supabase/.temp
+
 # vercel
 .vercel
 
