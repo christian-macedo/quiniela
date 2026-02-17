@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shield, ShieldOff, UserCheck, UserX } from "lucide-react";
 import { formatLocalDate } from "@/lib/utils/date";
-import { getPublicUserDisplay, maskEmail } from "@/lib/utils/privacy";
+import { getPublicUserDisplay } from "@/lib/utils/privacy";
 
 interface UserWithStats extends AdminUserView {
   is_admin: boolean;
@@ -134,12 +134,6 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
           <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-4">
             <div>
               <p className="font-medium">{getPublicUserDisplay(user)}</p>
-              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                {maskEmail(user.email)}
-                <Badge variant="outline" className="text-xs ml-1">
-                  {t("users.adminView")}
-                </Badge>
-              </p>
             </div>
             <div>
               {user.is_admin ? (
