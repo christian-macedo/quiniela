@@ -3,18 +3,20 @@ import { RankingsTable } from "@/components/rankings/rankings-table";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 export default async function RankingsPage({
   params,
 }: {
   params: Promise<{ tournamentId: string }>;
 }) {
-  const t = await getTranslations('rankings');
+  const t = await getTranslations("rankings");
   const { tournamentId } = await params;
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -28,10 +30,12 @@ export default async function RankingsPage({
 
   const { data: rankings } = await supabase
     .from("tournament_rankings")
-    .select(`
+    .select(
+      `
       *,
       user:users(*)
-    `)
+    `
+    )
     .eq("tournament_id", tournamentId)
     .order("rank", { ascending: true });
 
@@ -40,15 +44,19 @@ export default async function RankingsPage({
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">{tournament?.name}</h1>
-          <p className="text-muted-foreground">{t('subtitle')}</p>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex gap-2">
-        <Link href={`/${tournamentId}`}>
-          <Button variant="outline">{t('backToTournament')}</Button>
-        </Link>
+          <Link href={`/${tournamentId}`}>
+            <Button variant="outline">{t("backToTournament")}</Button>
+          </Link>
         </div>
       </div>
-      <RankingsTable rankings={rankings || []} currentUserId={user?.id} tournamentId={tournamentId} />
+      <RankingsTable
+        rankings={rankings || []}
+        currentUserId={user?.id}
+        tournamentId={tournamentId}
+      />
     </div>
   );
 }

@@ -8,13 +8,13 @@ This project uses a flexible CSS variable-based theming system that makes it eas
 
 ### Palette Colors
 
-| Color Name | Hex Code | Usage |
-|------------|----------|-------|
+| Color Name     | Hex Code  | Usage                                    |
+| -------------- | --------- | ---------------------------------------- |
 | Vivid Cerulean | `#00A6FB` | Accent colors, highlights, active states |
-| Honolulu Blue | `#0582CA` | Primary buttons, links, main brand color |
-| Sea Blue | `#006494` | Muted text, secondary elements |
-| Prussian Blue | `#003554` | Dark mode cards, secondary backgrounds |
-| Rich Black | `#051923` | Text color, dark mode background |
+| Honolulu Blue  | `#0582CA` | Primary buttons, links, main brand color |
+| Sea Blue       | `#006494` | Muted text, secondary elements           |
+| Prussian Blue  | `#003554` | Dark mode cards, secondary backgrounds   |
+| Rich Black     | `#051923` | Text color, dark mode background         |
 
 ## How to Change the Color Scheme
 
@@ -40,6 +40,7 @@ https://coolors.co/palette/ff6b6b-4ecdc4-45b7d1-f7fff7-1a535c
 Use a tool like [Coolors HSL Converter](https://coolors.co/gradient-maker) or any online converter.
 
 Example conversions:
+
 - `#FF6B6B` → `hsl(0, 100%, 71%)`
 - `#4ECDC4` → `hsl(174, 63%, 56%)`
 - `#45B7D1` → `hsl(194, 61%, 55%)`
@@ -51,9 +52,9 @@ Example conversions:
 ```css
 :root {
   /* Update these HSL values */
-  --primary: 194 61% 55%;        /* #45B7D1 - Your main brand color */
-  --accent: 174 63% 56%;         /* #4ECDC4 - Accent/highlights */
-  --foreground: 188 56% 22%;     /* #1A535C - Text color */
+  --primary: 194 61% 55%; /* #45B7D1 - Your main brand color */
+  --accent: 174 63% 56%; /* #4ECDC4 - Accent/highlights */
+  --foreground: 188 56% 22%; /* #1A535C - Text color */
   /* ... update other variables as needed */
 }
 ```
@@ -68,16 +69,16 @@ Update the color reference comment at the top of `globals.css` and this file wit
 
 These are the main colors you'll update when changing themes:
 
-| Variable | Purpose | Example Usage |
-|----------|---------|---------------|
-| `--primary` | Main brand color | Buttons, links, primary actions |
-| `--secondary` | Secondary actions | Secondary buttons, less prominent UI |
-| `--accent` | Highlights & emphasis | Hover states, active items, badges |
-| `--muted` | Background variations | Cards, sidebars, subtle backgrounds |
-| `--foreground` | Main text color | Body text, headings |
-| `--background` | Page background | App background |
-| `--border` | Borders & dividers | Card borders, separators |
-| `--destructive` | Errors & warnings | Delete buttons, error messages |
+| Variable        | Purpose               | Example Usage                        |
+| --------------- | --------------------- | ------------------------------------ |
+| `--primary`     | Main brand color      | Buttons, links, primary actions      |
+| `--secondary`   | Secondary actions     | Secondary buttons, less prominent UI |
+| `--accent`      | Highlights & emphasis | Hover states, active items, badges   |
+| `--muted`       | Background variations | Cards, sidebars, subtle backgrounds  |
+| `--foreground`  | Main text color       | Body text, headings                  |
+| `--background`  | Page background       | App background                       |
+| `--border`      | Borders & dividers    | Card borders, separators             |
+| `--destructive` | Errors & warnings     | Delete buttons, error messages       |
 
 ### How Colors are Applied
 
@@ -106,10 +107,10 @@ To toggle dark mode programmatically:
 
 ```javascript
 // Enable dark mode
-document.documentElement.classList.add('dark');
+document.documentElement.classList.add("dark");
 
 // Disable dark mode
-document.documentElement.classList.remove('dark');
+document.documentElement.classList.remove("dark");
 ```
 
 ## Tips for Choosing a Color Scheme
@@ -137,9 +138,9 @@ If you need additional custom colors beyond the semantic tokens:
 ```css
 /* In app/globals.css */
 :root {
-  --success: 142 71% 45%;  /* Green for success states */
-  --warning: 38 92% 50%;   /* Orange for warnings */
-  --info: 199 89% 48%;     /* Blue for info messages */
+  --success: 142 71% 45%; /* Green for success states */
+  --warning: 38 92% 50%; /* Orange for warnings */
+  --info: 199 89% 48%; /* Blue for info messages */
 }
 ```
 
@@ -169,15 +170,18 @@ Then use as normal Tailwind classes:
 ## Troubleshooting
 
 **Colors not updating?**
+
 - Clear your browser cache (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)
 - Restart your development server (`npm run dev`)
 - Check for typos in HSL values (should be format: `H S% L%`)
 
 **Colors look wrong?**
+
 - Verify HSL conversion is correct
 - Check that you updated both `:root` and `.dark` sections
 - Ensure values don't have extra characters (like `deg` or `%` in wrong places)
 
 **Want to preview before committing?**
+
 - Use browser DevTools to temporarily edit CSS variables
 - Test with `document.documentElement.style.setProperty('--primary', '200 100% 49%')`

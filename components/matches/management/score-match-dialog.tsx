@@ -42,15 +42,11 @@ export function ScoreMatchDialog({
   const router = useRouter();
   const t = useTranslations("matches.score");
   const tCommon = useTranslations("common");
-  const toast = useFeatureToast('matches');
+  const toast = useFeatureToast("matches");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [homeScore, setHomeScore] = useState<string>(
-    currentHomeScore?.toString() || ""
-  );
-  const [awayScore, setAwayScore] = useState<string>(
-    currentAwayScore?.toString() || ""
-  );
+  const [homeScore, setHomeScore] = useState<string>(currentHomeScore?.toString() || "");
+  const [awayScore, setAwayScore] = useState<string>(currentAwayScore?.toString() || "");
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -109,9 +105,7 @@ export function ScoreMatchDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t("title")}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("description")}
-          </AlertDialogDescription>
+          <AlertDialogDescription>{t("description")}</AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="space-y-4 py-4">
@@ -149,18 +143,25 @@ export function ScoreMatchDialog({
               <p className="font-medium text-amber-700 dark:text-amber-500">
                 {t("pointMultiplier", { multiplier })}
               </p>
-              <p className="text-muted-foreground mt-1">
-                {t("multiplierNote", { multiplier })}
-              </p>
+              <p className="text-muted-foreground mt-1">{t("multiplierNote", { multiplier })}</p>
             </div>
           )}
 
           <div className="bg-muted/50 rounded-md p-3 text-sm space-y-1">
             <p className="font-medium">{t("scoringRules")}</p>
             <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
-              <li>{t("exactScore")} {multiplier > 1 && `(${3 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}</li>
-              <li>{t("correctDifference")} {multiplier > 1 && `(${2 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}</li>
-              <li>{t("correctWinner")} {multiplier > 1 && `(${1 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}</li>
+              <li>
+                {t("exactScore")}{" "}
+                {multiplier > 1 && `(${3 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}
+              </li>
+              <li>
+                {t("correctDifference")}{" "}
+                {multiplier > 1 && `(${2 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}
+              </li>
+              <li>
+                {t("correctWinner")}{" "}
+                {multiplier > 1 && `(${1 * multiplier} ${t("ptsWithMultiplier", { multiplier })})`}
+              </li>
             </ul>
           </div>
         </div>

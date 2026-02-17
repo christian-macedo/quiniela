@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import Link from "next/link";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function UpdatePasswordPage() {
-  const t = useTranslations('auth.updatePassword');
+  const t = useTranslations("auth.updatePassword");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,9 @@ export default function UpdatePasswordPage() {
   useEffect(() => {
     // Check if user has a valid recovery session
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         setIsValidSession(true);
       } else {
@@ -33,15 +35,15 @@ export default function UpdatePasswordPage() {
     };
 
     // Listen for auth state changes (PASSWORD_RECOVERY event)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "PASSWORD_RECOVERY") {
-          setIsValidSession(true);
-        } else if (session) {
-          setIsValidSession(true);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsValidSession(true);
+      } else if (session) {
+        setIsValidSession(true);
       }
-    );
+    });
 
     checkSession();
 
@@ -56,12 +58,12 @@ export default function UpdatePasswordPage() {
 
     // Client-side validation
     if (password !== confirmPassword) {
-      setError(t('passwordMismatch'));
+      setError(t("passwordMismatch"));
       return;
     }
 
     if (password.length < 6) {
-      setError(t('passwordTooShort'));
+      setError(t("passwordTooShort"));
       return;
     }
 
@@ -95,9 +97,7 @@ export default function UpdatePasswordPage() {
         </div>
         <Card className="w-full max-w-md">
           <CardContent className="py-8">
-            <div className="text-center text-muted-foreground">
-              {t('verifying')}
-            </div>
+            <div className="text-center text-muted-foreground">{t("verifying")}</div>
           </CardContent>
         </Card>
       </div>
@@ -113,20 +113,16 @@ export default function UpdatePasswordPage() {
         </div>
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl">{t('invalidLinkTitle')}</CardTitle>
-            <CardDescription>
-              {t('invalidLinkMessage')}
-            </CardDescription>
+            <CardTitle className="text-2xl">{t("invalidLinkTitle")}</CardTitle>
+            <CardDescription>{t("invalidLinkMessage")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/forgot-password">
-              <Button className="w-full">
-                {t('requestNewLink')}
-              </Button>
+              <Button className="w-full">{t("requestNewLink")}</Button>
             </Link>
             <div className="mt-4 text-center text-sm">
               <Link href="/login" className="text-primary hover:underline">
-                {t('backToLogin')}
+                {t("backToLogin")}
               </Link>
             </div>
           </CardContent>
@@ -144,16 +140,12 @@ export default function UpdatePasswordPage() {
         </div>
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl">{t('successTitle')}</CardTitle>
-            <CardDescription>
-              {t('successMessage')}
-            </CardDescription>
+            <CardTitle className="text-2xl">{t("successTitle")}</CardTitle>
+            <CardDescription>{t("successMessage")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/login">
-              <Button className="w-full">
-                {t('goToLogin')}
-              </Button>
+              <Button className="w-full">{t("goToLogin")}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -168,16 +160,14 @@ export default function UpdatePasswordPage() {
       </div>
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">{t('title')}</CardTitle>
-          <CardDescription>
-            {t('subtitle')}
-          </CardDescription>
+          <CardTitle className="text-2xl">{t("title")}</CardTitle>
+          <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                {t('newPasswordLabel')}
+                {t("newPasswordLabel")}
               </label>
               <Input
                 id="password"
@@ -191,7 +181,7 @@ export default function UpdatePasswordPage() {
             </div>
             <div className="space-y-2">
               <label htmlFor="confirmPassword" className="text-sm font-medium">
-                {t('confirmPasswordLabel')}
+                {t("confirmPasswordLabel")}
               </label>
               <Input
                 id="confirmPassword"
@@ -203,11 +193,9 @@ export default function UpdatePasswordPage() {
                 minLength={6}
               />
             </div>
-            {error && (
-              <div className="text-sm text-destructive">{error}</div>
-            )}
+            {error && <div className="text-sm text-destructive">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('updating') : t('updatePassword')}
+              {loading ? t("updating") : t("updatePassword")}
             </Button>
           </form>
         </CardContent>

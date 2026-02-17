@@ -3,14 +3,14 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserPredictionsView } from "@/components/rankings/user-predictions-view";
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 export default async function UserRankingDetailPage({
   params,
 }: {
   params: Promise<{ tournamentId: string; userId: string }>;
 }) {
-  const t = await getTranslations('rankings');
+  const t = await getTranslations("rankings");
   const { tournamentId, userId } = await params;
   const supabase = await createClient();
 
@@ -34,11 +34,7 @@ export default async function UserRankingDetailPage({
   }
 
   // Fetch the user being viewed
-  const { data: viewedUser } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", userId)
-    .single();
+  const { data: viewedUser } = await supabase.from("users").select("*").eq("id", userId).single();
 
   if (!viewedUser) {
     redirect(`/${tournamentId}/rankings`);
@@ -78,15 +74,17 @@ export default async function UserRankingDetailPage({
           <h1 className="text-4xl font-bold mb-2">
             {viewedUser.screen_name || viewedUser.email}
             {isCurrentUser && (
-              <span className="ml-2 text-lg text-muted-foreground">({t('userPredictions.you')})</span>
+              <span className="ml-2 text-lg text-muted-foreground">
+                ({t("userPredictions.you")})
+              </span>
             )}
           </h1>
           <p className="text-muted-foreground">
-            {t('userPredictions.predictionsFor', { tournament: tournament.name })}
+            {t("userPredictions.predictionsFor", { tournament: tournament.name })}
           </p>
         </div>
         <Link href={`/${tournamentId}/rankings`}>
-          <Button variant="outline">{t('backToRankings')}</Button>
+          <Button variant="outline">{t("backToRankings")}</Button>
         </Link>
       </div>
       <UserPredictionsView

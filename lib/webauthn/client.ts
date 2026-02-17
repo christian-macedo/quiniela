@@ -134,11 +134,7 @@ export async function authenticateWithPasskey(
       if (error instanceof Error && error.name === "NotAllowedError") {
         throw new PasskeyError("Authentication was cancelled", "USER_CANCELLED");
       }
-      throw new PasskeyError(
-        "Failed to authenticate with passkey",
-        "BROWSER_ERROR",
-        error
-      );
+      throw new PasskeyError("Failed to authenticate with passkey", "BROWSER_ERROR", error);
     }
 
     // Step 3: Verify authentication with server (creates session directly)
@@ -231,11 +227,7 @@ export async function listPasskeys(): Promise<{
 
     if (!response.ok) {
       const error = await response.json();
-      throw new PasskeyError(
-        error.error || "Failed to fetch passkeys",
-        "FETCH_ERROR",
-        error
-      );
+      throw new PasskeyError(error.error || "Failed to fetch passkeys", "FETCH_ERROR", error);
     }
 
     const data = await response.json();
@@ -267,11 +259,7 @@ export async function renamePasskey(
 
     if (!response.ok) {
       const error = await response.json();
-      throw new PasskeyError(
-        error.error || "Failed to rename passkey",
-        "RENAME_ERROR",
-        error
-      );
+      throw new PasskeyError(error.error || "Failed to rename passkey", "RENAME_ERROR", error);
     }
 
     return { success: true };
@@ -299,11 +287,7 @@ export async function deletePasskey(
 
     if (!response.ok) {
       const error = await response.json();
-      throw new PasskeyError(
-        error.error || "Failed to delete passkey",
-        "DELETE_ERROR",
-        error
-      );
+      throw new PasskeyError(error.error || "Failed to delete passkey", "DELETE_ERROR", error);
     }
 
     return { success: true };

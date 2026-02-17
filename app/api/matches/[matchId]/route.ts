@@ -12,12 +12,14 @@ export async function GET(
 
     const { data, error } = await supabase
       .from("matches")
-      .select(`
+      .select(
+        `
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*),
         tournament:tournaments(*)
-      `)
+      `
+      )
       .eq("id", matchId)
       .single();
 
@@ -26,10 +28,7 @@ export async function GET(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching match:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch match" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch match" }, { status: 500 });
   }
 }
 
@@ -64,18 +63,12 @@ export async function PUT(
 
     // Validate required fields
     if (!tournament_id || !home_team_id || !away_team_id || !match_date) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Validate teams are different
     if (home_team_id === away_team_id) {
-      return NextResponse.json(
-        { error: "Home and away teams must be different" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Home and away teams must be different" }, { status: 400 });
     }
 
     // Validate multiplier
@@ -114,11 +107,13 @@ export async function PUT(
         updated_at: getCurrentUTC(),
       })
       .eq("id", matchId)
-      .select(`
+      .select(
+        `
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*)
-      `)
+      `
+      )
       .single();
 
     if (error) throw error;
@@ -126,10 +121,7 @@ export async function PUT(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error updating match:", error);
-    return NextResponse.json(
-      { error: "Failed to update match" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update match" }, { status: 500 });
   }
 }
 
@@ -176,9 +168,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting match:", error);
-    return NextResponse.json(
-      { error: "Failed to delete match" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete match" }, { status: 500 });
   }
 }

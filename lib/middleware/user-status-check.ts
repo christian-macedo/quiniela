@@ -13,7 +13,9 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function checkUserActive(): Promise<NextResponse | null> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return null;
 
@@ -23,7 +25,7 @@ export async function checkUserActive(): Promise<NextResponse | null> {
     .eq("id", user.id)
     .single();
 
-  if (userProfile?.status === 'deactivated') {
+  if (userProfile?.status === "deactivated") {
     await supabase.auth.signOut();
 
     return NextResponse.json(

@@ -6,7 +6,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
  */
 export async function isAdmin(): Promise<boolean> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return false;
 
@@ -35,7 +37,9 @@ export async function requireAdmin(): Promise<void> {
  */
 export async function getCurrentUser() {
   const supabase = await createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
 
   if (!authUser) return null;
 
@@ -52,16 +56,10 @@ export async function getCurrentUser() {
  * Admin function to update user admin status
  * Uses service role to bypass RLS policies
  */
-export async function updateUserAdminStatus(
-  userId: string,
-  isAdmin: boolean
-): Promise<void> {
+export async function updateUserAdminStatus(userId: string, isAdmin: boolean): Promise<void> {
   const adminClient = createAdminClient();
 
-  const { error } = await adminClient
-    .from("users")
-    .update({ is_admin: isAdmin })
-    .eq("id", userId);
+  const { error } = await adminClient.from("users").update({ is_admin: isAdmin }).eq("id", userId);
 
   if (error) throw error;
 }
@@ -80,7 +78,7 @@ export async function updateUserAdminStatus(
  */
 export async function updateUserStatus(
   userId: string,
-  status: 'active' | 'deactivated'
+  status: "active" | "deactivated"
 ): Promise<void> {
   const adminClient = createAdminClient();
 
@@ -88,7 +86,7 @@ export async function updateUserStatus(
     .from("users")
     .update({
       status,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import Link from "next/link";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default function SignupPage() {
-  const t = useTranslations('auth.signup');
+  const t = useTranslations("auth.signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [screenName, setScreenName] = useState("");
@@ -62,16 +62,16 @@ export default function SignupPage() {
 
       <Card className="w-full max-w-md relative animate-scale-in">
         <CardHeader>
-          <CardTitle className="font-display text-3xl uppercase tracking-tight">{t('title')}</CardTitle>
-          <CardDescription>
-            {t('subtitle')}
-          </CardDescription>
+          <CardTitle className="font-display text-3xl uppercase tracking-tight">
+            {t("title")}
+          </CardTitle>
+          <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                {t('emailLabel')}
+                {t("emailLabel")}
               </label>
               <Input
                 id="email"
@@ -84,19 +84,19 @@ export default function SignupPage() {
             </div>
             <div className="space-y-2">
               <label htmlFor="screenName" className="text-sm font-medium">
-                {t('screenNameLabel')}
+                {t("screenNameLabel")}
               </label>
               <Input
                 id="screenName"
                 type="text"
                 value={screenName}
                 onChange={(e) => setScreenName(e.target.value)}
-                placeholder={t('screenNamePlaceholder')}
+                placeholder={t("screenNamePlaceholder")}
               />
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                {t('passwordLabel')}
+                {t("passwordLabel")}
               </label>
               <Input
                 id="password"
@@ -108,17 +108,15 @@ export default function SignupPage() {
                 minLength={6}
               />
             </div>
-            {error && (
-              <div className="text-sm text-destructive">{error}</div>
-            )}
+            {error && <div className="text-sm text-destructive">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('creatingAccount') : t('signUpButton')}
+              {loading ? t("creatingAccount") : t("signUpButton")}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            {t('hasAccount')}{" "}
+            {t("hasAccount")}{" "}
             <Link href="/login" className="text-primary hover:underline">
-              {t('loginLink')}
+              {t("loginLink")}
             </Link>
           </div>
         </CardContent>

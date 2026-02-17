@@ -10,7 +10,9 @@ export default async function TournamentPage({
   const { tournamentId } = await params;
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -30,29 +32,33 @@ export default async function TournamentPage({
   // Fetch matches with teams
   const { data: matches } = await supabase
     .from("matches")
-    .select(`
+    .select(
+      `
       *,
       home_team:teams!matches_home_team_id_fkey(*),
       away_team:teams!matches_away_team_id_fkey(*)
-    `)
+    `
+    )
     .eq("tournament_id", tournamentId)
     .order("match_date", { ascending: true });
 
   // Fetch rankings
   const { data: rankings } = await supabase
     .from("tournament_rankings")
-    .select(`
+    .select(
+      `
       *,
       user:users(*)
-    `)
+    `
+    )
     .eq("tournament_id", tournamentId)
     .order("rank", { ascending: true });
 
   // Get user stats
-  const userRanking = rankings?.find(r => r.user_id === user.id);
+  const userRanking = rankings?.find((r) => r.user_id === user.id);
 
   // Count user's predictions for this tournament
-  const matchIds = matches?.map(m => m.id) || [];
+  const matchIds = matches?.map((m) => m.id) || [];
   let totalPredictions = 0;
 
   if (matchIds.length > 0) {

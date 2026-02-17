@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { PredictionForm } from "@/components/predictions/prediction-form";
 import { PredictionResultCard } from "@/components/predictions/prediction-result-card";
@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function PredictionsPage() {
-  const t = useTranslations('predictions');
-  const tCommon = useTranslations('common');
+  const t = useTranslations("predictions");
+  const tCommon = useTranslations("common");
   const params = useParams();
   const router = useRouter();
   const tournamentId = params.tournamentId as string;
@@ -24,7 +24,9 @@ export default function PredictionsPage() {
   const supabase = createClient();
 
   const loadData = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       router.push("/login");
@@ -44,11 +46,13 @@ export default function PredictionsPage() {
     // Load scheduled matches
     const { data: scheduledMatchesData } = await supabase
       .from("matches")
-      .select(`
+      .select(
+        `
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*)
-      `)
+      `
+      )
       .eq("tournament_id", tournamentId)
       .eq("status", "scheduled")
       .order("match_date", { ascending: true });
@@ -56,18 +60,20 @@ export default function PredictionsPage() {
     // Load completed matches
     const { data: completedMatchesData } = await supabase
       .from("matches")
-      .select(`
+      .select(
+        `
         *,
         home_team:teams!matches_home_team_id_fkey(*),
         away_team:teams!matches_away_team_id_fkey(*)
-      `)
+      `
+      )
       .eq("tournament_id", tournamentId)
       .eq("status", "completed")
       .order("match_date", { ascending: false });
 
     const allMatchIds = [
-      ...(scheduledMatchesData?.map(m => m.id) || []),
-      ...(completedMatchesData?.map(m => m.id) || [])
+      ...(scheduledMatchesData?.map((m) => m.id) || []),
+      ...(completedMatchesData?.map((m) => m.id) || []),
     ];
 
     // Load user's predictions for all matches
@@ -81,7 +87,7 @@ export default function PredictionsPage() {
     setCompletedMatches(completedMatchesData || []);
 
     const predictionsMap: Record<string, Prediction> = {};
-    predictionsData?.forEach(p => {
+    predictionsData?.forEach((p) => {
       predictionsMap[p.match_id] = p;
     });
     setPredictions(predictionsMap);
@@ -94,7 +100,7 @@ export default function PredictionsPage() {
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
     if (!isParticipant) {
-      alert(t('mustBeParticipant'));
+      alert(t("mustBeParticipant"));
       return;
     }
 
@@ -112,7 +118,7 @@ export default function PredictionsPage() {
       loadData();
     } else if (response.status === 403) {
       const data = await response.json();
-      alert(data.error || t('notAuthorized'));
+      alert(data.error || t("notAuthorized"));
       setIsParticipant(false);
     }
   }
@@ -120,34 +126,30 @@ export default function PredictionsPage() {
   if (loading) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="text-center">{tCommon('status.loading')}</div>
+        <div className="text-center">{tCommon("status.loading")}</div>
       </div>
     );
   }
 
   // Filter completed matches to only show those with predictions
-  const completedWithPredictions = completedMatches.filter(match => predictions[match.id]);
+  const completedWithPredictions = completedMatches.filter((match) => predictions[match.id]);
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
-          <p className="text-muted-foreground">
-            {t('subtitle')}
-          </p>
+          <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Link href={`/${tournamentId}`}>
-          <Button variant="outline">{t('backToTournament')}</Button>
+          <Button variant="outline">{t("backToTournament")}</Button>
         </Link>
       </div>
 
       {!isParticipant && (
         <div className="mb-8 p-6 bg-muted/50 border rounded-lg text-center">
-          <h3 className="text-lg font-semibold mb-2">{t('notParticipant')}</h3>
-          <p className="text-muted-foreground">
-            {t('notParticipantMessage')}
-          </p>
+          <h3 className="text-lg font-semibold mb-2">{t("notParticipant")}</h3>
+          <p className="text-muted-foreground">{t("notParticipantMessage")}</p>
         </div>
       )}
 
@@ -156,10 +158,8 @@ export default function PredictionsPage() {
         {completedWithPredictions.length > 0 && (
           <div>
             <div className="mb-4">
-              <h2 className="text-2xl font-bold">{t('completedMatches')}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t('completedMatchesSubtitle')}
-              </p>
+              <h2 className="text-2xl font-bold">{t("completedMatches")}</h2>
+              <p className="text-sm text-muted-foreground">{t("completedMatchesSubtitle")}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {completedWithPredictions.map((match) => (
@@ -177,14 +177,12 @@ export default function PredictionsPage() {
         {isParticipant && (
           <div>
             <div className="mb-4">
-              <h2 className="text-2xl font-bold">{t('upcomingMatches')}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t('upcomingMatchesSubtitle')}
-              </p>
+              <h2 className="text-2xl font-bold">{t("upcomingMatches")}</h2>
+              <p className="text-sm text-muted-foreground">{t("upcomingMatchesSubtitle")}</p>
             </div>
             {scheduledMatches.length === 0 ? (
               <div className="text-center py-12 border rounded-lg bg-muted/50">
-                <p className="text-muted-foreground">{t('noUpcomingMatches')}</p>
+                <p className="text-muted-foreground">{t("noUpcomingMatches")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

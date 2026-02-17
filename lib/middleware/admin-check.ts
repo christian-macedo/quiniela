@@ -19,13 +19,13 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function checkAdminPermission(): Promise<NextResponse | null> {
   const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return NextResponse.json(
-      { error: "Unauthorized: Authentication required" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Unauthorized: Authentication required" }, { status: 401 });
   }
 
   const { data: userProfile } = await supabase
@@ -35,10 +35,7 @@ export async function checkAdminPermission(): Promise<NextResponse | null> {
     .single();
 
   if (!userProfile?.is_admin) {
-    return NextResponse.json(
-      { error: "Forbidden: Admin access required" },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
   }
 
   return null; // Admin check passed

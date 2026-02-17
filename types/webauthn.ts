@@ -2,9 +2,9 @@
  * WebAuthn / Passkey TypeScript Type Definitions
  */
 
-export type AuthenticatorTransport = 'usb' | 'nfc' | 'ble' | 'internal' | 'hybrid';
+export type AuthenticatorTransport = "usb" | "nfc" | "ble" | "internal" | "hybrid";
 
-export type CredentialDeviceType = 'singleDevice' | 'multiDevice';
+export type CredentialDeviceType = "singleDevice" | "multiDevice";
 
 /**
  * WebAuthn Credential stored in database
@@ -32,7 +32,7 @@ export interface WebAuthnChallenge {
   id: string;
   user_id: string | null;
   challenge: string;
-  type: 'registration' | 'authentication';
+  type: "registration" | "authentication";
   created_at: string;
   expires_at: string;
 }
@@ -51,17 +51,18 @@ export interface RPConfig {
  */
 export type WebAuthnCredentialInsert = Omit<
   WebAuthnCredential,
-  'id' | 'created_at' | 'updated_at' | 'last_used_at'
+  "id" | "created_at" | "updated_at" | "last_used_at"
 > & {
   last_used_at?: string | null;
 };
 
-export type WebAuthnChallengeInsert = Omit<WebAuthnChallenge, 'id' | 'created_at'>;
+export type WebAuthnChallengeInsert = Omit<WebAuthnChallenge, "id" | "created_at">;
 
 /**
  * API Request/Response types
  */
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PasskeyRegisterOptionsRequest {
   // User must be authenticated - no body needed
 }

@@ -25,12 +25,7 @@ interface PasskeyListItemProps {
   isDeleting: boolean;
 }
 
-export function PasskeyListItem({
-  passkey,
-  onRename,
-  onDelete,
-  isDeleting,
-}: PasskeyListItemProps) {
+export function PasskeyListItem({ passkey, onRename, onDelete, isDeleting }: PasskeyListItemProps) {
   const t = useTranslations("auth.passkeys");
   const tCommon = useTranslations("common.actions");
   const tAccessibility = useTranslations("accessibility");
@@ -84,9 +79,7 @@ export function PasskeyListItem({
     <>
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="mt-1 text-muted-foreground">
-            {getDeviceIcon()}
-          </div>
+          <div className="mt-1 text-muted-foreground">{getDeviceIcon()}</div>
 
           <div className="flex-1 min-w-0">
             {isEditing ? (
@@ -123,12 +116,8 @@ export function PasskeyListItem({
               </div>
             ) : (
               <div>
-                <p className="font-medium truncate">
-                  {passkey.credentialName || t("unnamed")}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {getDeviceTypeLabel()}
-                </p>
+                <p className="font-medium truncate">{passkey.credentialName || t("unnamed")}</p>
+                <p className="text-sm text-muted-foreground">{getDeviceTypeLabel()}</p>
                 <div className="text-xs text-muted-foreground mt-1">
                   <p>{t("createdOn", { date: formatLocalDate(passkey.createdAt) })}</p>
                   {passkey.lastUsedAt && (

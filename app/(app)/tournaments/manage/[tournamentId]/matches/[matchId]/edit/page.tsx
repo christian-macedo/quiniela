@@ -33,11 +33,13 @@ export default async function EditMatchPage({
   // Fetch match details
   const { data: match } = await supabase
     .from("matches")
-    .select(`
+    .select(
+      `
       *,
       home_team:teams!matches_home_team_id_fkey(*),
       away_team:teams!matches_away_team_id_fkey(*)
-    `)
+    `
+    )
     .eq("id", matchId)
     .single();
 
@@ -48,10 +50,12 @@ export default async function EditMatchPage({
   // Fetch teams registered in this tournament
   const { data: tournamentTeams } = await supabase
     .from("tournament_teams")
-    .select(`
+    .select(
+      `
       team_id,
       teams (*)
-    `)
+    `
+    )
     .eq("tournament_id", tournamentId);
 
   const teams = (tournamentTeams?.map((tt) => tt.teams).filter(Boolean) || []) as unknown as Team[];
@@ -75,20 +79,22 @@ export default async function EditMatchPage({
       </div>
 
       <MatchEditForm
-        match={match as {
-          id: string;
-          tournament_id: string;
-          home_team_id: string;
-          away_team_id: string;
-          match_date: string;
-          home_score: number | null;
-          away_score: number | null;
-          status: "scheduled" | "in_progress" | "completed" | "cancelled";
-          round: string | null;
-          multiplier: number;
-          home_team: Team;
-          away_team: Team;
-        }}
+        match={
+          match as {
+            id: string;
+            tournament_id: string;
+            home_team_id: string;
+            away_team_id: string;
+            match_date: string;
+            home_score: number | null;
+            away_score: number | null;
+            status: "scheduled" | "in_progress" | "completed" | "cancelled";
+            round: string | null;
+            multiplier: number;
+            home_team: Team;
+            away_team: Team;
+          }
+        }
         teams={teams}
       />
     </div>

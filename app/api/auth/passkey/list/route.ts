@@ -7,7 +7,10 @@ export async function GET() {
     const supabase = await createClient();
 
     // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json(
@@ -19,7 +22,9 @@ export async function GET() {
     // Fetch user's credentials
     const { data: credentials, error } = await supabase
       .from("webauthn_credentials")
-      .select("id, credential_id, credential_name, device_type, last_used_at, created_at, transports, backed_up")
+      .select(
+        "id, credential_id, credential_name, device_type, last_used_at, created_at, transports, backed_up"
+      )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -42,9 +47,6 @@ export async function GET() {
     return NextResponse.json({ passkeys: summaries });
   } catch (error) {
     console.error("Error listing passkeys:", error);
-    return NextResponse.json(
-      { error: "Failed to list passkeys" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to list passkeys" }, { status: 500 });
   }
 }

@@ -10,20 +10,18 @@ export async function uploadImage(
 ): Promise<string | null> {
   const supabase = createClient();
 
-  const { data, error } = await supabase.storage
-    .from(bucket)
-    .upload(path, file, {
-      upsert: true,
-    });
+  const { data, error } = await supabase.storage.from(bucket).upload(path, file, {
+    upsert: true,
+  });
 
   if (error) {
     console.error("Error uploading image:", error);
     return null;
   }
 
-  const { data: { publicUrl } } = supabase.storage
-    .from(bucket)
-    .getPublicUrl(data.path);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(bucket).getPublicUrl(data.path);
 
   return publicUrl;
 }

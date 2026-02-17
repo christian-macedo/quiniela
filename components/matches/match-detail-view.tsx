@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDateTime } from "@/lib/utils/date";
 import { Zap } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 interface PredictionWithUser extends Prediction {
   user: Pick<User, "id" | "screen_name" | "avatar_url">;
@@ -19,13 +19,9 @@ interface MatchDetailViewProps {
   currentUserId: string;
 }
 
-export function MatchDetailView({
-  match,
-  predictions,
-  currentUserId,
-}: MatchDetailViewProps) {
-  const t = useTranslations('matches');
-  const tCommon = useTranslations('common');
+export function MatchDetailView({ match, predictions, currentUserId }: MatchDetailViewProps) {
+  const t = useTranslations("matches");
+  const tCommon = useTranslations("common");
   const isCompleted = match.status === "completed";
   const isLive = match.status === "in_progress";
   const isCancelled = match.status === "cancelled";
@@ -53,7 +49,11 @@ export function MatchDetailView({
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Match Summary Card */}
-      <Card className={isLive ? "border-success border-2 shadow-[0_0_15px_hsl(var(--success)/0.15)]" : ""}>
+      <Card
+        className={
+          isLive ? "border-success border-2 shadow-[0_0_15px_hsl(var(--success)/0.15)]" : ""
+        }
+      >
         <CardHeader>
           <div className="flex justify-between items-center">
             <Badge
@@ -71,18 +71,14 @@ export function MatchDetailView({
               <TeamBadge team={match.home_team} size="lg" showName={true} />
             </div>
 
-            {isCompleted &&
-            match.home_score !== null &&
-            match.away_score !== null ? (
+            {isCompleted && match.home_score !== null && match.away_score !== null ? (
               <div className="flex items-center gap-4 font-display text-4xl font-bold animate-score-pop">
                 <span>{match.home_score}</span>
                 <span className="text-muted-foreground">:</span>
                 <span>{match.away_score}</span>
               </div>
             ) : (
-              <div className="text-2xl font-semibold text-muted-foreground">
-                {tCommon('vs')}
-              </div>
+              <div className="text-2xl font-semibold text-muted-foreground">{tCommon("vs")}</div>
             )}
 
             <div className="flex-1 flex justify-center">
@@ -93,19 +89,17 @@ export function MatchDetailView({
           {/* Match Info Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">{t('details.dateTime')}</p>
-              <p className="font-medium">
-                {formatLocalDateTime(match.match_date)}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("details.dateTime")}</p>
+              <p className="font-medium">{formatLocalDateTime(match.match_date)}</p>
             </div>
             {match.round && (
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">{t('details.round')}</p>
+                <p className="text-sm text-muted-foreground">{t("details.round")}</p>
                 <p className="font-medium">{match.round}</p>
               </div>
             )}
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">{t('details.multiplier')}</p>
+              <p className="text-sm text-muted-foreground">{t("details.multiplier")}</p>
               <p className="font-medium text-lg">
                 {match.multiplier > 1 ? (
                   <span className="text-warning flex items-center justify-center gap-1">
@@ -118,7 +112,7 @@ export function MatchDetailView({
               </p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">{t('details.totalPredictions')}</p>
+              <p className="text-sm text-muted-foreground">{t("details.totalPredictions")}</p>
               <p className="font-medium">{predictions.length}</p>
             </div>
           </div>
@@ -128,13 +122,11 @@ export function MatchDetailView({
       {/* Predictions Card */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('details.predictions')}</CardTitle>
+          <CardTitle>{t("details.predictions")}</CardTitle>
         </CardHeader>
         <CardContent>
           {predictions.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
-              {t('details.noPredictions')}
-            </p>
+            <p className="text-center text-muted-foreground py-8">{t("details.noPredictions")}</p>
           ) : (
             <div className="space-y-3">
               {sortedPredictions.map((prediction) => (
@@ -159,7 +151,7 @@ export function MatchDetailView({
             <div className="flex items-center gap-2 text-warning">
               <Zap className="h-5 w-5" />
               <p className="text-sm">
-                {t('details.multiplierNote', { multiplier: match.multiplier })}
+                {t("details.multiplierNote", { multiplier: match.multiplier })}
               </p>
             </div>
           </CardContent>
@@ -184,8 +176,8 @@ function PredictionRow({
   isCurrentUser,
   match,
 }: PredictionRowProps) {
-  const t = useTranslations('matches.details');
-  const tCommon = useTranslations('common');
+  const t = useTranslations("matches.details");
+  const tCommon = useTranslations("common");
   const getInitials = (name: string | null) => {
     if (!name) return "U";
     return name
@@ -201,9 +193,7 @@ function PredictionRow({
   return (
     <div
       className={`flex items-center justify-between p-3 rounded-lg ${
-        isCurrentUser
-          ? "bg-primary/10 border border-primary/20"
-          : "bg-muted/50"
+        isCurrentUser ? "bg-primary/10 border border-primary/20" : "bg-muted/50"
       }`}
     >
       {/* User Info */}
@@ -213,16 +203,12 @@ function PredictionRow({
             src={prediction.user.avatar_url || undefined}
             alt={prediction.user.screen_name || "User"}
           />
-          <AvatarFallback>
-            {getInitials(prediction.user.screen_name)}
-          </AvatarFallback>
+          <AvatarFallback>{getInitials(prediction.user.screen_name)}</AvatarFallback>
         </Avatar>
         <div>
           <p className="font-medium">
-            {prediction.user.screen_name || t('anonymous')}
-            {isCurrentUser && (
-              <span className="ml-2 text-xs text-primary">{t('you')}</span>
-            )}
+            {prediction.user.screen_name || t("anonymous")}
+            {isCurrentUser && <span className="ml-2 text-xs text-primary">{t("you")}</span>}
           </p>
         </div>
       </div>
@@ -233,8 +219,7 @@ function PredictionRow({
           <>
             <div className="text-center">
               <p className="text-lg font-bold font-display">
-                {prediction.predicted_home_score} :{" "}
-                {prediction.predicted_away_score}
+                {prediction.predicted_home_score} : {prediction.predicted_away_score}
               </p>
             </div>
             {isCompleted && !isCancelled && (
@@ -245,20 +230,18 @@ function PredictionRow({
                     prediction.points_earned >= 3 * match.multiplier
                       ? "bg-success"
                       : prediction.points_earned > 0
-                      ? "bg-info"
-                      : ""
+                        ? "bg-info"
+                        : ""
                   }
                 >
-                  {prediction.points_earned} {tCommon('labels.pts')}
+                  {prediction.points_earned} {tCommon("labels.pts")}
                 </Badge>
               </div>
             )}
           </>
         ) : (
           <div className="text-center">
-            <span className="text-muted-foreground italic text-sm">
-              {t('hiddenUntilEnd')}
-            </span>
+            <span className="text-muted-foreground italic text-sm">{t("hiddenUntilEnd")}</span>
           </div>
         )}
       </div>

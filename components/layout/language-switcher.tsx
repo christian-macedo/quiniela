@@ -1,7 +1,7 @@
 "use client";
 
-import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -9,10 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Globe } from 'lucide-react';
+import { Globe } from "lucide-react";
 
 export function LanguageSwitcher() {
-  const t = useTranslations('language');
+  const t = useTranslations("language");
   const locale = useLocale();
   const [isChanging, setIsChanging] = useState(false);
 
@@ -29,25 +29,21 @@ export function LanguageSwitcher() {
   return (
     <div className="flex items-center gap-2">
       <Globe className="h-4 w-4 text-muted-foreground" />
-      <Select
-        value={locale}
-        onValueChange={handleLanguageChange}
-        disabled={isChanging}
-      >
+      <Select value={locale} onValueChange={handleLanguageChange} disabled={isChanging}>
         <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder={t('selectLanguage')} />
+          <SelectValue placeholder={t("selectLanguage")} />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="en">
             <span className="flex items-center gap-2">
               <span>🇺🇸</span>
-              <span>{t('english')}</span>
+              <span>{t("english")}</span>
             </span>
           </SelectItem>
           <SelectItem value="es">
             <span className="flex items-center gap-2">
               <span>🇪🇸</span>
-              <span>{t('spanish')}</span>
+              <span>{t("spanish")}</span>
             </span>
           </SelectItem>
         </SelectContent>
