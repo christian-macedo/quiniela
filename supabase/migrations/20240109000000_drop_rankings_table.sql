@@ -1,7 +1,8 @@
 -- Drop the tournament_rankings table and replace with a view
 -- The view is already created in the previous migration (20240108000000_create_rankings_view.sql)
 
--- First, drop the existing table if it exists
+-- Drop the existing table or view if it exists
+DROP VIEW IF EXISTS tournament_rankings CASCADE;
 DROP TABLE IF EXISTS tournament_rankings CASCADE;
 
 -- Now create the view (rerunning in case it needs to be recreated)

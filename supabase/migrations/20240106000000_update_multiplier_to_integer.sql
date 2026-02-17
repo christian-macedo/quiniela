@@ -17,6 +17,7 @@ ALTER TABLE matches ALTER COLUMN multiplier SET NOT NULL;
 ALTER TABLE matches ALTER COLUMN multiplier SET DEFAULT 1;
 
 -- Add new constraint to ensure multiplier is between 1 and 3
+ALTER TABLE matches DROP CONSTRAINT IF EXISTS matches_multiplier_range;
 ALTER TABLE matches ADD CONSTRAINT matches_multiplier_range CHECK (multiplier >= 1 AND multiplier <= 3);
 
 -- Update the comment

@@ -1,5 +1,8 @@
 -- Create a view that calculates tournament rankings dynamically from predictions
 -- This replaces the tournament_rankings table with a computed view
+-- Drop the existing table first so the view can be created
+DROP TABLE IF EXISTS tournament_rankings CASCADE;
+
 CREATE OR REPLACE VIEW tournament_rankings AS
 SELECT
   p.user_id,
