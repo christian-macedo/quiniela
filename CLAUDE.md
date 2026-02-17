@@ -26,6 +26,7 @@ Quiniela is a multi-tournament prediction application initially designed for the
 - [Scoring Logic](#scoring-logic)
 - [API Routes](#api-routes)
 - [Best Practices & Conventions](#best-practices--conventions)
+- [Git Hooks & Code Quality Automation](#git-hooks--code-quality-automation)
 - [Common Gotchas](#common-gotchas)
 - [Troubleshooting](#troubleshooting)
 - [Adding New Tournaments](#adding-new-tournaments)
@@ -40,11 +41,16 @@ Quiniela is a multi-tournament prediction application initially designed for the
 import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
 // Supabase clients
-import { createClient } from "@/lib/supabase/server";  // Server Components
-import { createClient } from "@/lib/supabase/client";  // Client Components
+import { createClient } from "@/lib/supabase/server"; // Server Components
+import { createClient } from "@/lib/supabase/client"; // Client Components
 
 // Date utilities
-import { formatLocalDate, formatLocalDateTime, formatLocalTime, isPastDate } from "@/lib/utils/date";
+import {
+  formatLocalDate,
+  formatLocalDateTime,
+  formatLocalTime,
+  isPastDate,
+} from "@/lib/utils/date";
 
 // Image uploads
 import { uploadImage, generateImageFilename } from "@/lib/utils/image";
@@ -81,19 +87,26 @@ formatLocalDateTime(match.date_time)  // "Jun 11, 2026 at 12:00"
 // Image upload
 const filename = generateImageFilename(teamId, file);
 const url = await uploadImage(file, "team-logos", filename);
+
+// Code formatting
+npm run format                    // Format all files
+npm run format:check              // Check formatting
 ```
 
 ## Tech Stack
 
 **Core:**
+
 - Next.js 15+ (App Router) + React 19 + TypeScript
 - Tailwind CSS + shadcn/ui components
 
 **Backend:**
+
 - Supabase (PostgreSQL + Auth + Storage + RLS)
 - Next.js API routes (serverless functions)
 
 **Key Libraries & Patterns:**
+
 - Date handling: Native JS (UTC storage, local timezone display)
 - Toast notifications: Custom hook with i18n support
 - Image optimization: Next.js Image component
@@ -102,15 +115,18 @@ const url = await uploadImage(file, "team-logos", filename);
 ## Requirements & Compatibility
 
 **Development Requirements:**
+
 - Node.js 20.x or higher
 - npm 10.x or higher
 - Supabase project (free tier works fine)
 
 **Environment Setup:**
+
 - `.env.local` with Supabase credentials (see `.env.example`)
 - Supabase storage buckets configured (team-logos, user-avatars)
 
 **Browser Support:**
+
 - Modern browsers (Chrome, Firefox, Safari, Edge latest versions)
 - Mobile browsers (iOS Safari 14+, Chrome Android)
 
@@ -138,12 +154,14 @@ npm run lint
 ### When to Use Server vs Client Components
 
 **Server Component (default):**
+
 - Data fetching from database
 - Static content rendering
 - No user interaction needed
 - SEO-critical pages
 
 **Client Component ("use client"):**
+
 - Forms with state management
 - onClick handlers, useState, useEffect hooks
 - Toast notifications
@@ -189,15 +207,15 @@ Use `useFeatureToast(namespace)` for all user feedback with automatic localizati
 ```typescript
 import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 
-const toast = useFeatureToast('teams');
-toast.success('success.created');           // Feature-specific
-toast.error('common:error.generic');        // Common message
+const toast = useFeatureToast("teams");
+toast.success("success.created"); // Feature-specific
+toast.error("common:error.generic"); // Common message
 toast.promise(asyncOp, { loading, success, error }); // Loading states
 ```
 
 ### Key Features
 
-- Feature-scoped localization (teams.messages.*, matches.messages.*, etc.)
+- Feature-scoped localization (teams.messages._, matches.messages._, etc.)
 - Automatic fallback to common messages
 - Promise pattern for loading states (status:creating → success/error)
 - Rich colors (green/red/yellow/blue backgrounds)
@@ -205,6 +223,7 @@ toast.promise(asyncOp, { loading, success, error }); // Loading states
 ### Message Organization
 
 **Feature-Specific** (use without prefix):
+
 - `teams.messages.*` - Team operations
 - `matches.messages.*` - Match operations and scoring
 - `tournaments.messages.*` - Tournament operations
@@ -213,6 +232,7 @@ toast.promise(asyncOp, { loading, success, error }); // Loading states
 - `profile.messages.*` - Profile updates
 
 **Common** (use with `common:` prefix):
+
 - `common.messages.success.*` - Generic success (saved, created, updated, deleted)
 - `common.messages.error.*` - Generic errors (generic, networkError, unauthorized)
 - `common.status.*` - Loading states (saving, creating, updating, deleting)
@@ -220,6 +240,7 @@ toast.promise(asyncOp, { loading, success, error }); // Loading states
 ### Full Documentation
 
 📖 See **[TOASTS.md](./TOASTS.md)** for:
+
 - Complete API reference
 - Promise pattern examples
 - Best practices and guidelines
@@ -233,20 +254,27 @@ All dates are stored in **UTC** in the database (PostgreSQL `TIMESTAMPTZ` type) 
 ### Date Utilities
 
 ```typescript
-import { formatLocalDate, formatLocalDateTime, formatLocalTime, isPastDate, isFutureDate, getCurrentUTC } from "@/lib/utils/date";
+import {
+  formatLocalDate,
+  formatLocalDateTime,
+  formatLocalTime,
+  isPastDate,
+  isFutureDate,
+  getCurrentUTC,
+} from "@/lib/utils/date";
 
 // Display dates (automatic timezone conversion)
-formatLocalDate("2026-06-11T16:00:00Z")        // "Jun 11, 2026"
-formatLocalDateTime("2026-06-11T16:00:00Z")    // "Jun 11, 2026 at 12:00"
-formatLocalTime("2026-06-11T16:00:00Z")        // "12:00"
+formatLocalDate("2026-06-11T16:00:00Z"); // "Jun 11, 2026"
+formatLocalDateTime("2026-06-11T16:00:00Z"); // "Jun 11, 2026 at 12:00"
+formatLocalTime("2026-06-11T16:00:00Z"); // "12:00"
 
 // Check date status
-isPastDate("2026-06-11T16:00:00Z")             // true/false
-isFutureDate("2026-06-11T16:00:00Z")           // true/false
+isPastDate("2026-06-11T16:00:00Z"); // true/false
+isFutureDate("2026-06-11T16:00:00Z"); // true/false
 
 // Store dates (always use UTC)
-getCurrentUTC()                                 // "2026-01-17T20:30:45.123Z"
-new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
+getCurrentUTC(); // "2026-01-17T20:30:45.123Z"
+new Date().toISOString(); // "2026-01-17T20:30:45.123Z"
 ```
 
 ### Rules
@@ -262,33 +290,37 @@ new Date().toISOString()                       // "2026-01-17T20:30:45.123Z"
 
 Required in `.env.local` (see `.env.example`):
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key (public) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Optional | For admin operations (keep secret) |
+| Variable                        | Required | Description                        |
+| ------------------------------- | -------- | ---------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Yes      | Your Supabase project URL          |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes      | Supabase anonymous key (public)    |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Optional | For admin operations (keep secret) |
 
 ### Client Usage Patterns
 
 **Server Components**:
+
 ```typescript
 import { createClient } from "@/lib/supabase/server";
-const supabase = await createClient();  // Note: await is required
+const supabase = await createClient(); // Note: await is required
 ```
 
 **Client Components**:
+
 ```typescript
 import { createClient } from "@/lib/supabase/client";
-const supabase = createClient();  // No await needed
+const supabase = createClient(); // No await needed
 ```
 
 **Middleware** (for auth refresh):
+
 - Uses `lib/supabase/middleware.ts`
 - Configured in `middleware.ts` at root
 
 ### Row Level Security (RLS)
 
 All tables have RLS enabled:
+
 - **Public read**: teams, tournaments, matches, tournament_teams, users, predictions, rankings
 - **Authenticated write**: users can only update their own profile and predictions
 - **Admin operations**: Match scoring requires elevated permissions (implement admin checks)
@@ -404,6 +436,7 @@ Users can be in one of two states: `active` or `deactivated`.
 ### User Self-Deactivation
 
 Users can deactivate their own accounts from profile settings:
+
 - Immediate status change to 'deactivated'
 - Automatic logout
 - All predictions and data preserved
@@ -412,14 +445,16 @@ Users can deactivate their own accounts from profile settings:
 ### Admin User Management
 
 Admins can activate/deactivate any user:
+
 ```typescript
 import { updateUserStatus } from "@/lib/utils/admin";
-await updateUserStatus(userId, 'deactivated');
+await updateUserStatus(userId, "deactivated");
 ```
 
 ### Effects of Deactivation
 
 When a user is deactivated:
+
 - Cannot log in (blocked at app layout level)
 - Cannot submit or update predictions (RLS policy blocks)
 - Excluded from tournament rankings (VIEW filter: `WHERE u.status = 'active'`)
@@ -429,6 +464,7 @@ When a user is deactivated:
 ### Checking User Status
 
 In API routes:
+
 ```typescript
 import { checkUserActive } from "@/lib/middleware/user-status-check";
 
@@ -437,8 +473,9 @@ if (statusError) return statusError;
 ```
 
 In components (user is already loaded):
+
 ```typescript
-if (user.status === 'deactivated') {
+if (user.status === "deactivated") {
   // Handle deactivated user
 }
 ```
@@ -450,6 +487,7 @@ The application uses a flexible CSS variable-based theming system powered by the
 ### Current Palette
 
 **Blue Lagoon** from [Coolors.co](https://coolors.co/palette/00a6fb-0582ca-006494-003554-051923):
+
 - `#00A6FB` - Vivid Cerulean (accents, highlights)
 - `#0582CA` - Honolulu Blue (primary brand color)
 - `#006494` - Sea Blue (muted elements)
@@ -461,6 +499,7 @@ The application uses a flexible CSS variable-based theming system powered by the
 All theme colors are defined in **one place**: `app/globals.css`
 
 To update the entire color scheme:
+
 1. Edit the CSS variables in the `:root` section (light mode)
 2. Edit the CSS variables in the `.dark` section (dark mode)
 3. Save - the entire app updates automatically!
@@ -491,6 +530,7 @@ The final score is multiplied by the match's `multiplier` value (default: 1).
 ### Match Scoring Process
 
 When a match is scored (via `/api/matches/[matchId]/score`):
+
 1. Match status updates to the provided status (e.g., "completed")
 2. If status is "completed": All predictions for that match are scored
 3. If status changes FROM "completed" TO another status: All prediction scores are reset to 0
@@ -499,15 +539,18 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 ## API Routes
 
 ### User Management
+
 - `POST /api/account/deactivate` - User self-deactivation (signs out user immediately)
 - `PATCH /api/admin/users/[userId]/status` - Admin activate/deactivate user
 - `GET /api/admin/users` - Get all users with stats (includes status)
 - `PATCH /api/admin/users/[userId]/permissions` - Toggle admin permissions
 
 ### Match Operations
+
 - `POST /api/matches/[matchId]/score` - Score match and calculate prediction points
 
 ### Predictions
+
 - `POST /api/predictions` - Submit or update prediction (checks user is active)
 
 ## Best Practices & Conventions
@@ -554,6 +597,105 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 - **Transactions** - use database transactions for multi-step operations
 - **Query optimization** - use indexes for frequently queried columns
 
+## Git Hooks & Code Quality Automation
+
+This project uses Husky with lint-staged and Prettier to enforce code quality automatically.
+
+### Pre-commit Checks (runs on every commit)
+
+**Automated via lint-staged:**
+
+- Prettier formatting (auto-formats all staged files)
+- ESLint validation (auto-fixes when possible)
+
+**What gets formatted:**
+
+- TypeScript/JavaScript files (`.ts`, `.tsx`, `.js`, `.jsx`)
+- JSON, CSS, Markdown files
+
+**Performance:** ~2-4 seconds per commit (only checks staged files)
+
+### Pre-push Checks (runs before pushing to remote)
+
+- TypeScript type checking (`tsc --noEmit`)
+- Full production build (`npm run build`)
+
+**Performance:** ~20-30 seconds per push
+
+### Manual Commands
+
+```bash
+# Format entire project
+npm run format
+
+# Check if files are formatted (no changes)
+npm run format:check
+
+# Fix all ESLint errors
+npm run lint:fix
+
+# Type check without building
+npm run type-check
+```
+
+### Prettier Configuration
+
+Located in `.prettierrc`:
+
+- 2-space indentation
+- Semicolons required
+- Double quotes for consistency with JSX
+- 100-character line width
+- Auto line endings (handles Windows/Unix)
+
+### Bypassing Hooks (Emergency Only)
+
+**When to use:** Critical hotfixes, WIP commits that need to be saved urgently
+
+```bash
+# Skip pre-commit hooks
+git commit --no-verify -m "emergency: bypass hooks"
+
+# Skip pre-push hooks
+git push --no-verify
+```
+
+**Important:** Use sparingly! Bypassed commits can break CI/CD or introduce linting errors.
+
+### Troubleshooting
+
+**Hooks not running:**
+
+```bash
+# Verify git hooks path
+git config core.hooksPath  # Should output: .husky/_
+
+# Reinstall hooks
+npx husky install
+```
+
+**Formatting conflicts:**
+
+```bash
+# Format your local files
+npm run format
+
+# Check what's different
+git diff
+```
+
+**Slow commits (rare):**
+
+- Check how many files are staged: `git diff --cached --name-only`
+- If formatting many files at once, consider committing in smaller batches
+- Typical commit times: 2-4 seconds
+
+**Pre-push taking too long:**
+
+- Type checking and builds are comprehensive (20-30s is normal)
+- Consider if you can break commits into smaller logical units
+- Use `--no-verify` only for urgent hotfixes
+
 ## Common Gotchas
 
 Things that will definitely bite you if you're not careful:
@@ -577,39 +719,47 @@ Things that will definitely bite you if you're not careful:
 ## Troubleshooting
 
 ### "Supabase client not initialized"
+
 → Check `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`  
 → Verify environment variables are loaded (restart dev server after changes)
 
 ### Toast messages showing translation keys instead of text
+
 → Check namespace matches feature area (e.g., `useFeatureToast('teams')` for team operations)  
 → Verify translation keys exist in `/messages/[locale]/[feature].json`  
 → For common messages, ensure you're using the `common:` prefix
 
 ### Dates showing in UTC instead of local time
+
 → Use `formatLocalDateTime()`, `formatLocalDate()`, or `formatLocalTime()` - NOT `.toLocaleString()`  
 → Verify date is stored as ISO string in database
 
 ### Rankings not updating after scoring a match
+
 → Rankings should update automatically via database view - check that `tournament_rankings` view exists  
 → Run query manually to verify: `SELECT * FROM tournament_rankings WHERE tournament_id = '...'`  
 → Check RLS policies allow reading from the view
 
 ### Images not uploading to Supabase Storage
+
 → Verify storage buckets exist and are public (team-logos, user-avatars)  
 → Check bucket policies allow INSERT for authenticated users  
 → Verify file size is under bucket limits (default 50MB)
 
 ### "Module not found" errors in production build
+
 → Check imports use aliases correctly (`@/lib/...` not `../../../lib/...`)  
 → Verify `tsconfig.json` has correct path mappings  
 → Clear `.next` folder and rebuild
 
 ### Middleware not refreshing auth tokens
+
 → Ensure `middleware.ts` is at project root (not in `/app`)  
 → Check matcher config includes protected routes  
 → Verify Supabase middleware helper is imported correctly
 
 ### Client component errors about "use server"
+
 → You're likely importing a server action in a client component  
 → Move server actions to separate files and import them properly  
 → Check that API routes are being called via fetch, not direct imports
@@ -621,6 +771,7 @@ The file `supabase/bootstrap.sql` contains the complete database schema and must
 ### When to Update
 
 Update `supabase/bootstrap.sql` after ANY of these changes:
+
 - Adding, modifying, or removing tables
 - Adding, modifying, or removing columns
 - Adding, modifying, or removing indexes

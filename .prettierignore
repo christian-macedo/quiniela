@@ -1,0 +1,21 @@
+# Build outputs
+.next
+out
+build
+dist
+
+# Dependencies
+node_modules
+
+# Config files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Generated files
+*.tsbuildinfo
+next-env.d.ts
+
+# Supabase migrations (don't auto-format SQL)
+supabase/migrations/**/*.sql
+supabase/bootstrap.sql
