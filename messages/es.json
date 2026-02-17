@@ -568,6 +568,7 @@
       "displayNamePlaceholder": "Ingresa tu nombre de usuario",
       "displayNameHelp": "Así es como otros usuarios verán tu nombre",
       "emailAddress": "Correo Electrónico",
+      "emailMasked": "El correo está enmascarado para proteger la privacidad",
       "saveChanges": "Guardar Cambios",
       "saving": "Guardando..."
     },
@@ -615,6 +616,7 @@
       "grantAdmin": "Otorgar Admin",
       "revokeAdmin": "Revocar Admin",
       "anonymous": "Anónimo",
+      "adminView": "Vista Admin",
       "failedToUpdateStatus": "Error al actualizar estado de administrador"
     },
     "scoring": {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Tournament, Team, MatchWithTeams } from "@/types/database";
+import { Tournament, Team, MatchWithTeams, AdminUserView } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import { TeamBadge } from "@/components/teams/team-badge";
 import { MatchCard } from "@/components/matches/match-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDate } from "@/lib/utils/date";
+import { getPublicUserDisplay, getPublicUserInitials, maskEmail } from "@/lib/utils/privacy";
 import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import {
   ArrowLeft,
@@ -32,15 +33,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface ParticipantUser {
-  id: string;
-  email: string;
-  screen_name: string | null;
-  avatar_url: string | null;
-}
-
 interface Participant {
-  user: ParticipantUser | null;
+  user: AdminUserView | null;
   total_points: number;
   rank: number | null;
 }
@@ -51,7 +45,7 @@ interface TournamentDetailViewProps {
   allTeams: Team[];
   matches: MatchWithTeams[];
   participants: Participant[];
-  allUsers: ParticipantUser[];
+  allUsers: AdminUserView[];
 }
 
 const statusColors = {
@@ -356,7 +350,7 @@ export function TournamentDetailView({
                 ) : (
                   availableUsers.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
-                      {user.screen_name || user.email}
+                      {getPublicUserDisplay(user)}
                     </SelectItem>
                   ))
                 )}
@@ -396,20 +390,16 @@ export function TournamentDetailView({
                         )}
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={participant.user.avatar_url || undefined} />
-                          <AvatarFallback>
-                            {participant.user.screen_name?.[0] ||
-                              participant.user.email[0].toUpperCase()}
-                          </AvatarFallback>
+                          <AvatarFallback>{getPublicUserInitials(participant.user)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">
-                            {participant.user.screen_name || participant.user.email}
+                          <p className="font-medium">{getPublicUserDisplay(participant.user)}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            {maskEmail(participant.user.email)}
+                            <Badge variant="outline" className="text-xs ml-1">
+                              Admin
+                            </Badge>
                           </p>
-                          {participant.user.screen_name && (
-                            <p className="text-xs text-muted-foreground">
-                              {participant.user.email}
-                            </p>
-                          )}
                         </div>
                         <Badge variant="secondary">
                           {participant.total_points} {tCommon("labels.pts")}

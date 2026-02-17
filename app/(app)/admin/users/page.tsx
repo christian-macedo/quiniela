@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { User } from "@/types/database";
+import { AdminUserView, UserStatus } from "@/types/database";
 import { UserManagementList } from "@/components/admin/user-management-list";
 import { Loader2 } from "lucide-react";
 
-interface UserWithStats extends User {
+interface UserWithStats extends AdminUserView {
+  is_admin: boolean;
+  status: UserStatus;
   stats: {
     prediction_count: number;
     tournament_count: number;

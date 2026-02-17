@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getPublicUserDisplay, getPublicUserInitials, maskEmail } from "@/lib/utils/privacy";
 import { UserCircle, LogOut, Shield, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -37,10 +38,8 @@ export function UserNav({ user }: UserNavProps) {
     router.refresh();
   }
 
-  const displayName = user.screen_name || user.email;
-  const initials = user.screen_name
-    ? user.screen_name[0].toUpperCase()
-    : user.email[0].toUpperCase();
+  const displayName = getPublicUserDisplay(user);
+  const initials = getPublicUserInitials(user);
 
   return (
     <DropdownMenu>
@@ -65,7 +64,7 @@ export function UserNav({ user }: UserNavProps) {
                 </Badge>
               )}
             </div>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-xs leading-none text-muted-foreground">{maskEmail(user.email)}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

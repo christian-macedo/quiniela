@@ -3,13 +3,16 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
-import { User } from "@/types/database";
+import { AdminUserView, UserStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shield, ShieldOff, UserCheck, UserX } from "lucide-react";
 import { formatLocalDate } from "@/lib/utils/date";
+import { getPublicUserDisplay, maskEmail } from "@/lib/utils/privacy";
 
-interface UserWithStats extends User {
+interface UserWithStats extends AdminUserView {
+  is_admin: boolean;
+  status: UserStatus;
   stats: {
     prediction_count: number;
     tournament_count: number;
@@ -47,7 +50,7 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
 
       // Update local state
       const updatedUser = users.find((u) => u.id === userId);
-      const userName = updatedUser?.screen_name || updatedUser?.email || t("users.anonymous");
+      const userName = updatedUser ? getPublicUserDisplay(updatedUser) : t("users.anonymous");
 
       setUsers(users.map((u) => (u.id === userId ? { ...u, is_admin: !currentStatus } : u)));
 
@@ -78,10 +81,8 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
 
       if (!response.ok) throw new Error("Failed to update status");
 
-      const userName =
-        users.find((u) => u.id === userId)?.screen_name ||
-        users.find((u) => u.id === userId)?.email ||
-        t("users.anonymous");
+      const foundUser = users.find((u) => u.id === userId);
+      const userName = foundUser ? getPublicUserDisplay(foundUser) : t("users.anonymous");
 
       setUsers(
         users.map((u) =>
@@ -132,8 +133,13 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
         >
           <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-4">
             <div>
-              <p className="font-medium">{user.screen_name || t("users.anonymous")}</p>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
+              <p className="font-medium">{getPublicUserDisplay(user)}</p>
+              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                {maskEmail(user.email)}
+                <Badge variant="outline" className="text-xs ml-1">
+                  {t("users.adminView")}
+                </Badge>
+              </p>
             </div>
             <div>
               {user.is_admin ? (

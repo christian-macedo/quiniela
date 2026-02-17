@@ -568,6 +568,7 @@
       "displayNamePlaceholder": "Enter your display name",
       "displayNameHelp": "This is how other users will see your name",
       "emailAddress": "Email Address",
+      "emailMasked": "Email is masked for privacy protection",
       "saveChanges": "Save Changes",
       "saving": "Saving..."
     },
@@ -615,6 +616,7 @@
       "grantAdmin": "Grant Admin",
       "revokeAdmin": "Revoke Admin",
       "anonymous": "Anonymous",
+      "adminView": "Admin View",
       "failedToUpdateStatus": "Failed to update admin status"
     },
     "scoring": {

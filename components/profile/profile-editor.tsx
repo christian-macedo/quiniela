@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDate, formatLocalTime } from "@/lib/utils/date";
+import { getPublicUserInitials, maskEmail } from "@/lib/utils/privacy";
 import { AccountDeactivationDialog } from "@/components/profile/account-deactivation-dialog";
 
 interface ProfileEditorProps {
@@ -61,7 +62,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
               <Avatar className="h-24 w-24">
                 <AvatarImage src={avatarPreview ?? user.avatar_url ?? undefined} />
                 <AvatarFallback className="text-2xl">
-                  {screenName?.[0]?.toUpperCase() ?? user.email[0].toUpperCase()}
+                  {screenName?.[0]?.toUpperCase() ?? getPublicUserInitials(user)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-2">
@@ -95,10 +96,11 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
               <p className="text-xs text-muted-foreground">{t("edit.displayNameHelp")}</p>
             </div>
 
-            {/* Email (read-only) */}
+            {/* Email (read-only, masked for privacy) */}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("edit.emailAddress")}</label>
-              <Input value={user.email} disabled className="bg-muted" />
+              <Input value={maskEmail(user.email)} disabled className="bg-muted" />
+              <p className="text-xs text-muted-foreground">{t("edit.emailMasked")}</p>
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

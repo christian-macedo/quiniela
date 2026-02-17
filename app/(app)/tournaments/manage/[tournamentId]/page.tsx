@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/utils/admin";
 import { TournamentDetailView } from "@/components/tournaments/management/tournament-detail-view";
+import { AdminUserView } from "@/types/database";
 
 interface TournamentDetailPageProps {
   params: Promise<{ tournamentId: string }>;
@@ -83,15 +84,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
     .eq("tournament_id", tournamentId)
     .order("joined_at", { ascending: true });
 
-  type ParticipantUser = {
-    id: string;
-    email: string;
-    screen_name: string | null;
-    avatar_url: string | null;
-  };
-
   const participantUsers = (tournamentParticipants?.map((tp) => tp.users).filter(Boolean) ||
-    []) as unknown as ParticipantUser[];
+    []) as unknown as AdminUserView[];
 
   // Fetch rankings for participants
   const { data: rankings } = await supabase
@@ -112,10 +106,10 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
     rank: rankingsMap[user.id]?.rank || null,
   }));
 
-  // Fetch all users for the dropdown
+  // Fetch all users for the dropdown (admin page - will be masked in component)
   const { data: allUsers } = await supabase
     .from("users")
-    .select("id, email, screen_name, avatar_url")
+    .select("id, screen_name, avatar_url, email")
     .order("screen_name");
 
   return (
@@ -126,7 +120,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         allTeams={allTeams || []}
         matches={matches || []}
         participants={participants}
-        allUsers={(allUsers as unknown as ParticipantUser[]) || []}
+        allUsers={(allUsers as unknown as AdminUserView[]) || []}
       />
     </div>
   );

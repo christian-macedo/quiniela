@@ -77,6 +77,20 @@ CREATE TABLE IF NOT EXISTS public.tournament_teams (
     PRIMARY KEY (tournament_id, team_id)
 );
 
+-- ============================================================================
+-- PRIVACY NOTE: Users Table
+-- ============================================================================
+-- The users table contains sensitive PII that must be protected:
+-- - email: Required for auth, NEVER expose in public APIs/UI (mask when displayed)
+-- - is_admin: Privilege escalation risk, never expose publicly
+-- - webauthn_user_id: Security sensitive, never expose
+-- - last_login: Privacy sensitive, never expose
+-- - status: Functional field, admin-only visibility
+--
+-- Public-safe fields: id, screen_name, avatar_url, created_at, updated_at
+-- Application MUST use privacy utilities (lib/utils/privacy.ts) for all displays
+-- ============================================================================
+
 -- Users table - Extends Supabase auth.users
 CREATE TABLE IF NOT EXISTS public.users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -564,6 +578,11 @@ DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
 CREATE POLICY "Users can update their own profile"
     ON public.users FOR UPDATE
     USING (auth.uid() = id OR public.is_admin(auth.uid()));
+
+-- PRIVACY NOTE: While users table allows SELECT by everyone (needed for rankings/leaderboards),
+-- application code MUST filter sensitive fields before sending to clients.
+-- Use sanitizeUserForPublic() or explicit field selection in queries to exclude:
+-- email, is_admin, webauthn_user_id, last_login, status
 
 -- ============================================================================
 -- RLS POLICIES: Tournament Participants

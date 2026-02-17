@@ -480,6 +480,73 @@ if (user.status === "deactivated") {
 }
 ```
 
+## Privacy & Data Protection
+
+The application implements strict privacy controls to protect user PII.
+
+### Public User Data
+
+**Publicly visible fields**:
+
+- User ID (UUID)
+- Screen name (required at signup, or "Player #XXXXX" for legacy users)
+- Avatar URL
+- Account creation/update timestamps
+
+**Protected fields** (never exposed in public UI/APIs):
+
+- Email address (masked even in admin views: `j***@example.com`)
+- Admin status flag
+- WebAuthn credentials
+- Last login timestamp
+- Account status
+
+### Privacy Utilities
+
+**ALWAYS** use privacy utilities when displaying user information:
+
+```typescript
+import {
+  getPublicUserDisplay,
+  getPublicUserInitials,
+  maskEmail,
+  sanitizeUserForPublic,
+} from "@/lib/utils/privacy";
+
+// Display name (shows screen_name or "Player #XXXXX" for legacy users)
+const displayName = getPublicUserDisplay(user);
+
+// Avatar initials (uses screen_name first letter or "P")
+const initials = getPublicUserInitials(user);
+
+// Masked email (for admin views and user's own profile)
+const maskedEmail = maskEmail(user.email); // "j***@example.com"
+
+// Strip sensitive fields for public APIs
+const publicUser = sanitizeUserForPublic(user);
+```
+
+### API Response Filtering
+
+**Public endpoints** - explicit field selection:
+
+```typescript
+.select('id, screen_name, avatar_url, created_at, updated_at')
+```
+
+**Admin endpoints** - mask sensitive data:
+
+```typescript
+const users = await fetchUsers();
+const masked = users.map((u) => ({ ...u, email: maskEmail(u.email) }));
+```
+
+### Screen Name Requirement
+
+- **New users**: Must set screen_name during signup (3-30 characters)
+- **Legacy users**: Grandfathered in with anonymous display ("Player #XXXXX")
+- **Encouraged**: Banner prompts legacy users to set screen_name
+
 ## Theming & Color Scheme
 
 The application uses a flexible CSS variable-based theming system powered by the **Blue Lagoon** color palette.
