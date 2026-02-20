@@ -16,14 +16,14 @@ Quiniela is a multi-tournament prediction application initially designed for the
 - [Development Commands](#development-commands)
 - [Local Development with Supabase](#local-development-with-supabase)
 - [Component Patterns](#component-patterns)
-- [Toast Notifications](#toast-notifications) → See [TOASTS.md](./TOASTS.md)
+- [Toast Notifications](#toast-notifications) → See [TOASTS.md](./docs/TOASTS.md)
 - [Date and Time Handling](#date-and-time-handling)
 - [Supabase Configuration](#supabase-configuration)
 - [Database Architecture](#database-architecture)
 - [Project Structure](#project-structure)
-- [Authentication Flow](#authentication-flow)
+- [Authorization & Security](#authorization--security) → See [AUTHORIZATION.md](./docs/AUTHORIZATION.md)
 - [Image Uploads](#image-uploads)
-- [Theming & Color Scheme](#theming--color-scheme) → See [THEMING.md](./THEMING.md)
+- [Theming & Color Scheme](#theming--color-scheme) → See [THEMING.md](./docs/THEMING.md)
 - [Scoring Logic](#scoring-logic)
 - [API Routes](#api-routes)
 - [Best Practices & Conventions](#best-practices--conventions)
@@ -59,6 +59,12 @@ import { uploadImage, generateImageFilename } from "@/lib/utils/image";
 
 // Scoring
 import { calculatePoints } from "@/lib/utils/scoring";
+
+// Authorization & security
+import { checkAdminPermission } from "@/lib/middleware/admin-check";
+import { checkUserActive } from "@/lib/middleware/user-status-check";
+import { getPublicUserDisplay, maskEmail, sanitizeUserForPublic } from "@/lib/utils/privacy";
+import { isAdmin, requireAdmin } from "@/lib/utils/admin";
 ```
 
 ### Common Patterns
@@ -203,29 +209,29 @@ npm run dev
 
 After running `supabase:reset`, these accounts are ready to use (no email confirmation needed):
 
-| Email                    | Password      | Role  |
-| ------------------------ | ------------- | ----- |
-| `admin@quiniela.test`    | `password123` | Admin |
-| `player1@quiniela.test`  | `password123` | User  |
-| `player2@quiniela.test`  | `password123` | User  |
+| Email                   | Password      | Role  |
+| ----------------------- | ------------- | ----- |
+| `admin@quiniela.test`   | `password123` | Admin |
+| `player1@quiniela.test` | `password123` | User  |
+| `player2@quiniela.test` | `password123` | User  |
 
 ### Command Reference
 
-| Command                  | Description                                      |
-| ------------------------ | ------------------------------------------------ |
-| `npm run supabase:start` | Start all Docker containers                      |
-| `npm run supabase:stop`  | Stop containers (preserves data)                 |
-| `npm run supabase:reset` | Drop DB, reapply all migrations + seed.sql       |
-| `npm run supabase:status`| Show status and local credentials                |
+| Command                   | Description                                |
+| ------------------------- | ------------------------------------------ |
+| `npm run supabase:start`  | Start all Docker containers                |
+| `npm run supabase:stop`   | Stop containers (preserves data)           |
+| `npm run supabase:reset`  | Drop DB, reapply all migrations + seed.sql |
+| `npm run supabase:status` | Show status and local credentials          |
 
 ### Local Service URLs
 
-| Service   | URL                          | Description                |
-| --------- | ---------------------------- | -------------------------- |
-| API       | `http://127.0.0.1:54321`     | Supabase API endpoint      |
-| Studio    | `http://127.0.0.1:54323`     | Database admin dashboard   |
-| Mailpit   | `http://127.0.0.1:54324`     | Email testing inbox        |
-| Database  | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` | Direct DB connection |
+| Service  | URL                                                       | Description              |
+| -------- | --------------------------------------------------------- | ------------------------ |
+| API      | `http://127.0.0.1:54321`                                  | Supabase API endpoint    |
+| Studio   | `http://127.0.0.1:54323`                                  | Database admin dashboard |
+| Mailpit  | `http://127.0.0.1:54324`                                  | Email testing inbox      |
+| Database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` | Direct DB connection     |
 
 ### Switching Between Local and Cloud
 
@@ -328,7 +334,7 @@ toast.promise(asyncOp, { loading, success, error }); // Loading states
 
 ### Full Documentation
 
-📖 See **[TOASTS.md](./TOASTS.md)** for:
+📖 See **[TOASTS.md](./docs/TOASTS.md)** for:
 
 - Complete API reference
 - Promise pattern examples
@@ -408,11 +414,7 @@ const supabase = createClient(); // No await needed
 
 ### Row Level Security (RLS)
 
-All tables have RLS enabled:
-
-- **Public read**: teams, tournaments, matches, tournament_teams, users, predictions, rankings
-- **Authenticated write**: users can only update their own profile and predictions
-- **Admin operations**: Match scoring requires elevated permissions (implement admin checks)
+All tables have RLS enabled. See **[AUTHORIZATION.md](./docs/AUTHORIZATION.md#row-level-security-policies)** for the complete per-table policy reference.
 
 ## Database Architecture
 
@@ -424,12 +426,9 @@ The application is built around a **tournament-centric architecture** with these
 2. **tournaments**: Competition containers (name, sport, dates, status, scoring_rules)
 3. **tournament_teams**: Many-to-many junction table linking teams to tournaments
 4. **matches**: Individual games within a tournament (references home/away teams, scores, status)
-5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url, is_admin, **status**)
-   - **Status field**: Soft delete mechanism - values: 'active' (default) or 'deactivated'
-   - Deactivated users are excluded from rankings and cannot submit predictions
+5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url, is_admin, status) — see [AUTHORIZATION.md](./docs/AUTHORIZATION.md#user-status--deactivation) for status details
 6. **predictions**: User predictions for matches (predicted scores, points_earned)
-7. **tournament_rankings**: Database VIEW that dynamically calculates rankings from predictions (total_points, rank)
-   - Filters out deactivated users: `WHERE u.status = 'active'`
+7. **tournament_rankings**: Database VIEW that dynamically calculates rankings from predictions (total_points, rank) — filters out deactivated users
 
 ### Key Relationships
 
@@ -475,6 +474,9 @@ The application is built around a **tournament-centric architecture** with these
     /server.ts               # Server component client
     /client.ts               # Client component client
     /middleware.ts           # Auth refresh middleware
+  /middleware                 # Auth & permission middleware → See docs/AUTHORIZATION.md
+    /admin-check.ts          # checkAdminPermission()
+    /user-status-check.ts    # checkUserActive()
   /utils                     # Utility functions
     /scoring.ts              # Points calculation
     /date.ts                 # Date formatting and utilities
@@ -492,13 +494,36 @@ The application is built around a **tournament-centric architecture** with these
   /avatars                   # Default avatar images
 ```
 
-## Authentication Flow
+## Authorization & Security
 
-- Supabase Auth handles sign-up, login, session management
-- Middleware refreshes auth tokens automatically on route changes
-- User profiles are created in `users` table (extends auth.users)
-- Protected routes check `auth.getUser()` in Server Components
-- Redirect to login if unauthenticated
+Authentication, authorization, privacy, and user status are handled at multiple layers. See **[AUTHORIZATION.md](./docs/AUTHORIZATION.md)** for the complete reference.
+
+### Quick Start
+
+```typescript
+// Admin-only API route
+import { checkAdminPermission } from "@/lib/middleware/admin-check";
+const adminError = await checkAdminPermission();
+if (adminError) return adminError; // 401 or 403
+
+// Active user check
+import { checkUserActive } from "@/lib/middleware/user-status-check";
+const statusError = await checkUserActive();
+if (statusError) return statusError; // 403 if deactivated
+
+// Privacy: display user data safely
+import { getPublicUserDisplay, sanitizeUserForPublic } from "@/lib/utils/privacy";
+const displayName = getPublicUserDisplay(user); // screen_name or "Player #XXXXX"
+const publicUser = sanitizeUserForPublic(user); // strips email, is_admin, etc.
+```
+
+### Key Patterns
+
+- **4 protection layers**: app layout, API middleware, RLS policies, application code
+- **Deactivated users**: blocked at layout + API + RLS levels; excluded from rankings
+- **Privacy**: never expose email in public UI; use `maskEmail()` in admin views
+- **Admin client**: `createAdminClient()` bypasses RLS (server-only, never in client components)
+- **First user**: automatically becomes admin via `handle_new_user()` trigger
 
 ## Image Uploads
 
@@ -517,132 +542,6 @@ const url = await uploadImage(file, "user-avatars", filename);
 ```
 
 **Important**: Both buckets must be configured as public in Supabase Dashboard.
-
-## User Status and Deactivation
-
-Users can be in one of two states: `active` or `deactivated`.
-
-### User Self-Deactivation
-
-Users can deactivate their own accounts from profile settings:
-
-- Immediate status change to 'deactivated'
-- Automatic logout
-- All predictions and data preserved
-- Must contact admin to reactivate
-
-### Admin User Management
-
-Admins can activate/deactivate any user:
-
-```typescript
-import { updateUserStatus } from "@/lib/utils/admin";
-await updateUserStatus(userId, "deactivated");
-```
-
-### Effects of Deactivation
-
-When a user is deactivated:
-
-- Cannot log in (blocked at app layout level)
-- Cannot submit or update predictions (RLS policy blocks)
-- Excluded from tournament rankings (VIEW filter: `WHERE u.status = 'active'`)
-- Profile hidden or returns 404
-- All historical data preserved
-
-### Checking User Status
-
-In API routes:
-
-```typescript
-import { checkUserActive } from "@/lib/middleware/user-status-check";
-
-const statusError = await checkUserActive();
-if (statusError) return statusError;
-```
-
-In components (user is already loaded):
-
-```typescript
-if (user.status === "deactivated") {
-  // Handle deactivated user
-}
-```
-
-## Privacy & Data Protection
-
-The application implements strict privacy controls to protect user PII.
-
-### Public User Data
-
-**Publicly visible fields**:
-
-- User ID (UUID)
-- Screen name (required at signup, or "Player #XXXXX" for legacy users)
-- Avatar URL
-- Account creation/update timestamps
-
-**Protected fields** (never exposed in public UI/APIs):
-
-- Email address (users see their own full email; masked in admin views: `j***@example.com`)
-- Admin status flag
-- WebAuthn credentials
-- Last login timestamp
-- Account status
-
-### Privacy Utilities
-
-**ALWAYS** use privacy utilities when displaying user information:
-
-```typescript
-import {
-  getPublicUserDisplay,
-  getPublicUserInitials,
-  maskEmail,
-  sanitizeUserForPublic,
-} from "@/lib/utils/privacy";
-
-// Display name (shows screen_name or "Player #XXXXX" for legacy users)
-const displayName = getPublicUserDisplay(user);
-
-// Avatar initials (uses screen_name first letter or "P")
-const initials = getPublicUserInitials(user);
-
-// Masked email (for admin views when viewing OTHER users' emails)
-const maskedEmail = maskEmail(user.email); // "j***@example.com"
-
-// Strip sensitive fields for public APIs
-const publicUser = sanitizeUserForPublic(user);
-```
-
-**When to mask emails**:
-
-- ✅ Admin viewing other users' emails → use `maskEmail()`
-- ✅ Tournament participants list (admin view) → use `maskEmail()`
-- ✅ Any context where viewing another user's email → use `maskEmail()`
-- ❌ User viewing their own email in menu/profile → show full email
-- ❌ Public contexts (rankings, leaderboards) → don't include email at all
-
-### API Response Filtering
-
-**Public endpoints** - explicit field selection:
-
-```typescript
-.select('id, screen_name, avatar_url, created_at, updated_at')
-```
-
-**Admin endpoints** - mask sensitive data:
-
-```typescript
-const users = await fetchUsers();
-const masked = users.map((u) => ({ ...u, email: maskEmail(u.email) }));
-```
-
-### Screen Name Requirement
-
-- **New users**: Must set screen_name during signup (3-30 characters)
-- **Legacy users**: Grandfathered in with anonymous display ("Player #XXXXX")
-- **Encouraged**: Banner prompts legacy users to set screen_name
 
 ## Theming & Color Scheme
 
@@ -668,7 +567,7 @@ To update the entire color scheme:
 2. Edit the CSS variables in the `.dark` section (dark mode)
 3. Save - the entire app updates automatically!
 
-📖 See **[THEMING.md](./THEMING.md)** for detailed instructions and color palette resources.
+📖 See **[THEMING.md](./docs/THEMING.md)** for detailed instructions and color palette resources.
 
 ### Using Theme Colors
 
@@ -717,6 +616,8 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 
 - `POST /api/predictions` - Submit or update prediction (checks user is active)
 
+See **[AUTHORIZATION.md](./docs/AUTHORIZATION.md#api-route-protection-patterns)** for route protection patterns and decision matrix.
+
 ## Best Practices & Conventions
 
 ### Component Development
@@ -742,7 +643,7 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 
 ### User Experience
 
-- **Toast notifications** - use `useFeatureToast(namespace)` for all user feedback messages (see [TOASTS.md](./TOASTS.md))
+- **Toast notifications** - use `useFeatureToast(namespace)` for all user feedback messages (see [TOASTS.md](./docs/TOASTS.md))
 - **Loading states** - show loading indicators for async operations (use toast.promise pattern)
 - **Error messages** - provide clear, actionable error messages to users
 - **Confirmation dialogs** - require confirmation for destructive actions (delete, reset scores)
@@ -757,7 +658,7 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 ### Database Operations
 
 - **Bootstrap script maintenance** - always update `supabase/bootstrap.sql` after ANY schema change (tables, columns, indexes, RLS policies, functions, triggers, views, grants)
-- **RLS awareness** - remember all tables have Row Level Security enabled; test permissions thoroughly
+- **RLS awareness** - all tables have Row Level Security enabled; see [AUTHORIZATION.md](./docs/AUTHORIZATION.md#row-level-security-policies) for policy reference
 - **Transactions** - use database transactions for multi-step operations
 - **Query optimization** - use indexes for frequently queried columns
 
@@ -891,11 +792,11 @@ Naming convention: `<source-filename>.test.ts` (or `.test.tsx` for components).
 
 ### Test Categories
 
-| Category | What to mock | Example |
-|----------|-------------|----------|
-| **Pure utilities** | Nothing | `scoring.test.ts` |
-| **Server middleware / API routes** | `@/lib/supabase/server` | `admin-check.test.ts`, `route.test.ts` |
-| **Client components** | `@/lib/supabase/client`, `next/navigation`, `next-intl` | `page.test.tsx` |
+| Category                           | What to mock                                            | Example                                |
+| ---------------------------------- | ------------------------------------------------------- | -------------------------------------- |
+| **Pure utilities**                 | Nothing                                                 | `scoring.test.ts`                      |
+| **Server middleware / API routes** | `@/lib/supabase/server`                                 | `admin-check.test.ts`, `route.test.ts` |
+| **Client components**              | `@/lib/supabase/client`, `next/navigation`, `next-intl` | `page.test.tsx`                        |
 
 ### Mock Helpers
 
@@ -925,8 +826,14 @@ import { createMockAuthUser } from "@/__tests__/helpers/supabase-mock";
 const { mockSupabase, mockAuth, mockQueryBuilder, mockQueryResult } = vi.hoisted(() => {
   const result = { data: null as unknown, error: null as unknown };
   const qb: Record<string, ReturnType<typeof vi.fn>> = {
-    select: vi.fn(), insert: vi.fn(), update: vi.fn(), delete: vi.fn(),
-    eq: vi.fn(), single: vi.fn(), limit: vi.fn(), order: vi.fn(),
+    select: vi.fn(),
+    insert: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    eq: vi.fn(),
+    single: vi.fn(),
+    limit: vi.fn(),
+    order: vi.fn(),
   };
   for (const key of Object.keys(qb)) {
     if (key === "single") qb[key].mockImplementation(() => Promise.resolve(result));
@@ -937,8 +844,11 @@ const { mockSupabase, mockAuth, mockQueryBuilder, mockQueryResult } = vi.hoisted
     configurable: true,
   });
   const mockAuth = {
-    getUser: vi.fn(), signUp: vi.fn(), signInWithPassword: vi.fn(),
-    signOut: vi.fn(), exchangeCodeForSession: vi.fn(),
+    getUser: vi.fn(),
+    signUp: vi.fn(),
+    signInWithPassword: vi.fn(),
+    signOut: vi.fn(),
+    exchangeCodeForSession: vi.fn(),
   };
   return {
     mockSupabase: { auth: mockAuth, from: vi.fn().mockReturnValue(qb) },
@@ -950,7 +860,7 @@ const { mockSupabase, mockAuth, mockQueryBuilder, mockQueryResult } = vi.hoisted
 
 // 2. Mock the module — factory can reference hoisted variables
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn().mockResolvedValue(mockSupabase),  // Note: server client is async
+  createClient: vi.fn().mockResolvedValue(mockSupabase), // Note: server client is async
 }));
 
 // 3. Import the module under test AFTER vi.mock()
@@ -959,7 +869,7 @@ import { checkAdminPermission } from "../admin-check";
 // 4. Reset mocks in beforeEach
 beforeEach(() => {
   vi.clearAllMocks();
-  mockSupabase.from.mockReturnValue(mockQueryBuilder);  // Re-wire after clear
+  mockSupabase.from.mockReturnValue(mockQueryBuilder); // Re-wire after clear
   mockAuth.getUser.mockResolvedValue({ data: { user: null }, error: null });
   mockQueryResult.data = null;
   mockQueryResult.error = null;
@@ -972,7 +882,7 @@ Same pattern, but the Supabase client mock is **synchronous** (no `await`):
 
 ```typescript
 vi.mock("@/lib/supabase/client", () => ({
-  createClient: vi.fn(() => mockSupabase),  // Note: no .mockResolvedValue — sync!
+  createClient: vi.fn(() => mockSupabase), // Note: no .mockResolvedValue — sync!
 }));
 ```
 
@@ -987,7 +897,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("next-intl", () => ({
-  useTranslations: vi.fn(() => (key: string) => key),  // Returns keys as-is
+  useTranslations: vi.fn(() => (key: string) => key), // Returns keys as-is
 }));
 ```
 
@@ -1012,13 +922,11 @@ Things that will definitely bite you if you're not careful:
 
 4. **Image paths**: Team logos use relative paths stored in database, not absolute URLs - the bucket path is constructed in the Image component
 
-5. **RLS policies**: Admin operations (like scoring matches) need explicit permission checks - just being authenticated isn't enough
+5. **Authorization & RLS**: Admin operations need explicit permission checks, deactivated users are blocked at multiple levels - see [AUTHORIZATION.md](./docs/AUTHORIZATION.md) for the full protection model
 
 6. **shadcn/ui components**: Files in `/components/ui` are generated by shadcn CLI - don't edit them directly; create wrapper components instead
 
 7. **Client/Server imports**: Importing server-only code in client components will cause build errors - keep imports separated by component type
-
-8. **User status checks**: Deactivated users are blocked at multiple levels (app layout, RLS policies, API routes) - ensure all checks are in place when adding new user-facing features
 
 ## Troubleshooting
 
@@ -1056,11 +964,9 @@ Things that will definitely bite you if you're not careful:
 → Verify `tsconfig.json` has correct path mappings  
 → Clear `.next` folder and rebuild
 
-### Middleware not refreshing auth tokens
+### Auth/middleware issues (token refresh, 401/403 errors)
 
-→ Ensure `middleware.ts` is at project root (not in `/app`)  
-→ Check matcher config includes protected routes  
-→ Verify Supabase middleware helper is imported correctly
+→ See **[AUTHORIZATION.md](./docs/AUTHORIZATION.md#troubleshooting)** for auth-related troubleshooting
 
 ### Client component errors about "use server"
 
