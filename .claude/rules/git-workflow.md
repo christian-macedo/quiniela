@@ -1,98 +1,43 @@
 # Git Hooks & Code Quality Automation
 
-This project uses Husky with lint-staged and Prettier to enforce code quality automatically.
+Husky + lint-staged + Prettier enforce code quality automatically.
 
-## Pre-commit Checks (runs on every commit)
+## Pre-commit (every commit, ~2-4s)
 
-**Automated via lint-staged:**
-
-- Prettier formatting (auto-formats all staged files)
+- Prettier formatting on staged files
 - ESLint validation (auto-fixes when possible)
+- Formats: `.ts`, `.tsx`, `.js`, `.jsx`, JSON, CSS, Markdown
 
-**What gets formatted:**
-
-- TypeScript/JavaScript files (`.ts`, `.tsx`, `.js`, `.jsx`)
-- JSON, CSS, Markdown files
-
-**Performance:** ~2-4 seconds per commit (only checks staged files)
-
-## Pre-push Checks (runs before pushing to remote)
+## Pre-push (before push, ~20-30s)
 
 - TypeScript type checking (`tsc --noEmit`)
 - Full production build (`npm run build`)
 
-**Performance:** ~20-30 seconds per push
-
 ## Manual Commands
 
 ```bash
-# Format entire project
-npm run format
-
-# Check if files are formatted (no changes)
-npm run format:check
-
-# Fix all ESLint errors
-npm run lint:fix
-
-# Type check without building
-npm run type-check
+npm run format        # Format entire project
+npm run format:check  # Check formatting (no changes)
+npm run lint:fix      # Fix all ESLint errors
+npm run type-check    # Type check without building
 ```
 
-## Prettier Configuration
+## Prettier Config (`.prettierrc`)
 
-Located in `.prettierrc`:
-
-- 2-space indentation
-- Semicolons required
-- Double quotes for consistency with JSX
-- 100-character line width
-- Auto line endings (handles Windows/Unix)
+2-space indent, semicolons, double quotes, 100-char width, auto line endings.
 
 ## Bypassing Hooks (Emergency Only)
 
-**When to use:** Critical hotfixes, WIP commits that need to be saved urgently
-
 ```bash
-# Skip pre-commit hooks
 git commit --no-verify -m "emergency: bypass hooks"
-
-# Skip pre-push hooks
 git push --no-verify
 ```
 
-**Important:** Use sparingly! Bypassed commits can break CI/CD or introduce linting errors.
+Use sparingly — bypassed commits can break CI/CD.
 
 ## Troubleshooting
 
-**Hooks not running:**
-
-```bash
-# Verify git hooks path
-git config core.hooksPath  # Should output: .husky/_
-
-# Reinstall hooks
-npx husky install
-```
-
-**Formatting conflicts:**
-
-```bash
-# Format your local files
-npm run format
-
-# Check what's different
-git diff
-```
-
-**Slow commits (rare):**
-
-- Check how many files are staged: `git diff --cached --name-only`
-- If formatting many files at once, consider committing in smaller batches
-- Typical commit times: 2-4 seconds
-
-**Pre-push taking too long:**
-
-- Type checking and builds are comprehensive (20-30s is normal)
-- Consider if you can break commits into smaller logical units
-- Use `--no-verify` only for urgent hotfixes
+- **Hooks not running**: Verify `git config core.hooksPath` outputs `.husky/_`. Reinstall: `npx husky install`
+- **Formatting conflicts**: Run `npm run format` then check `git diff`
+- **Slow commits**: Check staged file count with `git diff --cached --name-only`; commit in smaller batches
+- **Pre-push slow**: 20-30s is normal for type check + build
