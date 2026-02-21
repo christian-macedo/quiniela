@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { checkAdminPermission } from "@/lib/middleware/admin-check";
 import { NextRequest, NextResponse } from "next/server";
 import { calculatePoints } from "@/lib/utils/scoring";
 import { getCurrentUTC } from "@/lib/utils/date";
@@ -7,6 +8,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ matchId: string }> }
 ) {
+  const adminError = await checkAdminPermission();
+  if (adminError) return adminError;
+
   try {
     const supabase = await createClient();
     const { matchId } = await params;
