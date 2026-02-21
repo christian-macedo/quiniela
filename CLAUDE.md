@@ -234,6 +234,7 @@ See `.claude/skills/typescript-conventions.md` for the complete TypeScript conve
 - **Loading states** — show loading indicators for async operations (use toast.promise pattern)
 - **Confirmation dialogs** — require confirmation for destructive actions (delete, reset scores)
 - **Database operations** — use transactions for multi-step operations; always create a migration in `supabase/migrations/` after schema changes
+- **Tests required for new routes/middleware** — every new `app/api/**/route.ts` and `lib/middleware/*.ts` must have a co-located `__tests__/` test covering the guard, success path, and error path
 
 ## Git Hooks
 
@@ -242,6 +243,8 @@ Pre-commit runs Prettier + ESLint on staged files. Pre-push runs type checking +
 ## Testing
 
 The project uses Vitest with React Testing Library. Tests are co-located in `__tests__/` folders. See `.claude/rules/testing.md` for commands, mock patterns, and the critical `vi.hoisted()` Supabase mocking pattern.
+
+**Test requirement**: Every new API route and middleware must ship with a co-located `__tests__/` test file. A PR without tests for a new route will be blocked at review. See `.claude/rules/testing.md` for the full requirements table.
 
 ## Common Gotchas
 

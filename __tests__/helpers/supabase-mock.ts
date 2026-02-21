@@ -2,14 +2,20 @@ import { vi } from "vitest";
 import type { User } from "@/types/database";
 
 /**
- * Creates hoisted mock objects for use inside vi.hoisted(() => ...) blocks.
- * This is the recommended pattern for mocking @/lib/supabase/server or /client.
+ * Creates mock objects for Supabase testing. Call this OUTSIDE vi.hoisted(), at module scope.
+ *
+ * This helper cannot be used inside vi.hoisted() — it imports from 'vitest' at module level,
+ * which isn't resolved when vi.hoisted() runs.
  *
  * Usage:
- *   const { mockSupabase, mockAuth, mockQuery } = vi.hoisted(() => createHoistedMocks());
+ *   const { mockSupabase, mockAuth, mockQuery } = createHoistedMocks();
+ *
  *   vi.mock("@/lib/supabase/server", () => ({
  *     createClient: vi.fn().mockResolvedValue(mockSupabase),
  *   }));
+ *
+ * For multi-table dispatch, use the inline makeQb() factory inside vi.hoisted() instead.
+ * See .claude/rules/testing.md — "Multi-table dispatch" section.
  */
 export function createHoistedMocks() {
   const mockQuery = {
@@ -82,7 +88,7 @@ export function createMockAuthUser(
     id: string;
     email: string;
     user_metadata: Record<string, unknown>;
-  }> = {},
+  }> = {}
 ) {
   return {
     id: overrides.id ?? "user-123",
@@ -119,7 +125,7 @@ export function createMockUserProfile(overrides: Partial<User> = {}): User {
 export function resetHoistedMocks(
   mockSupabase: ReturnType<typeof createHoistedMocks>["mockSupabase"],
   mockAuth: ReturnType<typeof createHoistedMocks>["mockAuth"],
-  mockQuery: ReturnType<typeof createHoistedMocks>["mockQuery"],
+  mockQuery: ReturnType<typeof createHoistedMocks>["mockQuery"]
 ) {
   mockSupabase.from.mockReturnValue(mockQuery.queryBuilder);
   mockAuth.getUser.mockResolvedValue({ data: { user: null }, error: null });
