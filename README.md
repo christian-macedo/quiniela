@@ -69,10 +69,7 @@ npm run dev
 
 ## Scoring Rules
 
-- Exact score: 10 points
-- Correct winner + goal difference: 7 points
-- Correct winner: 5 points
-- Incorrect: 0 points
+Points are awarded based on prediction accuracy, with an optional match multiplier. See `lib/utils/scoring.ts` for the current scoring logic.
 
 ## Development
 
@@ -88,7 +85,7 @@ This application is optimized for deployment on Vercel's free tier.
 
 ### Manual Deployment
 
-For detailed deployment instructions, including environment variable configuration and Supabase setup, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+For detailed deployment instructions, including environment variable configuration and Supabase setup, see [deployment.md](./.claude/rules/deployment.md).
 
 **Quick steps:**
 
