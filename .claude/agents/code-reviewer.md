@@ -53,7 +53,7 @@ Refer to `CLAUDE.md` and `.claude/skills/typescript-conventions.md` for full con
 6. **Image Handling** — Next.js `<Image>`, `uploadImage`/`generateImageFilename` usage
 7. **Localization** — All user-facing strings in EN + ES, namespaced by feature
 8. **Database & Schema** — If schema changes, verify a new migration exists in `supabase/migrations/`; transactions for multi-step ops
-9. **Testing** — Co-located tests, `vi.hoisted()` Supabase mock pattern (see .claude/rules/testing.md)
+9. **Testing** — For every new `app/api/**/route.ts` or `lib/middleware/*.ts`, verify a co-located `__tests__/` file exists covering: (a) auth/admin guard rejection, (b) primary success path, (c) at least one error path. Check that tests use the `vi.hoisted()` pattern and `mockImplementation((table) => ...)` for multi-table dispatch. See `.claude/rules/testing.md`.
 10. **Error Handling** — try-catch + console.error + status codes in API routes
 11. **Imports** — `@/` aliases required, no server imports in client components
 12. **Scoring Logic** — Verify against point rules in CLAUDE.md
@@ -85,5 +85,5 @@ Refer to `CLAUDE.md` and `.claude/skills/typescript-conventions.md` for full con
 - Provide code snippets when suggesting fixes.
 - Do not nitpick formatting already enforced by Prettier.
 - Prioritize security issues above all else.
-- If a change touches an area with no tests, note this but only block if the code is complex or security-critical.
+- **New API routes and middleware without tests are always a Critical Issue** — list each untested file under Critical Issues: "Missing test file: create `<path>/__tests__/route.test.ts` covering auth guard, success path, and error path." If a pre-existing file (not newly added in this change) lacks tests, note it as a Warning instead.
 - When in doubt about intent, ask a clarifying question before assuming a bug.
