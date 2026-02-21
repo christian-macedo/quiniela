@@ -97,15 +97,23 @@ export async function DELETE(
       return NextResponse.json({ error: "Team ID is required" }, { status: 400 });
     }
 
-    // Check if team has matches in this tournament
-    const { data: matches } = await supabase
-      .from("matches")
-      .select("id")
-      .eq("tournament_id", tournamentId)
-      .or(`home_team_id.eq.${teamId},away_team_id.eq.${teamId}`)
-      .limit(1);
+    // Check if team has matches in this tournament (as home or away team)
+    const [{ data: homeMatches }, { data: awayMatches }] = await Promise.all([
+      supabase
+        .from("matches")
+        .select("id")
+        .eq("tournament_id", tournamentId)
+        .eq("home_team_id", teamId)
+        .limit(1),
+      supabase
+        .from("matches")
+        .select("id")
+        .eq("tournament_id", tournamentId)
+        .eq("away_team_id", teamId)
+        .limit(1),
+    ]);
 
-    if (matches && matches.length > 0) {
+    if ((homeMatches && homeMatches.length > 0) || (awayMatches && awayMatches.length > 0)) {
       return NextResponse.json(
         { error: "Cannot remove team: Team has matches in this tournament" },
         { status: 400 }
