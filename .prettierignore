@@ -18,4 +18,3 @@ next-env.d.ts
 
 # Supabase migrations (don't auto-format SQL)
 supabase/migrations/**/*.sql
-supabase/bootstrap.sql

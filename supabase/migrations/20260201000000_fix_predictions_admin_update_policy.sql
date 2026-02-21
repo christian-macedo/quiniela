@@ -1,5 +1,5 @@
 -- Fix predictions UPDATE policy to allow admins to score all predictions
--- This aligns the migration with bootstrap.sql
+-- This aligns the RLS policy with admin scoring requirements
 --
 -- Problem: When scoring a match, the admin could only update their own predictions
 -- because the RLS policy blocked updates to other users' predictions.

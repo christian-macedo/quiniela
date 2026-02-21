@@ -157,7 +157,7 @@ All tables have RLS enabled. See [AUTHORIZATION.md](./docs/AUTHORIZATION.md#row-
 
 Tournament-centric architecture: teams -> tournament_teams -> tournaments -> matches -> predictions. Rankings calculated dynamically via `tournament_rankings` VIEW (filters out deactivated users). Types in `types/database.ts`.
 
-**IMPORTANT**: After any schema change, update `supabase/bootstrap.sql` — it's the single source of truth. See `.claude/rules/database.md` for the full data model, schema locations, and bootstrap instructions.
+**IMPORTANT**: After any schema change, create a new migration in `supabase/migrations/`. See `.claude/rules/database.md` for the full data model, migration workflow, and setup instructions.
 
 ## Authorization & Security
 
@@ -233,7 +233,7 @@ See `.claude/skills/typescript-conventions.md` for the complete TypeScript conve
 - **Null checks** — always handle potential null/undefined from database queries
 - **Loading states** — show loading indicators for async operations (use toast.promise pattern)
 - **Confirmation dialogs** — require confirmation for destructive actions (delete, reset scores)
-- **Database operations** — use transactions for multi-step operations; always update `supabase/bootstrap.sql` after schema changes
+- **Database operations** — use transactions for multi-step operations; always create a migration in `supabase/migrations/` after schema changes
 
 ## Git Hooks
 

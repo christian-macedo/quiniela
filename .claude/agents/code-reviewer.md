@@ -52,7 +52,7 @@ Refer to `CLAUDE.md` and `.claude/skills/typescript-conventions.md` for full con
 5. **Toast & UX** — `useFeatureToast()`, correct namespaces, promise pattern (see docs/TOASTS.md)
 6. **Image Handling** — Next.js `<Image>`, `uploadImage`/`generateImageFilename` usage
 7. **Localization** — All user-facing strings in EN + ES, namespaced by feature
-8. **Database & Schema** — `supabase/bootstrap.sql` updated if schema changed, transactions for multi-step ops
+8. **Database & Schema** — If schema changes, verify a new migration exists in `supabase/migrations/`; transactions for multi-step ops
 9. **Testing** — Co-located tests, `vi.hoisted()` Supabase mock pattern (see .claude/rules/testing.md)
 10. **Error Handling** — try-catch + console.error + status codes in API routes
 11. **Imports** — `@/` aliases required, no server imports in client components

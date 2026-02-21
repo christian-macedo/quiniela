@@ -10,16 +10,16 @@
 | `lib/utils/privacy.ts`                | `maskEmail()`, `sanitizeUserForPublic()`, `getPublicUserDisplay()` |
 | `lib/supabase/admin.ts`               | `createAdminClient()` (service role, bypasses RLS)                 |
 | `app/(app)/layout.tsx`                | Deactivated user check at app boundary                             |
-| `supabase/bootstrap.sql`              | RLS policies, `is_admin()` function, triggers                      |
+| `supabase/migrations/`                | RLS policies, `is_admin()` function, triggers                      |
 
 ## Multi-Layer Protection Model
 
-| Layer                   | Where                    | What It Does                                                            |
-| ----------------------- | ------------------------ | ----------------------------------------------------------------------- |
-| **1. App Layout**       | `app/(app)/layout.tsx`   | Blocks deactivated users, redirects to login                            |
-| **2. API Middleware**   | `lib/middleware/`        | Guards individual endpoints (`checkAdminPermission`, `checkUserActive`) |
-| **3. RLS Policies**     | `supabase/bootstrap.sql` | Database-level row access control via `is_admin(auth.uid())`            |
-| **4. Application Code** | Components, utilities    | Privacy filtering, explicit `.select()` field lists                     |
+| Layer                   | Where                  | What It Does                                                            |
+| ----------------------- | ---------------------- | ----------------------------------------------------------------------- |
+| **1. App Layout**       | `app/(app)/layout.tsx` | Blocks deactivated users, redirects to login                            |
+| **2. API Middleware**   | `lib/middleware/`      | Guards individual endpoints (`checkAdminPermission`, `checkUserActive`) |
+| **3. RLS Policies**     | `supabase/migrations/` | Database-level row access control via `is_admin(auth.uid())`            |
+| **4. Application Code** | Components, utilities  | Privacy filtering, explicit `.select()` field lists                     |
 
 ## Authentication Flow
 
@@ -131,7 +131,7 @@ All tables have RLS. `is_admin(auth.uid())` used throughout.
 
 ### Key SQL Functions
 
-See `supabase/bootstrap.sql` for full source:
+See `supabase/migrations/` for full source:
 
 - **`is_admin(user_id)`** — checks admin flag, used in RLS policies (`SECURITY DEFINER`)
 - **`handle_new_user()`** — trigger on `auth.users` INSERT, creates profile, first user becomes admin
@@ -143,7 +143,7 @@ See `supabase/bootstrap.sql` for full source:
 
 **New page/component**: Server Components use `auth.getUser()`. Always `sanitizeUserForPublic()` or explicit field selection. Admin UI: check `isAdmin()`.
 
-**New database table**: Enable RLS → create policies (use existing tables as templates) → update `supabase/bootstrap.sql` → add grants for `anon`/`authenticated`.
+**New database table**: Enable RLS → create policies (use existing tables as templates) → create a new migration in `supabase/migrations/` → add grants for `anon`/`authenticated`.
 
 ## Troubleshooting
 

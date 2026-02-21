@@ -52,7 +52,7 @@ Agents are isolated subprocesses spawned via the Task tool. They run in their ow
 5. Toast notifications & UX (`useFeatureToast()`, correct namespaces, promise pattern)
 6. Image handling (Next.js `<Image>`, `uploadImage`/`generateImageFilename`)
 7. Localization (EN + ES translations, namespaced by feature)
-8. Database & schema (`bootstrap.sql` updates, transactions for multi-step ops)
+8. Database & schema (migration in `supabase/migrations/` if schema changed, transactions for multi-step ops)
 9. Testing (co-located tests, `vi.hoisted()` Supabase mock pattern)
 10. Error handling (try-catch + console.error + status codes in API routes)
 11. Imports & path aliases (`@/` aliases, no server imports in client components)
@@ -163,7 +163,7 @@ These files are not automatically loaded into any context. Claude or agents read
 
 The primary project reference. Covers the full tech stack, architecture, development commands, database schema, project structure, scoring logic, API routes, testing patterns, git hooks, and all conventions. This is the single most important file — it's the foundation that agents and skills build on.
 
-**Sections:** Quick Reference, Tech Stack, Requirements, Development Commands, Local Supabase Setup, Component Patterns, Toast Notifications, Date Handling, Supabase Configuration, Database Architecture, Project Structure, Authorization & Security, Image Uploads, Theming, Scoring Logic, API Routes, Best Practices, Git Hooks, Testing, Common Gotchas, Troubleshooting, Adding Tournaments, Database Bootstrap.
+**Sections:** Quick Reference, Tech Stack, Requirements, Development Commands, Local Supabase Setup, Component Patterns, Toast Notifications, Date Handling, Supabase Configuration, Database Architecture, Project Structure, Authorization & Security, Image Uploads, Theming, Scoring Logic, API Routes, Best Practices, Git Hooks, Testing, Common Gotchas, Troubleshooting.
 
 ### AUTHORIZATION.md
 
@@ -273,7 +273,7 @@ CLAUDE.md (always loaded)
 ├── references → docs/TOASTS.md
 ├── references → docs/THEMING.md
 ├── references → .claude/skills/typescript-conventions.md
-└── references → supabase/bootstrap.sql
+└── references → supabase/migrations/
 
 code-reviewer (agent)
 ├── pre-loads → typescript-conventions (skill)
@@ -295,14 +295,14 @@ typescript-conventions (skill)
 
 ## Quick Decision Guide
 
-| I want to...                                              | Use                                                                  |
-| --------------------------------------------------------- | -------------------------------------------------------------------- |
-| Get a structured pass/fail code review                    | Spawn **code-reviewer** agent                                        |
-| Get educational improvement suggestions with before/after | Spawn **code-improver** agent                                        |
-| Ensure conventions while writing code                     | Handled automatically (CLAUDE.md + **typescript-conventions** skill) |
-| Add correct auth/middleware to a new API route            | Read **AUTHORIZATION.md**                                            |
-| Add toast notifications to a feature                      | Read **TOASTS.md**                                                   |
-| Change the app's color scheme                             | Read **THEMING.md**                                                  |
-| Understand the rankings view migration                    | Read **MIGRATION_INSTRUCTIONS.md**                                   |
-| Bootstrap a fresh database                                | Follow **CLAUDE.md** → Database Bootstrap section                    |
-| Write or review tests                                     | Follow **CLAUDE.md** → Testing section                               |
+| I want to...                                              | Use                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------- |
+| Get a structured pass/fail code review                    | Spawn **code-reviewer** agent                                         |
+| Get educational improvement suggestions with before/after | Spawn **code-improver** agent                                         |
+| Ensure conventions while writing code                     | Handled automatically (CLAUDE.md + **typescript-conventions** skill)  |
+| Add correct auth/middleware to a new API route            | Read **AUTHORIZATION.md**                                             |
+| Add toast notifications to a feature                      | Read **TOASTS.md**                                                    |
+| Change the app's color scheme                             | Read **THEMING.md**                                                   |
+| Understand the rankings view migration                    | Read **MIGRATION_INSTRUCTIONS.md**                                    |
+| Set up a fresh database                                   | Follow **CLAUDE.md** → Database section + `.claude/rules/database.md` |
+| Write or review tests                                     | Follow **CLAUDE.md** → Testing section                                |

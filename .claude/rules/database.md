@@ -19,22 +19,37 @@ The application is built around a **tournament-centric architecture** with these
 - Predictions link users to matches (one prediction per user per match)
 - Rankings are scoped per user per tournament
 
-## Database Schema Location
+## Schema Locations
 
-- **Bootstrap script**: `supabase/bootstrap.sql` - Complete database setup script
-- Schema migrations: `supabase/migrations/`
-- Seed data: `supabase/seed.sql`
-- TypeScript types: `types/database.ts`
+- **Migrations**: `supabase/migrations/` — the source of truth for database schema
+- **Seed data**: `supabase/seed.sql` — test accounts and sample data
+- **TypeScript types**: `types/database.ts`
 
-## Database Bootstrap Script
+## Database Setup
 
-The file `supabase/bootstrap.sql` contains the complete database schema and must be kept up to date.
+### Local Development
 
-**IMPORTANT**: After any schema change (new tables, columns, RLS policies, functions, etc.), the `supabase/bootstrap.sql` script MUST be updated to reflect the latest database structure. This script is the single source of truth for bootstrapping a fresh database.
+```bash
+npm run supabase:start   # Start Docker containers + apply migrations
+npm run supabase:reset   # Drop DB, reapply all migrations + seed data
+```
 
-### When to Update
+### Remote (Cloud Supabase)
 
-Update `supabase/bootstrap.sql` after ANY of these changes:
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Link your project: `npx supabase link --project-ref <your-project-ref>`
+3. Apply migrations: `npx supabase db push`
+4. Run `supabase/seed.sql` via the SQL Editor in Supabase Dashboard (optional)
+5. Configure storage buckets via Dashboard:
+   - Create `team-logos` bucket (public)
+   - Create `user-avatars` bucket (public)
+6. Copy project URL and anon key to `.env.local`
+
+## Schema Changes: Migration Workflow
+
+### When to Create a Migration
+
+Create a new migration after ANY of these changes:
 
 - Adding, modifying, or removing tables
 - Adding, modifying, or removing columns
@@ -45,19 +60,16 @@ Update `supabase/bootstrap.sql` after ANY of these changes:
 - Changing grants or permissions
 - Adding status/state columns to existing tables
 
-### How to Use
+### How to Create a Migration
 
-To bootstrap a fresh Supabase project:
+```bash
+# 1. Generate a new migration file
+npx supabase migration new <descriptive_name>
 
-1. Create a new Supabase project at [supabase.com](https://supabase.com)
-2. Go to SQL Editor in Supabase Dashboard
-3. Paste and run the contents of `supabase/bootstrap.sql`
-4. Configure storage buckets via Dashboard:
-   - Create `team-logos` bucket (public)
-   - Create `user-avatars` bucket (public)
-5. Copy project URL and anon key to `.env.local`
-6. Run `npm run dev` to start development
+# 2. Write your SQL in the generated file at supabase/migrations/<timestamp>_<name>.sql
 
-### Bootstrap vs Migrations Strategy
+# 3. Test by resetting the local database (applies all migrations + seed)
+npm run supabase:reset
 
-Use `supabase/bootstrap.sql` for fresh database installations (fastest, single-file setup). Use `supabase/migrations/` for upgrading existing databases (incremental migrations). When adding schema changes, create a migration file and update bootstrap.sql to reflect the final state.
+# 4. Update types/database.ts if the schema change affects TypeScript types
+```
