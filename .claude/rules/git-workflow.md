@@ -13,6 +13,12 @@ Husky + lint-staged + Prettier enforce code quality automatically.
 - TypeScript type checking (`tsc --noEmit`)
 - Full production build (`npm run build`)
 
+## Branch Naming Convention
+
+`<user>/<description>` — e.g., `iakor/34-admin-authorization`
+
+Use kebab-case for the description. Include the issue number as a prefix when the branch addresses a specific GitHub issue.
+
 ## Manual Commands
 
 ```bash

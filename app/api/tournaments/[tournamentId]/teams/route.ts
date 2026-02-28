@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { checkAdminPermission } from "@/lib/middleware/admin-check";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET all teams for a tournament
@@ -37,16 +38,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ tournamentId: string }> }
 ) {
+  const adminError = await checkAdminPermission();
+  if (adminError) return adminError;
+
   try {
     const { tournamentId } = await params;
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const body = await request.json();
     const { team_id } = body;
@@ -86,16 +83,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ tournamentId: string }> }
 ) {
+  const adminError = await checkAdminPermission();
+  if (adminError) return adminError;
+
   try {
     const { tournamentId } = await params;
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const teamId = searchParams.get("teamId");
