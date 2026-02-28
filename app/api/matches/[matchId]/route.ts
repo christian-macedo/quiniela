@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { checkAdminPermission } from "@/lib/middleware/admin-check";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUTC } from "@/lib/utils/date";
 
@@ -36,19 +37,12 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ matchId: string }> }
 ) {
+  const adminError = await checkAdminPermission();
+  if (adminError) return adminError;
+
   try {
     const supabase = await createClient();
     const { matchId } = await params;
-
-    // Check authentication
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const body = await request.json();
     const {
@@ -129,19 +123,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ matchId: string }> }
 ) {
+  const adminError = await checkAdminPermission();
+  if (adminError) return adminError;
+
   try {
     const supabase = await createClient();
     const { matchId } = await params;
-
-    // Check authentication
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     // Check if match has any predictions
     const { data: predictions } = await supabase

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { checkAdminPermission } from "@/lib/middleware/admin-check";
 import { NextResponse } from "next/server";
 
 /**
@@ -6,6 +7,9 @@ import { NextResponse } from "next/server";
  * This is an admin endpoint to ensure data consistency
  */
 export async function POST() {
+  const adminError = await checkAdminPermission();
+  if (adminError) return adminError;
+
   try {
     const supabase = await createClient();
 
