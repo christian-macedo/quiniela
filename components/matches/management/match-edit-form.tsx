@@ -74,7 +74,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/matches/${match.id}`, {
+      const response = await fetch(`/api/admin/matches/${match.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -100,7 +100,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/matches/${match.id}`, {
+      const response = await fetch(`/api/admin/matches/${match.id}`, {
         method: "DELETE",
       });
 

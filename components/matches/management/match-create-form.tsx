@@ -44,7 +44,7 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/matches", {
+      const response = await fetch("/api/admin/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

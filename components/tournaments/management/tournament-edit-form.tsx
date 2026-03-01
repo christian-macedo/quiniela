@@ -57,7 +57,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/tournaments/${tournament.id}`, {
+      const response = await fetch(`/api/admin/tournaments/${tournament.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -89,7 +89,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/tournaments/${tournament.id}`, {
+      const response = await fetch(`/api/admin/tournaments/${tournament.id}`, {
         method: "DELETE",
       });
 
