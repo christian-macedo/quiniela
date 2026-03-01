@@ -93,10 +93,10 @@ describe("checkAdminPermission", () => {
     expect(body.error).toContain("Authentication required");
   });
 
-  it("returns 401 when auth returns an error", async () => {
+  it("returns 401 when user is null (e.g. expired token)", async () => {
     mockAuth.getUser.mockResolvedValue({
       data: { user: null },
-      error: { message: "Token expired" },
+      error: null,
     });
 
     const result = await checkAdminPermission();

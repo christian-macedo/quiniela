@@ -86,7 +86,7 @@ export function TournamentDetailView({
     setIsAddingTeam(true);
 
     try {
-      const response = await fetch(`/api/tournaments/${tournament.id}/teams`, {
+      const response = await fetch(`/api/admin/tournaments/${tournament.id}/teams`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ team_id: selectedTeamId }),
@@ -112,7 +112,7 @@ export function TournamentDetailView({
     setRemovingTeamId(teamId);
 
     try {
-      const response = await fetch(`/api/tournaments/${tournament.id}/teams?teamId=${teamId}`, {
+      const response = await fetch(`/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`, {
         method: "DELETE",
       });
 
@@ -137,7 +137,7 @@ export function TournamentDetailView({
     setIsAddingParticipant(true);
 
     try {
-      const response = await fetch(`/api/tournaments/${tournament.id}/participants`, {
+      const response = await fetch(`/api/admin/tournaments/${tournament.id}/participants`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: selectedUserId }),
@@ -164,7 +164,7 @@ export function TournamentDetailView({
 
     try {
       const response = await fetch(
-        `/api/tournaments/${tournament.id}/participants?userId=${userId}`,
+        `/api/admin/tournaments/${tournament.id}/participants?userId=${userId}`,
         { method: "DELETE" }
       );
 
