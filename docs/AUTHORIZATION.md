@@ -2,24 +2,28 @@
 
 ## Key Files
 
-| File                                  | Purpose                                                            |
-| ------------------------------------- | ------------------------------------------------------------------ |
-| `lib/middleware/admin-check.ts`       | `checkAdminPermission()` for API routes                            |
-| `lib/middleware/user-status-check.ts` | `checkUserActive()` for API routes                                 |
-| `lib/utils/admin.ts`                  | `isAdmin()`, `requireAdmin()`, `updateUserStatus()`                |
-| `lib/utils/privacy.ts`                | `maskEmail()`, `sanitizeUserForPublic()`, `getPublicUserDisplay()` |
-| `lib/supabase/admin.ts`               | `createAdminClient()` (service role, bypasses RLS)                 |
-| `app/(app)/layout.tsx`                | Deactivated user check at app boundary                             |
-| `supabase/migrations/`                | RLS policies, `is_admin()` function, triggers                      |
+| File                                       | Purpose                                                            |
+| ------------------------------------------ | ------------------------------------------------------------------ |
+| `lib/middleware/admin-check.ts`            | `checkAdminPermission()` for API routes                            |
+| `lib/middleware/user-status-check.ts`      | `checkUserActive()` for API routes                                 |
+| `lib/utils/admin.ts`                       | `isAdmin()`, `requireAdmin()`, `updateUserStatus()`                |
+| `lib/utils/privacy.ts`                     | `maskEmail()`, `sanitizeUserForPublic()`, `getPublicUserDisplay()` |
+| `lib/supabase/admin.ts`                    | `createAdminClient()` (service role, bypasses RLS)                 |
+| `app/(app)/layout.tsx`                     | Deactivated user check at app boundary                             |
+| `app/(app)/(user)/layout.tsx`              | Unauthenticated user check — redirects to `/login`                 |
+| `app/(app)/(user)/(admin)/layout.tsx`      | Non-admin check — redirects to `/unauthorized`                     |
+| `supabase/migrations/`                     | RLS policies, `is_admin()` function, triggers                      |
 
 ## Multi-Layer Protection Model
 
-| Layer                   | Where                  | What It Does                                                            |
-| ----------------------- | ---------------------- | ----------------------------------------------------------------------- |
-| **1. App Layout**       | `app/(app)/layout.tsx` | Blocks deactivated users, redirects to login                            |
-| **2. API Middleware**   | `lib/middleware/`      | Guards individual endpoints (`checkAdminPermission`, `checkUserActive`) |
-| **3. RLS Policies**     | `supabase/migrations/` | Database-level row access control via `is_admin(auth.uid())`            |
-| **4. Application Code** | Components, utilities  | Privacy filtering, explicit `.select()` field lists                     |
+| Layer                   | Where                                     | What It Does                                                            |
+| ----------------------- | ----------------------------------------- | ----------------------------------------------------------------------- |
+| **1. App Layout**       | `app/(app)/layout.tsx`                    | Blocks deactivated users, creates profile if missing                    |
+| **2. User Layout**      | `app/(app)/(user)/layout.tsx`             | Blocks unauthenticated users, redirects to `/login`                     |
+| **3. Admin Layout**     | `app/(app)/(user)/(admin)/layout.tsx`     | Blocks non-admin users, redirects to `/unauthorized`                    |
+| **4. API Middleware**   | `lib/middleware/`                         | Guards individual endpoints (`checkAdminPermission`, `checkUserActive`) |
+| **5. RLS Policies**     | `supabase/migrations/`                    | Database-level row access control via `is_admin(auth.uid())`            |
+| **6. Application Code** | Components, utilities                     | Privacy filtering, explicit `.select()` field lists                     |
 
 ## Authentication Flow
 
@@ -56,13 +60,33 @@ if (statusError) return statusError;
 
 ### Decision Matrix
 
-| Route Type       | Middleware                   | Example                             |
-| ---------------- | ---------------------------- | ----------------------------------- |
-| Public read-only | None (RLS handles it)        | GET matches, rankings               |
-| User actions     | `checkUserActive()`          | POST predictions                    |
-| Admin actions    | `checkAdminPermission()`     | POST match score, PATCH user status |
-| Admin + active   | Both checks                  | Admin operations on active users    |
-| Self-service     | `auth.getUser()` + ownership | POST account/deactivate             |
+| Route Type       | Middleware                   | Example                                               |
+| ---------------- | ---------------------------- | ----------------------------------------------------- |
+| Public read-only | None (RLS handles it)        | GET matches, rankings                                 |
+| User actions     | `checkUserActive()`          | POST predictions                                      |
+| Admin actions    | `checkAdminPermission()`     | POST /api/admin/matches/score, PATCH user status      |
+| Admin + active   | Both checks                  | Admin operations on active users                      |
+| Self-service     | `auth.getUser()` + ownership | POST account/deactivate                               |
+
+### Admin API Route Structure
+
+All admin mutations live under `/api/admin/`. Public GETs remain at their original paths.
+
+| Admin route                                         | Methods       | Description                       |
+| --------------------------------------------------- | ------------- | --------------------------------- |
+| `/api/admin/teams`                                  | POST          | Create team                       |
+| `/api/admin/teams/[teamId]`                         | PUT, DELETE   | Update / delete team              |
+| `/api/admin/matches`                                | POST          | Create match                      |
+| `/api/admin/matches/[matchId]`                      | PUT, DELETE   | Update / delete match             |
+| `/api/admin/matches/[matchId]/score`                | POST          | Score match, calculate points     |
+| `/api/admin/tournaments`                            | POST          | Create tournament                 |
+| `/api/admin/tournaments/[tournamentId]`             | PUT, DELETE   | Update / delete tournament        |
+| `/api/admin/tournaments/[tournamentId]/teams`       | POST, DELETE  | Add / remove team from tournament |
+| `/api/admin/tournaments/[tournamentId]/participants`| POST, DELETE  | Add / remove participant          |
+| `/api/admin/users`                                  | GET           | List all users with stats         |
+| `/api/admin/users/[userId]/status`                  | PATCH         | Activate / deactivate user        |
+| `/api/admin/users/[userId]/permissions`             | PATCH         | Toggle admin permissions          |
+| `/api/admin/reset-incomplete-predictions`           | POST          | Reset incomplete prediction scores|
 
 ## Admin Utilities
 
@@ -141,7 +165,9 @@ See `supabase/migrations/` for full source:
 
 **New API route**: Check [decision matrix](#decision-matrix) → add middleware at handler top → test with all user types (unauth, regular, deactivated, admin).
 
-**New page/component**: Server Components use `auth.getUser()`. Always `sanitizeUserForPublic()` or explicit field selection. Admin UI: check `isAdmin()`.
+**New authenticated page**: Place it inside `app/(app)/(user)/` — the layout handles the auth gate automatically. No per-page `auth.getUser()` + redirect needed (though you may still call `auth.getUser()` to retrieve `user.id` for data queries). Always `sanitizeUserForPublic()` or explicit field selection.
+
+**New admin page**: Place it inside `app/(app)/(user)/(admin)/` — both the user and admin layout guards fire automatically. No per-page `requireAdmin()` try/catch needed.
 
 **New database table**: Enable RLS → create policies (use existing tables as templates) → create a new migration in `supabase/migrations/` → add grants for `anon`/`authenticated`.
 

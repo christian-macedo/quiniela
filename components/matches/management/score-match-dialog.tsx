@@ -67,7 +67,7 @@ export function ScoreMatchDialog({
     }
 
     try {
-      const response = await fetch(`/api/matches/${matchId}/score`, {
+      const response = await fetch(`/api/admin/matches/${matchId}/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

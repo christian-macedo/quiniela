@@ -39,7 +39,7 @@ export function TournamentCreateForm() {
     setError(null);
 
     try {
-      const response = await fetch("/api/tournaments", {
+      const response = await fetch("/api/admin/tournaments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

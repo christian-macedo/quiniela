@@ -16,14 +16,16 @@ const { mockSupabase, matchesQb, matchesResult, predictionsQb, predictionsResult
         update: vi.fn(),
         delete: vi.fn(),
         eq: vi.fn(),
+        neq: vi.fn(),
+        in: vi.fn(),
         single: vi.fn(),
+        maybeSingle: vi.fn(),
         limit: vi.fn(),
         order: vi.fn(),
-        in: vi.fn(),
-        neq: vi.fn(),
       };
       for (const key of Object.keys(qb)) {
-        if (key === "single") qb[key].mockImplementation(() => Promise.resolve(result));
+        if (key === "single" || key === "maybeSingle")
+          qb[key].mockImplementation(() => Promise.resolve(result));
         else qb[key].mockReturnValue(qb);
       }
       Object.defineProperty(qb, "then", {
@@ -68,11 +70,11 @@ import { POST } from "../route";
 const MATCH_ID = "match-123";
 const matchParams = { params: Promise.resolve({ matchId: MATCH_ID }) };
 
-// ── POST /api/matches/[matchId]/score ──────────────────────────────────────────
+// ── POST /api/admin/matches/[matchId]/score ────────────────────────────────────
 
-describe("POST /api/matches/[matchId]/score", () => {
+describe("POST /api/admin/matches/[matchId]/score", () => {
   const makeRequest = (body: object) =>
-    new NextRequest(`http://localhost/api/matches/${MATCH_ID}/score`, {
+    new NextRequest(`http://localhost/api/admin/matches/${MATCH_ID}/score`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -91,7 +93,7 @@ describe("POST /api/matches/[matchId]/score", () => {
     predictionsResult.error = null;
   });
 
-  it("returns admin error when not authorized", async () => {
+  it("returns 403 when admin check fails", async () => {
     mockCheckAdminPermission.mockResolvedValue(
       new Response(JSON.stringify({ error: "Admin access required" }), { status: 403 })
     );
@@ -100,7 +102,7 @@ describe("POST /api/matches/[matchId]/score", () => {
     expect(response.status).toBe(403);
   });
 
-  it("scores a match when status is completed", async () => {
+  it("scores a match and calculates prediction points when status is completed", async () => {
     matchesResult.data = { multiplier: 2, tournament_id: "t-1", status: "scheduled" };
     predictionsResult.data = [{ id: "pred-1", predicted_home_score: 2, predicted_away_score: 1 }];
     mockCalculatePoints.mockReturnValue(3);
@@ -113,11 +115,7 @@ describe("POST /api/matches/[matchId]/score", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.success).toBe(true);
-
-    // Verify scoring calculation was invoked with correct arguments
     expect(mockCalculatePoints).toHaveBeenCalledWith(2, 1, 2, 1, 2);
-
-    // Verify predictions were updated with calculated points
     expect(predictionsQb.update).toHaveBeenCalledWith({ points_earned: 3 });
     expect(predictionsQb.eq).toHaveBeenCalledWith("id", "pred-1");
   });
@@ -134,11 +132,7 @@ describe("POST /api/matches/[matchId]/score", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.success).toBe(true);
-
-    // calculatePoints should NOT be called when unscoring
     expect(mockCalculatePoints).not.toHaveBeenCalled();
-
-    // Predictions should be reset to 0
     expect(predictionsQb.update).toHaveBeenCalledWith({ points_earned: 0 });
   });
 
@@ -158,8 +152,43 @@ describe("POST /api/matches/[matchId]/score", () => {
     expect(predictionsQb.update).not.toHaveBeenCalled();
   });
 
+  it("defaults to 'completed' status when status is not provided", async () => {
+    matchesResult.data = { multiplier: 1, tournament_id: "t-1", status: "scheduled" };
+    predictionsResult.data = [];
+
+    const response = await POST(
+      makeRequest({ home_score: 1, away_score: 0 }), // no status field
+      matchParams
+    );
+
+    expect(response.status).toBe(200);
+    expect(matchesQb.update).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "completed" })
+    );
+  });
+
   it("returns 500 when match fetch fails", async () => {
     matchesResult.error = { message: "Match not found" };
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await POST(
+      makeRequest({ home_score: 2, away_score: 1, status: "completed" }),
+      matchParams
+    );
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body.error).toContain("Failed to update match score");
+    consoleSpy.mockRestore();
+  });
+
+  it("returns 500 when match update fails", async () => {
+    matchesResult.data = { multiplier: 1, tournament_id: "t-1", status: "scheduled" };
+    // The second call to matches (update) should fail — override via update mock
+    matchesQb.update.mockReturnValueOnce({
+      ...matchesQb,
+      eq: vi.fn().mockReturnValue(Promise.resolve({ error: { message: "Update failed" } })),
+    });
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const response = await POST(

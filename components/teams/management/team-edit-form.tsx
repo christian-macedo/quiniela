@@ -55,7 +55,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/teams/${team.id}`, {
+      const response = await fetch(`/api/admin/teams/${team.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -86,7 +86,7 @@ export function TeamEditForm({ team }: TeamEditFormProps) {
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/teams/${team.id}`, {
+      const response = await fetch(`/api/admin/teams/${team.id}`, {
         method: "DELETE",
       });
 
