@@ -300,13 +300,20 @@ export async function verifyUserAuthenticationResponse(
     requireUserVerification: USER_VERIFICATION === "required",
   };
 
-  const verification = await verifyAuthenticationResponse(opts);
-
-  if (!verification.verified) {
+  let verification;
+  try {
+    verification = await verifyAuthenticationResponse(opts);
+  } catch {
+    await supabase.rpc("increment_credential_failed_attempts", { cred_id: credentialID });
     throw new Error("Authentication verification failed");
   }
 
-  // Update counter using secure database function
+  if (!verification.verified) {
+    await supabase.rpc("increment_credential_failed_attempts", { cred_id: credentialID });
+    throw new Error("Authentication verification failed");
+  }
+
+  // Update counter (and reset failed_attempts) using secure database function
   await supabase.rpc("update_credential_counter", {
     cred_id: credentialID,
     new_counter: verification.authenticationInfo.newCounter,

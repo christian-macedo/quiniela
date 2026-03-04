@@ -2,28 +2,28 @@
 
 ## Key Files
 
-| File                                       | Purpose                                                            |
-| ------------------------------------------ | ------------------------------------------------------------------ |
-| `lib/middleware/admin-check.ts`            | `checkAdminPermission()` for API routes                            |
-| `lib/middleware/user-status-check.ts`      | `checkUserActive()` for API routes                                 |
-| `lib/utils/admin.ts`                       | `isAdmin()`, `requireAdmin()`, `updateUserStatus()`                |
-| `lib/utils/privacy.ts`                     | `maskEmail()`, `sanitizeUserForPublic()`, `getPublicUserDisplay()` |
-| `lib/supabase/admin.ts`                    | `createAdminClient()` (service role, bypasses RLS)                 |
-| `app/(app)/layout.tsx`                     | Deactivated user check at app boundary                             |
-| `app/(app)/(user)/layout.tsx`              | Unauthenticated user check — redirects to `/login`                 |
-| `app/(app)/(user)/(admin)/layout.tsx`      | Non-admin check — redirects to `/unauthorized`                     |
-| `supabase/migrations/`                     | RLS policies, `is_admin()` function, triggers                      |
+| File                                  | Purpose                                                            |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| `lib/middleware/admin-check.ts`       | `checkAdminPermission()` for API routes                            |
+| `lib/middleware/user-status-check.ts` | `checkUserActive()` for API routes                                 |
+| `lib/utils/admin.ts`                  | `isAdmin()`, `requireAdmin()`, `updateUserStatus()`                |
+| `lib/utils/privacy.ts`                | `maskEmail()`, `sanitizeUserForPublic()`, `getPublicUserDisplay()` |
+| `lib/supabase/admin.ts`               | `createAdminClient()` (service role, bypasses RLS)                 |
+| `app/(app)/layout.tsx`                | Deactivated user check at app boundary                             |
+| `app/(app)/(user)/layout.tsx`         | Unauthenticated user check — redirects to `/login`                 |
+| `app/(app)/(user)/(admin)/layout.tsx` | Non-admin check — redirects to `/unauthorized`                     |
+| `supabase/migrations/`                | RLS policies, `is_admin()` function, triggers                      |
 
 ## Multi-Layer Protection Model
 
-| Layer                   | Where                                     | What It Does                                                            |
-| ----------------------- | ----------------------------------------- | ----------------------------------------------------------------------- |
-| **1. App Layout**       | `app/(app)/layout.tsx`                    | Blocks deactivated users, creates profile if missing                    |
-| **2. User Layout**      | `app/(app)/(user)/layout.tsx`             | Blocks unauthenticated users, redirects to `/login`                     |
-| **3. Admin Layout**     | `app/(app)/(user)/(admin)/layout.tsx`     | Blocks non-admin users, redirects to `/unauthorized`                    |
-| **4. API Middleware**   | `lib/middleware/`                         | Guards individual endpoints (`checkAdminPermission`, `checkUserActive`) |
-| **5. RLS Policies**     | `supabase/migrations/`                    | Database-level row access control via `is_admin(auth.uid())`            |
-| **6. Application Code** | Components, utilities                     | Privacy filtering, explicit `.select()` field lists                     |
+| Layer                   | Where                                 | What It Does                                                            |
+| ----------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
+| **1. App Layout**       | `app/(app)/layout.tsx`                | Blocks deactivated users, creates profile if missing                    |
+| **2. User Layout**      | `app/(app)/(user)/layout.tsx`         | Blocks unauthenticated users, redirects to `/login`                     |
+| **3. Admin Layout**     | `app/(app)/(user)/(admin)/layout.tsx` | Blocks non-admin users, redirects to `/unauthorized`                    |
+| **4. API Middleware**   | `lib/middleware/`                     | Guards individual endpoints (`checkAdminPermission`, `checkUserActive`) |
+| **5. RLS Policies**     | `supabase/migrations/`                | Database-level row access control via `is_admin(auth.uid())`            |
+| **6. Application Code** | Components, utilities                 | Privacy filtering, explicit `.select()` field lists                     |
 
 ## Authentication Flow
 
@@ -60,33 +60,33 @@ if (statusError) return statusError;
 
 ### Decision Matrix
 
-| Route Type       | Middleware                   | Example                                               |
-| ---------------- | ---------------------------- | ----------------------------------------------------- |
-| Public read-only | None (RLS handles it)        | GET matches, rankings                                 |
-| User actions     | `checkUserActive()`          | POST predictions                                      |
-| Admin actions    | `checkAdminPermission()`     | POST /api/admin/matches/score, PATCH user status      |
-| Admin + active   | Both checks                  | Admin operations on active users                      |
-| Self-service     | `auth.getUser()` + ownership | POST account/deactivate                               |
+| Route Type       | Middleware                   | Example                                          |
+| ---------------- | ---------------------------- | ------------------------------------------------ |
+| Public read-only | None (RLS handles it)        | GET matches, rankings                            |
+| User actions     | `checkUserActive()`          | POST predictions                                 |
+| Admin actions    | `checkAdminPermission()`     | POST /api/admin/matches/score, PATCH user status |
+| Admin + active   | Both checks                  | Admin operations on active users                 |
+| Self-service     | `auth.getUser()` + ownership | POST account/deactivate                          |
 
 ### Admin API Route Structure
 
 All admin mutations live under `/api/admin/`. Public GETs remain at their original paths.
 
-| Admin route                                         | Methods       | Description                       |
-| --------------------------------------------------- | ------------- | --------------------------------- |
-| `/api/admin/teams`                                  | POST          | Create team                       |
-| `/api/admin/teams/[teamId]`                         | PUT, DELETE   | Update / delete team              |
-| `/api/admin/matches`                                | POST          | Create match                      |
-| `/api/admin/matches/[matchId]`                      | PUT, DELETE   | Update / delete match             |
-| `/api/admin/matches/[matchId]/score`                | POST          | Score match, calculate points     |
-| `/api/admin/tournaments`                            | POST          | Create tournament                 |
-| `/api/admin/tournaments/[tournamentId]`             | PUT, DELETE   | Update / delete tournament        |
-| `/api/admin/tournaments/[tournamentId]/teams`       | POST, DELETE  | Add / remove team from tournament |
-| `/api/admin/tournaments/[tournamentId]/participants`| POST, DELETE  | Add / remove participant          |
-| `/api/admin/users`                                  | GET           | List all users with stats         |
-| `/api/admin/users/[userId]/status`                  | PATCH         | Activate / deactivate user        |
-| `/api/admin/users/[userId]/permissions`             | PATCH         | Toggle admin permissions          |
-| `/api/admin/reset-incomplete-predictions`           | POST          | Reset incomplete prediction scores|
+| Admin route                                          | Methods      | Description                        |
+| ---------------------------------------------------- | ------------ | ---------------------------------- |
+| `/api/admin/teams`                                   | POST         | Create team                        |
+| `/api/admin/teams/[teamId]`                          | PUT, DELETE  | Update / delete team               |
+| `/api/admin/matches`                                 | POST         | Create match                       |
+| `/api/admin/matches/[matchId]`                       | PUT, DELETE  | Update / delete match              |
+| `/api/admin/matches/[matchId]/score`                 | POST         | Score match, calculate points      |
+| `/api/admin/tournaments`                             | POST         | Create tournament                  |
+| `/api/admin/tournaments/[tournamentId]`              | PUT, DELETE  | Update / delete tournament         |
+| `/api/admin/tournaments/[tournamentId]/teams`        | POST, DELETE | Add / remove team from tournament  |
+| `/api/admin/tournaments/[tournamentId]/participants` | POST, DELETE | Add / remove participant           |
+| `/api/admin/users`                                   | GET          | List all users with stats          |
+| `/api/admin/users/[userId]/status`                   | PATCH        | Activate / deactivate user         |
+| `/api/admin/users/[userId]/permissions`              | PATCH        | Toggle admin permissions           |
+| `/api/admin/reset-incomplete-predictions`            | POST         | Reset incomplete prediction scores |
 
 ## Admin Utilities
 
@@ -142,9 +142,11 @@ All tables have RLS. `is_admin(auth.uid())` used throughout.
 | `users`                   | Everyone | Own only     | Own OR admin          | -      |
 | `predictions`             | Everyone | Own + active | Own + active OR admin | -      |
 | `webauthn_credentials`    | Own      | Own          | Own                   | Own    |
-| `webauthn_challenges`     | Own      | Own          | -                     | Own    |
+| `webauthn_challenges`     | Own      | Own¹         | -                     | Own    |
 
 **Key**: Predictions INSERT/UPDATE includes active status check at DB level. Users SELECT allows all rows — app code MUST filter with `sanitizeUserForPublic()` or explicit `.select()`.
+
+> ¹ Unauthenticated login challenges are stored via the `store_auth_challenge()` SECURITY DEFINER function (bypasses RLS safely). Direct INSERT via RLS is restricted to authenticated users inserting their own row.
 
 ### Storage Buckets
 
@@ -160,6 +162,9 @@ See `supabase/migrations/` for full source:
 - **`is_admin(user_id)`** — checks admin flag, used in RLS policies (`SECURITY DEFINER`)
 - **`handle_new_user()`** — trigger on `auth.users` INSERT, creates profile, first user becomes admin
 - **`tournament_rankings` VIEW** — joins predictions + users, `WHERE u.status = 'active'`
+- **`store_auth_challenge(email, challenge, expires_at)`** — stores login challenge before user is authenticated (`SECURITY DEFINER`; bypasses RLS safely for unauthenticated flows)
+- **`increment_credential_failed_attempts(cred_id)`** — increments `webauthn_credentials.failed_attempts` on verification failure (audit trail for brute-force detection)
+- **`update_credential_counter(cred_id, counter)`** — updates signature counter after successful auth; also resets `failed_attempts = 0`
 
 ## Common Scenarios
 
