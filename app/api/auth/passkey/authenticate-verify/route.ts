@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     });
 
     if (linkError || !linkData) {
-      console.error("Failed to generate link:", linkError);
+      console.error("Error generating magic link:", linkError);
       return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
     }
 
@@ -52,25 +52,16 @@ export async function POST(request: Request) {
     });
 
     if (sessionError || !sessionData.session) {
-      console.error("Failed to create session:", sessionError);
+      console.error("Error creating session:", sessionError);
       return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
     }
 
     // Update last_login timestamp
     await supabase.from("users").update({ last_login: new Date().toISOString() }).eq("id", userId);
 
-    return NextResponse.json({
-      verified: true,
-      userId,
-      session: sessionData.session,
-    });
+    return NextResponse.json({ verified: true, userId });
   } catch (error) {
     console.error("Error verifying authentication:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Failed to verify authentication",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to verify authentication" }, { status: 500 });
   }
 }

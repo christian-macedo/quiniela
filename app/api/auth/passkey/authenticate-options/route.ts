@@ -21,22 +21,20 @@ export async function POST(request: Request) {
 
     return NextResponse.json(options);
   } catch (error) {
-    console.error("Error generating authentication options:", error);
-
-    // Handle specific error cases
+    // Return the same generic message for both "not found" cases to prevent email enumeration
     if (error instanceof Error) {
-      if (error.message === "User not found") {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-      if (error.message === "No passkeys registered for this user") {
+      if (
+        error.message === "User not found" ||
+        error.message === "No passkeys registered for this user"
+      ) {
         return NextResponse.json(
-          { error: "No passkeys registered for this account" },
+          { error: "Could not find credentials for this account" },
           { status: 404 }
         );
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.error("Error generating authentication options:", error);
     return NextResponse.json(
       { error: "Failed to generate authentication options" },
       { status: 500 }
