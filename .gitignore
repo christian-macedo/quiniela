@@ -36,6 +36,11 @@ supabase/.env.test
 supabase/.branches
 supabase/.temp
 
+# playwright
+playwright-report/
+test-results/
+__tests__/.auth/
+
 # vercel
 .vercel
 
