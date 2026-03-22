@@ -54,34 +54,47 @@ async function loginViaApi(
     expires_in: number;
   };
 
-  // 2. Navigate to the app so cookies are set in the right origin
-  await page.goto("/login");
-  await page.waitForLoadState("domcontentloaded");
+  // 2. Inject the session as cookies — @supabase/ssr reads cookies, not localStorage.
+  //    The cookie name follows the pattern: sb-<project-ref>-auth-token
+  //    Long values are chunked as .0, .1, etc. by the library, but we write the
+  //    full value here; the middleware will re-chunk on first response.
+  const projectRef = new URL(SUPABASE_URL).hostname.split(".")[0];
+  const cookieName = `sb-${projectRef}-auth-token`;
+  const cookieValue = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_in: session.expires_in,
+    expires_at: Math.floor(Date.now() / 1000) + session.expires_in,
+    token_type: "bearer",
+  });
 
-  // 3. Inject the Supabase session via the browser's Supabase client
-  //    @supabase/ssr reads the session from cookies; we set it via the client
-  //    so the library handles cookie-chunking correctly.
-  await page.evaluate(
-    ({ url, key, accessToken, refreshToken }) => {
-      // Use the Supabase global if available, otherwise set the raw storage key
-      const storageKey = `sb-${new URL(url).hostname.split(".")[0]}-auth-token`;
-      const sessionData = JSON.stringify({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        token_type: "bearer",
-      });
-      localStorage.setItem(storageKey, sessionData);
-    },
-    {
-      url: SUPABASE_URL,
-      key: SUPABASE_ANON_KEY,
-      accessToken: session.access_token,
-      refreshToken: session.refresh_token,
-    }
-  );
+  // Chunk the cookie value into 3600-byte pieces (Supabase SSR default)
+  const chunkSize = 3600;
+  const chunks: string[] = [];
+  for (let i = 0; i < cookieValue.length; i += chunkSize) {
+    chunks.push(cookieValue.slice(i, i + chunkSize));
+  }
 
-  // 4. Navigate to /tournaments — the app middleware will exchange localStorage
-  //    tokens for proper cookies and redirect if authenticated.
+  const baseURL = "http://localhost:3000";
+  if (chunks.length === 1) {
+    await page
+      .context()
+      .addCookies([
+        { name: cookieName, value: chunks[0], url: baseURL, httpOnly: false, sameSite: "Lax" },
+      ]);
+  } else {
+    await page.context().addCookies(
+      chunks.map((chunk, i) => ({
+        name: `${cookieName}.${i}`,
+        value: chunk,
+        url: baseURL,
+        httpOnly: false,
+        sameSite: "Lax" as const,
+      }))
+    );
+  }
+
+  // 3. Navigate to /tournaments — the middleware will see the session cookies.
   await page.goto("/tournaments");
   await page.waitForURL("**/tournaments", { timeout: 15_000 });
   await expect(page).toHaveURL(/\/tournaments/);
