@@ -129,7 +129,7 @@ export default function LoginPage() {
                 required
               />
             </div>
-            {error && <div className="text-sm text-destructive">{error}</div>}
+            {error && <div role="alert" aria-live="assertive" className="text-sm text-destructive">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? t("loggingIn") : t("loginButton")}
             </Button>
