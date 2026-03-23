@@ -206,6 +206,16 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 - `GET /api/admin/users` - Get all users with stats (includes status)
 - `PATCH /api/admin/users/[userId]/permissions` - Toggle admin permissions
 
+### Passkey Authentication
+
+- `POST /api/auth/passkey/authenticate-options` - Generate auth challenge (no auth required)
+- `POST /api/auth/passkey/authenticate-verify` - Verify response and create session
+- `POST /api/auth/passkey/register-options` - Generate registration challenge (auth required)
+- `POST /api/auth/passkey/register-verify` - Verify and store new credential (auth required)
+- `GET /api/auth/passkey/list` - List user's registered passkeys (auth required)
+- `PATCH /api/auth/passkey/[id]/rename` - Rename a passkey (auth required)
+- `DELETE /api/auth/passkey/[id]` - Delete a passkey (auth required)
+
 ### Match Operations
 
 - `POST /api/matches/[matchId]/score` - Score match and calculate prediction points
@@ -229,7 +239,7 @@ Use `useFeatureToast(namespace)` for all user feedback. Feature-specific keys ne
 See `.claude/skills/typescript-conventions.md` for the complete TypeScript conventions reference.
 
 - **All user-facing strings must be localized** to English and Spanish, organized by feature area with namespaced keys
-- **Error handling** — API routes should return appropriate HTTP status codes and clear error messages
+- **Error handling** — API routes should return appropriate HTTP status codes and clear error messages. Authentication endpoints (login flows) must return the **same generic error message** for "account not found" and "credential not found" to prevent email enumeration.
 - **Null checks** — always handle potential null/undefined from database queries
 - **Loading states** — show loading indicators for async operations (use toast.promise pattern)
 - **Confirmation dialogs** — require confirmation for destructive actions (delete, reset scores)
