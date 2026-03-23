@@ -57,6 +57,15 @@ Refer to `CLAUDE.md` and `.claude/skills/typescript-conventions.md` for full con
 10. **Error Handling** — try-catch + console.error + status codes in API routes
 11. **Imports** — `@/` aliases required, no server imports in client components
 12. **Scoring Logic** — Verify against point rules in CLAUDE.md
+13. **Accessibility (WCAG 2.1 AA)** — See `.claude/rules/accessibility.md` for the full checklist. Key items:
+    - Page has `<main id="main-content">` and a skip-to-content link
+    - Every `<button>`, link, and Radix `<SelectTrigger>` has an accessible name (`aria-label` or visible label)
+    - All form inputs have a `<label>` or `aria-label` (never placeholder-only)
+    - Tabular data (rankings, standings) uses `<table>` with `<th scope>`
+    - Error messages use `role="alert"`; async status uses `aria-live="polite"`
+    - Decorative icons have `aria-hidden="true"`
+    - Modal/drawer close returns focus to the trigger
+    - New animations respect `prefers-reduced-motion`
 
 ## Output Format
 
