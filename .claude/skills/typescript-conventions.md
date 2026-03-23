@@ -191,3 +191,57 @@ await toast.promise(asyncOp(), {
 - Organized by feature: `teams.messages.*`, `matches.messages.*`
 - Namespaced keys: `teams.messages.success.created` not just `created`
 - Server: `getTranslations("rankings")` (async). Client: `useTranslations("predictions")`
+
+## Accessibility (WCAG 2.1 AA)
+
+Full patterns in `.claude/rules/accessibility.md`. Non-negotiable rules per component type:
+
+**Buttons & links**
+
+```tsx
+// Icon-only button — always needs aria-label; icon gets aria-hidden
+<Button size="icon" aria-label="Open menu">
+  <Menu className="h-5 w-5" aria-hidden="true" />
+</Button>
+```
+
+**Radix Select — always add aria-label or a visible <label>**
+
+```tsx
+<Select>
+  <SelectTrigger aria-label="Select tournament status">
+    <SelectValue placeholder="Status" />
+  </SelectTrigger>
+</Select>
+```
+
+**Form inputs — label or aria-label required**
+
+```tsx
+<Input aria-label={`${homeTeam.name} predicted score`} type="number" />
+```
+
+**Error messages — must be announced**
+
+```tsx
+{
+  error && (
+    <div role="alert" className="text-destructive text-sm">
+      {error}
+    </div>
+  );
+}
+```
+
+**Decorative icons — must be hidden**
+
+```tsx
+<Fingerprint className="h-5 w-5" aria-hidden="true" />
+```
+
+**Page structure — required in every layout**
+
+```tsx
+<a href="#main-content" className="sr-only focus:not-sr-only …">Skip to main content</a>
+<main id="main-content">…</main>
+```
