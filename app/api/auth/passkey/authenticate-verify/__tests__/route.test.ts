@@ -2,16 +2,28 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────────
 
-const { mockVerifyAuthResponse, mockAdminGenerateLink, mockSupabase, mockAuth } = vi.hoisted(() => {
+const {
+  mockVerifyAuthResponse,
+  mockAdminGenerateLink,
+  mockSupabase,
+  mockAuth,
+  mockQueryBuilder,
+  mockQueryResult,
+} = vi.hoisted(() => {
   const mockVerifyAuthResponse = vi.fn();
   const mockAdminGenerateLink = vi.fn();
 
+  const result = { data: null as unknown, error: null as unknown };
   const qb = {
     update: vi.fn(),
     eq: vi.fn(),
   };
   qb.update.mockReturnValue(qb);
-  qb.eq.mockReturnValue(Promise.resolve({ data: null, error: null }));
+  qb.eq.mockReturnValue(qb);
+  Object.defineProperty(qb, "then", {
+    get: () => (resolve: (v: unknown) => void) => resolve(result),
+    configurable: true,
+  });
 
   const mockAuth = {
     verifyOtp: vi.fn(),
@@ -22,7 +34,14 @@ const { mockVerifyAuthResponse, mockAdminGenerateLink, mockSupabase, mockAuth } 
     from: vi.fn().mockReturnValue(qb),
   };
 
-  return { mockVerifyAuthResponse, mockAdminGenerateLink, mockSupabase, mockAuth };
+  return {
+    mockVerifyAuthResponse,
+    mockAdminGenerateLink,
+    mockSupabase,
+    mockAuth,
+    mockQueryBuilder: qb,
+    mockQueryResult: result,
+  };
 });
 
 vi.mock("@/lib/webauthn/server", () => ({
@@ -47,6 +66,9 @@ import { POST } from "@/app/api/auth/passkey/authenticate-verify/route";
 describe("POST /api/auth/passkey/authenticate-verify", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase.from.mockReturnValue(mockQueryBuilder);
+    mockQueryResult.data = null;
+    mockQueryResult.error = null;
   });
 
   it("returns 400 when required fields are missing", async () => {
@@ -102,6 +124,8 @@ describe("POST /api/auth/passkey/authenticate-verify", () => {
     const body = await res.json();
     expect(body.verified).toBe(true);
     expect(body.userId).toBe("user-123");
+    // Verify that the last_login DB side-effect was triggered
+    expect(mockSupabase.from).toHaveBeenCalledWith("users");
     // Tokens set via HTTP-only cookies must not appear in the response body
     expect(body.session).toBeUndefined();
     expect(body.access_token).toBeUndefined();

@@ -18,6 +18,7 @@ import {
   type AuthenticationResponseJSON,
 } from "@simplewebauthn/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getRPConfig,
   CHALLENGE_TIMEOUT_MINUTES,
@@ -285,6 +286,12 @@ export async function verifyUserAuthenticationResponse(
 
   const credential = credentials[0];
 
+  // Enforce lockout after too many failed attempts
+  const MAX_FAILED_ATTEMPTS = 10;
+  if (credential.failed_attempts >= MAX_FAILED_ATTEMPTS) {
+    throw new Error("Credential locked due to too many failed attempts");
+  }
+
   // Verify the authentication response
   const opts: VerifyAuthenticationResponseOpts = {
     response,
@@ -300,16 +307,17 @@ export async function verifyUserAuthenticationResponse(
     requireUserVerification: USER_VERIFICATION === "required",
   };
 
+  const adminSupabase = createAdminClient();
   let verification;
   try {
     verification = await verifyAuthenticationResponse(opts);
   } catch {
-    await supabase.rpc("increment_credential_failed_attempts", { cred_id: credentialID });
+    await adminSupabase.rpc("increment_credential_failed_attempts", { cred_id: credentialID });
     throw new Error("Authentication verification failed");
   }
 
   if (!verification.verified) {
-    await supabase.rpc("increment_credential_failed_attempts", { cred_id: credentialID });
+    await adminSupabase.rpc("increment_credential_failed_attempts", { cred_id: credentialID });
     throw new Error("Authentication verification failed");
   }
 

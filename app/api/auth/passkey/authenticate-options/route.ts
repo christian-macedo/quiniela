@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         error.message === "User not found" ||
         error.message === "No passkeys registered for this user"
       ) {
+        console.warn("Passkey auth attempt: no credentials found for request");
         return NextResponse.json(
           { error: "Could not find credentials for this account" },
           { status: 404 }
