@@ -93,6 +93,60 @@ describe("POST /api/admin/matches/[matchId]/score", () => {
     predictionsResult.error = null;
   });
 
+  // ── Validation tests ──────────────────────────────────────────────────────
+
+  it("returns 400 for non-integer home_score", async () => {
+    const response = await POST(makeRequest({ home_score: 1.5, away_score: 0 }), matchParams);
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("Scores must be integers");
+  });
+
+  it("returns 400 for negative scores", async () => {
+    const response = await POST(makeRequest({ home_score: -1, away_score: 0 }), matchParams);
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for scores exceeding max", async () => {
+    const response = await POST(makeRequest({ home_score: 0, away_score: 100 }), matchParams);
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for string scores", async () => {
+    const response = await POST(makeRequest({ home_score: "two", away_score: 0 }), matchParams);
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for null scores", async () => {
+    const response = await POST(makeRequest({ home_score: null, away_score: 0 }), matchParams);
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for invalid status string", async () => {
+    const response = await POST(
+      makeRequest({ home_score: 1, away_score: 0, status: "invalid_status" }),
+      matchParams
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("Invalid status");
+  });
+
+  it("accepts all valid status values", async () => {
+    matchesResult.data = { multiplier: 1, tournament_id: "t-1", status: "scheduled" };
+    predictionsResult.data = [];
+
+    for (const validStatus of ["scheduled", "in_progress", "completed", "cancelled"]) {
+      const response = await POST(
+        makeRequest({ home_score: 1, away_score: 0, status: validStatus }),
+        matchParams
+      );
+      expect(response.status).toBe(200);
+    }
+  });
+
+  // ── Auth & error tests ──────────────────────────────────────────────────────
+
   it("returns 403 when admin check fails", async () => {
     mockCheckAdminPermission.mockResolvedValue(
       new Response(JSON.stringify({ error: "Admin access required" }), { status: 403 })

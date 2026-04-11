@@ -1,0 +1,299 @@
+import { NextRequest } from "next/server";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createMockAuthUser } from "@/__tests__/helpers/supabase-mock";
+
+// ── Hoisted mocks ──────────────────────────────────────────────────────────────
+
+const mockCheckUserActive = vi.hoisted(() => vi.fn());
+
+const { mockSupabase, mockAuth, matchesQb, matchesResult, participantsQb, participantsResult, predictionsQb, predictionsResult } =
+  vi.hoisted(() => {
+    function makeQb() {
+      const result = { data: null as unknown, error: null as unknown };
+      const qb: Record<string, ReturnType<typeof vi.fn>> = {
+        select: vi.fn(),
+        insert: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+        eq: vi.fn(),
+        neq: vi.fn(),
+        in: vi.fn(),
+        single: vi.fn(),
+        maybeSingle: vi.fn(),
+        limit: vi.fn(),
+        order: vi.fn(),
+      };
+      for (const key of Object.keys(qb)) {
+        if (key === "single" || key === "maybeSingle")
+          qb[key].mockImplementation(() => Promise.resolve(result));
+        else qb[key].mockReturnValue(qb);
+      }
+      Object.defineProperty(qb, "then", {
+        get: () => (resolve: (v: unknown) => void) => resolve(result),
+        configurable: true,
+      });
+      return { qb, result };
+    }
+
+    const { qb: matchesQb, result: matchesResult } = makeQb();
+    const { qb: participantsQb, result: participantsResult } = makeQb();
+    const { qb: predictionsQb, result: predictionsResult } = makeQb();
+
+    const mockAuth = {
+      getUser: vi.fn(),
+      signUp: vi.fn(),
+      signInWithPassword: vi.fn(),
+      signOut: vi.fn(),
+      exchangeCodeForSession: vi.fn(),
+    };
+
+    return {
+      mockSupabase: { auth: mockAuth, from: vi.fn() },
+      mockAuth,
+      matchesQb,
+      matchesResult,
+      participantsQb,
+      participantsResult,
+      predictionsQb,
+      predictionsResult,
+    };
+  });
+
+vi.mock("@/lib/middleware/user-status-check", () => ({
+  checkUserActive: mockCheckUserActive,
+}));
+
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn().mockResolvedValue(mockSupabase),
+}));
+
+vi.mock("@/lib/utils/date", () => ({
+  getCurrentUTC: vi.fn(() => "2026-02-21T00:00:00.000Z"),
+}));
+
+// Import after mocking
+import { POST } from "../route";
+
+const USER_ID = "user-123";
+
+// ── POST /api/predictions ─────────────────────────────────────────────────────
+
+describe("POST /api/predictions", () => {
+  const makeRequest = (body: object) =>
+    new NextRequest("http://localhost/api/predictions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+  const validBody = {
+    match_id: "match-1",
+    predicted_home_score: 2,
+    predicted_away_score: 1,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockCheckUserActive.mockResolvedValue(null);
+    mockAuth.getUser.mockResolvedValue({
+      data: { user: createMockAuthUser({ id: USER_ID }) },
+      error: null,
+    });
+    mockSupabase.from.mockImplementation((table: string) => {
+      if (table === "matches") return matchesQb;
+      if (table === "tournament_participants") return participantsQb;
+      return predictionsQb;
+    });
+    matchesResult.data = null;
+    matchesResult.error = null;
+    participantsResult.data = null;
+    participantsResult.error = null;
+    predictionsResult.data = null;
+    predictionsResult.error = null;
+  });
+
+  // ── Validation tests ──────────────────────────────────────────────────────
+
+  it("returns 400 when match_id is missing", async () => {
+    const response = await POST(
+      makeRequest({ predicted_home_score: 1, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("match_id");
+  });
+
+  it("returns 400 when match_id is not a string", async () => {
+    const response = await POST(
+      makeRequest({ match_id: 123, predicted_home_score: 1, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for non-integer predicted scores", async () => {
+    const response = await POST(
+      makeRequest({ match_id: "m-1", predicted_home_score: 1.5, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("Scores must be integers");
+  });
+
+  it("returns 400 for negative predicted scores", async () => {
+    const response = await POST(
+      makeRequest({ match_id: "m-1", predicted_home_score: -1, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for scores exceeding max", async () => {
+    const response = await POST(
+      makeRequest({ match_id: "m-1", predicted_home_score: 0, predicted_away_score: 100 })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 for string scores", async () => {
+    const response = await POST(
+      makeRequest({ match_id: "m-1", predicted_home_score: "two", predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  // ── Auth tests ──────────────────────────────────────────────────────────────
+
+  it("returns 403 when user is deactivated", async () => {
+    mockCheckUserActive.mockResolvedValue(
+      new Response(JSON.stringify({ error: "Account deactivated" }), { status: 403 })
+    );
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(403);
+  });
+
+  it("returns 401 when user is not authenticated", async () => {
+    mockAuth.getUser.mockResolvedValue({
+      data: { user: null },
+      error: null,
+    });
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(401);
+  });
+
+  // ── Business logic tests ────────────────────────────────────────────────────
+
+  it("returns 404 when match is not found", async () => {
+    matchesResult.data = null;
+    matchesResult.error = { message: "Not found" };
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(404);
+  });
+
+  it("returns 403 when user is not a tournament participant", async () => {
+    matchesResult.data = { tournament_id: "t-1" };
+    participantsResult.data = null;
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(403);
+    const body = await response.json();
+    expect(body.error).toContain("participant");
+  });
+
+  it("creates a new prediction when none exists", async () => {
+    matchesResult.data = { tournament_id: "t-1" };
+    participantsResult.data = { user_id: USER_ID };
+    // First predictions query (check existing) returns null
+    // Second predictions query (insert) returns created data
+    const createdPrediction = {
+      id: "pred-new",
+      user_id: USER_ID,
+      match_id: "match-1",
+      predicted_home_score: 2,
+      predicted_away_score: 1,
+    };
+
+    // For the existing-check query, single() returns null data
+    // For the insert query, single() returns the new prediction
+    let predictionsCallCount = 0;
+    predictionsQb.single.mockImplementation(() => {
+      predictionsCallCount++;
+      if (predictionsCallCount === 1) {
+        // Check existing — not found
+        return Promise.resolve({ data: null, error: null });
+      }
+      // Insert result
+      return Promise.resolve({ data: createdPrediction, error: null });
+    });
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.id).toBe("pred-new");
+    expect(predictionsQb.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: USER_ID,
+        match_id: "match-1",
+        predicted_home_score: 2,
+        predicted_away_score: 1,
+      })
+    );
+  });
+
+  it("updates an existing prediction", async () => {
+    matchesResult.data = { tournament_id: "t-1" };
+    participantsResult.data = { user_id: USER_ID };
+
+    const updatedPrediction = {
+      id: "pred-existing",
+      user_id: USER_ID,
+      match_id: "match-1",
+      predicted_home_score: 2,
+      predicted_away_score: 1,
+    };
+
+    let predictionsCallCount = 0;
+    predictionsQb.single.mockImplementation(() => {
+      predictionsCallCount++;
+      if (predictionsCallCount === 1) {
+        // Check existing — found
+        return Promise.resolve({ data: { id: "pred-existing" }, error: null });
+      }
+      // Update result
+      return Promise.resolve({ data: updatedPrediction, error: null });
+    });
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.id).toBe("pred-existing");
+    expect(predictionsQb.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        predicted_home_score: 2,
+        predicted_away_score: 1,
+      })
+    );
+  });
+
+  it("returns 500 on DB error during insert", async () => {
+    matchesResult.data = { tournament_id: "t-1" };
+    participantsResult.data = { user_id: USER_ID };
+
+    let predictionsCallCount = 0;
+    predictionsQb.single.mockImplementation(() => {
+      predictionsCallCount++;
+      if (predictionsCallCount === 1) {
+        return Promise.resolve({ data: null, error: null });
+      }
+      return Promise.resolve({ data: null, error: { message: "Insert failed" } });
+    });
+
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body.error).toContain("Failed to save prediction");
+    consoleSpy.mockRestore();
+  });
+});
