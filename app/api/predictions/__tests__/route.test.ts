@@ -6,58 +6,67 @@ import { createMockAuthUser } from "@/__tests__/helpers/supabase-mock";
 
 const mockCheckUserActive = vi.hoisted(() => vi.fn());
 
-const { mockSupabase, mockAuth, matchesQb, matchesResult, participantsQb, participantsResult, predictionsQb, predictionsResult } =
-  vi.hoisted(() => {
-    function makeQb() {
-      const result = { data: null as unknown, error: null as unknown };
-      const qb: Record<string, ReturnType<typeof vi.fn>> = {
-        select: vi.fn(),
-        insert: vi.fn(),
-        update: vi.fn(),
-        delete: vi.fn(),
-        eq: vi.fn(),
-        neq: vi.fn(),
-        in: vi.fn(),
-        single: vi.fn(),
-        maybeSingle: vi.fn(),
-        limit: vi.fn(),
-        order: vi.fn(),
-      };
-      for (const key of Object.keys(qb)) {
-        if (key === "single" || key === "maybeSingle")
-          qb[key].mockImplementation(() => Promise.resolve(result));
-        else qb[key].mockReturnValue(qb);
-      }
-      Object.defineProperty(qb, "then", {
-        get: () => (resolve: (v: unknown) => void) => resolve(result),
-        configurable: true,
-      });
-      return { qb, result };
+const {
+  mockSupabase,
+  mockAuth,
+  matchesQb,
+  matchesResult,
+  participantsQb,
+  participantsResult,
+  predictionsQb,
+  predictionsResult,
+} = vi.hoisted(() => {
+  function makeQb() {
+    const result = { data: null as unknown, error: null as unknown };
+    const qb: Record<string, ReturnType<typeof vi.fn>> = {
+      select: vi.fn(),
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      upsert: vi.fn(),
+      eq: vi.fn(),
+      neq: vi.fn(),
+      in: vi.fn(),
+      single: vi.fn(),
+      maybeSingle: vi.fn(),
+      limit: vi.fn(),
+      order: vi.fn(),
+    };
+    for (const key of Object.keys(qb)) {
+      if (key === "single" || key === "maybeSingle")
+        qb[key].mockImplementation(() => Promise.resolve(result));
+      else qb[key].mockReturnValue(qb);
     }
+    Object.defineProperty(qb, "then", {
+      get: () => (resolve: (v: unknown) => void) => resolve(result),
+      configurable: true,
+    });
+    return { qb, result };
+  }
 
-    const { qb: matchesQb, result: matchesResult } = makeQb();
-    const { qb: participantsQb, result: participantsResult } = makeQb();
-    const { qb: predictionsQb, result: predictionsResult } = makeQb();
+  const { qb: matchesQb, result: matchesResult } = makeQb();
+  const { qb: participantsQb, result: participantsResult } = makeQb();
+  const { qb: predictionsQb, result: predictionsResult } = makeQb();
 
-    const mockAuth = {
-      getUser: vi.fn(),
-      signUp: vi.fn(),
-      signInWithPassword: vi.fn(),
-      signOut: vi.fn(),
-      exchangeCodeForSession: vi.fn(),
-    };
+  const mockAuth = {
+    getUser: vi.fn(),
+    signUp: vi.fn(),
+    signInWithPassword: vi.fn(),
+    signOut: vi.fn(),
+    exchangeCodeForSession: vi.fn(),
+  };
 
-    return {
-      mockSupabase: { auth: mockAuth, from: vi.fn() },
-      mockAuth,
-      matchesQb,
-      matchesResult,
-      participantsQb,
-      participantsResult,
-      predictionsQb,
-      predictionsResult,
-    };
-  });
+  return {
+    mockSupabase: { auth: mockAuth, from: vi.fn() },
+    mockAuth,
+    matchesQb,
+    matchesResult,
+    participantsQb,
+    participantsResult,
+    predictionsQb,
+    predictionsResult,
+  };
+});
 
 vi.mock("@/lib/middleware/user-status-check", () => ({
   checkUserActive: mockCheckUserActive,
@@ -68,30 +77,34 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 vi.mock("@/lib/utils/date", () => ({
-  getCurrentUTC: vi.fn(() => "2026-02-21T00:00:00.000Z"),
+  getCurrentUTC: vi.fn(() => "2026-04-11T00:00:00.000Z"),
 }));
 
 // Import after mocking
 import { POST } from "../route";
 
-const USER_ID = "user-123";
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
-// ── POST /api/predictions ─────────────────────────────────────────────────────
+const USER_ID = "user-123";
+const MATCH_ID = "match-456";
+const TOURNAMENT_ID = "tournament-789";
+
+const makeRequest = (body: object) =>
+  new NextRequest("http://localhost/api/predictions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+const validBody = {
+  match_id: MATCH_ID,
+  predicted_home_score: 2,
+  predicted_away_score: 1,
+};
+
+// ── Tests ──────────────────────────────────────────────────────────────────────
 
 describe("POST /api/predictions", () => {
-  const makeRequest = (body: object) =>
-    new NextRequest("http://localhost/api/predictions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-  const validBody = {
-    match_id: "match-1",
-    predicted_home_score: 2,
-    predicted_away_score: 1,
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
     mockCheckUserActive.mockResolvedValue(null);
@@ -104,15 +117,21 @@ describe("POST /api/predictions", () => {
       if (table === "tournament_participants") return participantsQb;
       return predictionsQb;
     });
-    matchesResult.data = null;
+    matchesResult.data = { tournament_id: TOURNAMENT_ID };
     matchesResult.error = null;
-    participantsResult.data = null;
+    participantsResult.data = { user_id: USER_ID };
     participantsResult.error = null;
-    predictionsResult.data = null;
+    predictionsResult.data = {
+      id: "pred-1",
+      user_id: USER_ID,
+      match_id: MATCH_ID,
+      predicted_home_score: 2,
+      predicted_away_score: 1,
+    };
     predictionsResult.error = null;
   });
 
-  // ── Validation tests ──────────────────────────────────────────────────────
+  // ── Input validation ───────────────────────────────────────────────────────
 
   it("returns 400 when match_id is missing", async () => {
     const response = await POST(
@@ -132,7 +151,7 @@ describe("POST /api/predictions", () => {
 
   it("returns 400 for non-integer predicted scores", async () => {
     const response = await POST(
-      makeRequest({ match_id: "m-1", predicted_home_score: 1.5, predicted_away_score: 0 })
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: 1.5, predicted_away_score: 0 })
     );
     expect(response.status).toBe(400);
     const body = await response.json();
@@ -141,30 +160,30 @@ describe("POST /api/predictions", () => {
 
   it("returns 400 for negative predicted scores", async () => {
     const response = await POST(
-      makeRequest({ match_id: "m-1", predicted_home_score: -1, predicted_away_score: 0 })
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: -1, predicted_away_score: 0 })
     );
     expect(response.status).toBe(400);
   });
 
   it("returns 400 for scores exceeding max", async () => {
     const response = await POST(
-      makeRequest({ match_id: "m-1", predicted_home_score: 0, predicted_away_score: 100 })
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: 0, predicted_away_score: 100 })
     );
     expect(response.status).toBe(400);
   });
 
   it("returns 400 for string scores", async () => {
     const response = await POST(
-      makeRequest({ match_id: "m-1", predicted_home_score: "two", predicted_away_score: 0 })
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: "two", predicted_away_score: 0 })
     );
     expect(response.status).toBe(400);
   });
 
-  // ── Auth tests ──────────────────────────────────────────────────────────────
+  // ── Guard checks ───────────────────────────────────────────────────────────
 
-  it("returns 403 when user is deactivated", async () => {
+  it("returns user-status error when user is deactivated", async () => {
     mockCheckUserActive.mockResolvedValue(
-      new Response(JSON.stringify({ error: "Account deactivated" }), { status: 403 })
+      new Response(JSON.stringify({ error: "Account is deactivated" }), { status: 403 })
     );
 
     const response = await POST(makeRequest(validBody));
@@ -172,16 +191,11 @@ describe("POST /api/predictions", () => {
   });
 
   it("returns 401 when user is not authenticated", async () => {
-    mockAuth.getUser.mockResolvedValue({
-      data: { user: null },
-      error: null,
-    });
+    mockAuth.getUser.mockResolvedValue({ data: { user: null }, error: null });
 
     const response = await POST(makeRequest(validBody));
     expect(response.status).toBe(401);
   });
-
-  // ── Business logic tests ────────────────────────────────────────────────────
 
   it("returns 404 when match is not found", async () => {
     matchesResult.data = null;
@@ -192,108 +206,46 @@ describe("POST /api/predictions", () => {
   });
 
   it("returns 403 when user is not a tournament participant", async () => {
-    matchesResult.data = { tournament_id: "t-1" };
     participantsResult.data = null;
 
     const response = await POST(makeRequest(validBody));
     expect(response.status).toBe(403);
     const body = await response.json();
-    expect(body.error).toContain("participant");
+    expect(body.error).toContain("tournament participant");
   });
 
-  it("creates a new prediction when none exists", async () => {
-    matchesResult.data = { tournament_id: "t-1" };
-    participantsResult.data = { user_id: USER_ID };
-    // First predictions query (check existing) returns null
-    // Second predictions query (insert) returns created data
-    const createdPrediction = {
-      id: "pred-new",
-      user_id: USER_ID,
-      match_id: "match-1",
-      predicted_home_score: 2,
-      predicted_away_score: 1,
-    };
+  // ── Success path ───────────────────────────────────────────────────────────
 
-    // For the existing-check query, single() returns null data
-    // For the insert query, single() returns the new prediction
-    let predictionsCallCount = 0;
-    predictionsQb.single.mockImplementation(() => {
-      predictionsCallCount++;
-      if (predictionsCallCount === 1) {
-        // Check existing — not found
-        return Promise.resolve({ data: null, error: null });
-      }
-      // Insert result
-      return Promise.resolve({ data: createdPrediction, error: null });
-    });
-
+  it("upserts a prediction and returns it", async () => {
     const response = await POST(makeRequest(validBody));
+
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.id).toBe("pred-new");
-    expect(predictionsQb.insert).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(body.id).toBe("pred-1");
+    expect(predictionsQb.upsert).toHaveBeenCalledWith(
+      {
         user_id: USER_ID,
-        match_id: "match-1",
+        match_id: MATCH_ID,
         predicted_home_score: 2,
         predicted_away_score: 1,
-      })
+        updated_at: "2026-04-11T00:00:00.000Z",
+      },
+      { onConflict: "user_id,match_id" }
     );
   });
 
-  it("updates an existing prediction", async () => {
-    matchesResult.data = { tournament_id: "t-1" };
-    participantsResult.data = { user_id: USER_ID };
+  // ── Error path ─────────────────────────────────────────────────────────────
 
-    const updatedPrediction = {
-      id: "pred-existing",
-      user_id: USER_ID,
-      match_id: "match-1",
-      predicted_home_score: 2,
-      predicted_away_score: 1,
-    };
-
-    let predictionsCallCount = 0;
-    predictionsQb.single.mockImplementation(() => {
-      predictionsCallCount++;
-      if (predictionsCallCount === 1) {
-        // Check existing — found
-        return Promise.resolve({ data: { id: "pred-existing" }, error: null });
-      }
-      // Update result
-      return Promise.resolve({ data: updatedPrediction, error: null });
-    });
-
-    const response = await POST(makeRequest(validBody));
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.id).toBe("pred-existing");
-    expect(predictionsQb.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        predicted_home_score: 2,
-        predicted_away_score: 1,
-      })
-    );
-  });
-
-  it("returns 500 on DB error during insert", async () => {
-    matchesResult.data = { tournament_id: "t-1" };
-    participantsResult.data = { user_id: USER_ID };
-
-    let predictionsCallCount = 0;
-    predictionsQb.single.mockImplementation(() => {
-      predictionsCallCount++;
-      if (predictionsCallCount === 1) {
-        return Promise.resolve({ data: null, error: null });
-      }
-      return Promise.resolve({ data: null, error: { message: "Insert failed" } });
-    });
-
+  it("returns 500 when upsert fails", async () => {
+    predictionsResult.data = null;
+    predictionsResult.error = { message: "DB error" };
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
     const response = await POST(makeRequest(validBody));
     expect(response.status).toBe(500);
     const body = await response.json();
     expect(body.error).toContain("Failed to save prediction");
+
     consoleSpy.mockRestore();
   });
 });
