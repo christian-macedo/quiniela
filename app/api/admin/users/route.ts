@@ -14,7 +14,7 @@ export async function GET() {
     // Get all users
     const { data: users, error: usersError } = await supabase
       .from("users")
-      .select("*")
+      .select("id, email, screen_name, avatar_url, is_admin, status, last_login, created_at")
       .order("created_at", { ascending: false });
 
     if (usersError) throw usersError;
