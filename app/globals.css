@@ -88,38 +88,38 @@
     --popover: 202 100% 16%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 200 100% 49%; /* #00A6FB - Vivid Cerulean */
+    --primary: 200 100% 55%; /* Brightened for 5:1+ contrast on card */
     --primary-foreground: 200 75% 8%;
 
     --secondary: 199 100% 29%; /* #006494 - Sea Blue */
     --secondary-foreground: 0 0% 98%;
 
     --muted: 199 100% 29%;
-    --muted-foreground: 200 100% 80%;
+    --muted-foreground: 200 100% 82%;
 
-    --accent: 202 95% 41%; /* #0582CA - Honolulu Blue */
+    --accent: 202 95% 55%; /* Brightened for 5:1+ contrast on card */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 100% 39.6% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 199 100% 29%;
     --input: 199 100% 29%;
-    --ring: 200 100% 49%; /* Primary color */
+    --ring: 200 100% 55%; /* Match primary */
 
     /* Chart colors for dark mode */
-    --chart-1: 200 100% 49%; /* #00A6FB */
-    --chart-2: 202 95% 41%; /* #0582CA */
-    --chart-3: 199 100% 29%; /* #006494 */
-    --chart-4: 202 100% 16%; /* #003554 */
-    --chart-5: 200 75% 8%; /* #051923 */
+    --chart-1: 200 100% 55%;
+    --chart-2: 202 95% 50%;
+    --chart-3: 199 100% 42%;
+    --chart-4: 202 100% 32%;
+    --chart-5: 200 75% 22%;
 
     /* Semantic status colors - Dark Mode */
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    --info: 200 100% 49%;
+    --info: 200 100% 55%;
     --info-foreground: 200 75% 8%;
 
     /* Achievement / podium colors */

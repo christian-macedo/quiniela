@@ -234,6 +234,19 @@ Use **Server Components by default** (data fetching, static rendering). Add `"us
 
 Use `useFeatureToast(namespace)` for all user feedback. Feature-specific keys need no prefix (`toast.success('success.created')`). Common messages use `common:` prefix (`toast.error('common:error.generic')`). See [TOASTS.md](./docs/TOASTS.md) for the full API reference and examples.
 
+## Accessibility
+
+All UI must meet **WCAG 2.1 AA**. See `.claude/rules/accessibility.md` for patterns and anti-patterns. Quick rules:
+
+- Every page needs `<main id="main-content">` and a skip-to-content link
+- Every `<button>`, link, and Radix `<SelectTrigger>` needs an accessible name (`aria-label` or visible label)
+- All form inputs need a `<label>` or `aria-label` — placeholder is never sufficient
+- Tabular data (rankings, standings) uses `<table>` with `<th scope>`
+- Error messages use `role="alert"`; decorative icons use `aria-hidden="true"`
+- Focus must return to the trigger element when a modal or drawer closes
+- New CSS animations must respect `prefers-reduced-motion`
+- Verify color contrast in both light and dark mode before finalizing
+
 ## Best Practices & Conventions
 
 See `.claude/skills/typescript-conventions.md` for the complete TypeScript conventions reference.
