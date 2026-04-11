@@ -78,6 +78,59 @@ describe("POST /api/admin/teams", () => {
     teamsResult.error = null;
   });
 
+  // ── Validation tests ──────────────────────────────────────────────────────
+
+  it("returns 400 when name is missing", async () => {
+    const response = await POST(makeRequest({ short_name: "BRA", country_code: "BR" }));
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("name");
+  });
+
+  it("returns 400 when name is empty string", async () => {
+    const response = await POST(
+      makeRequest({ name: "  ", short_name: "BRA", country_code: "BR" })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 when name exceeds 100 characters", async () => {
+    const response = await POST(
+      makeRequest({ name: "A".repeat(101), short_name: "BRA", country_code: "BR" })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 when short_name is missing", async () => {
+    const response = await POST(makeRequest({ name: "Brazil", country_code: "BR" }));
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("short_name");
+  });
+
+  it("returns 400 when short_name exceeds 10 characters", async () => {
+    const response = await POST(
+      makeRequest({ name: "Brazil", short_name: "TOOLONGNAME", country_code: "BR" })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 when country_code is missing", async () => {
+    const response = await POST(makeRequest({ name: "Brazil", short_name: "BRA" }));
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("country_code");
+  });
+
+  it("returns 400 when country_code is not 2 characters", async () => {
+    const response = await POST(
+      makeRequest({ name: "Brazil", short_name: "BRA", country_code: "BRA" })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  // ── Auth & error tests ──────────────────────────────────────────────────────
+
   it("returns 403 when admin check fails", async () => {
     mockCheckAdminPermission.mockResolvedValue(
       new Response(JSON.stringify({ error: "Admin access required" }), { status: 403 })
