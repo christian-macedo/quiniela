@@ -48,11 +48,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error verifying registration:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Failed to verify registration",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to verify registration" }, { status: 500 });
   }
 }
