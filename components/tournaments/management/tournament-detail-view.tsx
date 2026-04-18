@@ -112,9 +112,12 @@ export function TournamentDetailView({
     setRemovingTeamId(teamId);
 
     try {
-      const response = await fetch(`/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -268,7 +271,7 @@ export function TournamentDetailView({
           {/* Add Team */}
           <div className="flex gap-2">
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="flex-1" aria-label={t("detail.selectTeamToAdd")}>
                 <SelectValue placeholder={t("detail.selectTeamToAdd")} />
               </SelectTrigger>
               <SelectContent>
@@ -339,7 +342,7 @@ export function TournamentDetailView({
           {/* Add Participant */}
           <div className="flex gap-2">
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="flex-1" aria-label={t("detail.selectUserToAdd")}>
                 <SelectValue placeholder={t("detail.selectUserToAdd")} />
               </SelectTrigger>
               <SelectContent>

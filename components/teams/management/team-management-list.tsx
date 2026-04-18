@@ -90,7 +90,10 @@ export function TeamManagementList({
 
           {/* Country Filter */}
           <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger
+              className="w-full sm:w-[180px]"
+              aria-label={tCommon("filters.filterBy", { field: tCommon("filters.country") })}
+            >
               <SelectValue
                 placeholder={tCommon("filters.filterBy", { field: tCommon("filters.country") })}
               />
@@ -107,7 +110,10 @@ export function TeamManagementList({
 
           {/* Tournament Filter */}
           <Select value={selectedTournament} onValueChange={setSelectedTournament}>
-            <SelectTrigger className="w-full sm:w-[220px]">
+            <SelectTrigger
+              className="w-full sm:w-[220px]"
+              aria-label={tCommon("filters.filterBy", { field: tCommon("filters.tournament") })}
+            >
               <SelectValue
                 placeholder={tCommon("filters.filterBy", { field: tCommon("filters.tournament") })}
               />
