@@ -137,3 +137,36 @@ export type AdminUserView = PublicUserProfile & {
 export type RankingWithPublicUser = TournamentRanking & {
   user: PublicUserProfile;
 };
+
+export type JoinRequestStatus = "pending" | "approved" | "rejected";
+
+export interface TournamentJoinRequest {
+  id: string;
+  tournament_id: string;
+  user_id: string;
+  status: JoinRequestStatus;
+  created_at: string;
+  updated_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+}
+
+export interface JoinRequestWithDetails extends TournamentJoinRequest {
+  user: {
+    id: string;
+    email: string;
+    screen_name: string | null;
+    avatar_url: string | null;
+  };
+  tournament: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface JoinRequestStatusCheck {
+  hasRequest: boolean;
+  status?: JoinRequestStatus;
+  requestId?: string;
+  createdAt?: string;
+}
