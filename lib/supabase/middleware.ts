@@ -1,9 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-// App routes that require an active (non-deactivated) user session.
-// Auth routes and public routes are excluded — they don't need a status check.
-const APP_ROUTE_PREFIX = /^\/(tournaments|teams|admin|profile)/;
+// Public routes that do NOT require a deactivated-user check.
+// All other routes (including dynamic [tournamentId] routes) will be checked.
+const PUBLIC_ROUTE_PREFIX =
+  /^\/(login|signup|forgot-password|update-password|auth|unauthorized|_next|favicon\.ico|api)/;
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -37,8 +38,9 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Block deactivated users at the edge before any page renders.
-  // Only check app routes — no need to check auth/public pages.
-  if (user && APP_ROUTE_PREFIX.test(request.nextUrl.pathname)) {
+  // Inverted allow-list: skip only known public routes so new app routes are
+  // covered automatically without needing to update this regex.
+  if (user && !PUBLIC_ROUTE_PREFIX.test(request.nextUrl.pathname)) {
     const { data: profile } = await supabase
       .from("users")
       .select("status")
@@ -49,7 +51,13 @@ export async function updateSession(request: NextRequest) {
       await supabase.auth.signOut();
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("error", "account_deactivated");
-      return NextResponse.redirect(loginUrl);
+      // Copy auth-clearing cookies from supabaseResponse into the redirect so
+      // signOut() actually clears the session (redirect is a new Response object).
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value);
+      });
+      return redirectResponse;
     }
   }
 

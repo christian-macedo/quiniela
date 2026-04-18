@@ -29,12 +29,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       userProfile = data;
     }
 
-    // Check if user is deactivated and sign them out.
-    // NOTE: This is a server-side security check — not UX-only. However it runs
-    // at the layout level (after the page starts rendering), so deactivated users
-    // may briefly see the app shell before the redirect fires. For a hard edge-level
-    // block, move this check into middleware.ts once the user status is accessible
-    // there (e.g., via a custom JWT claim or an edge-compatible DB query).
+    // Defense-in-depth: also checked at the edge in lib/supabase/middleware.ts
+    // (which fires before this layout renders). This check is a fallback for
+    // routes not covered by the middleware or for direct server component renders.
     if (userProfile?.status === "deactivated") {
       await supabase.auth.signOut();
       redirect("/login?error=account_deactivated");
