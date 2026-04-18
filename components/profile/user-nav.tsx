@@ -44,12 +44,18 @@ export function UserNav({ user }: UserNavProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 gap-2 px-2">
+        <Button
+          variant="ghost"
+          className="relative h-10 gap-2 px-2"
+          aria-label={t("navigation.accountMenu", { name: displayName })}
+        >
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.avatar_url ?? undefined} alt={displayName} />
-            <AvatarFallback>{initials}</AvatarFallback>
+            <AvatarFallback aria-hidden="true">{initials}</AvatarFallback>
           </Avatar>
-          <span className="hidden md:inline-block font-medium text-sm">{displayName}</span>
+          <span className="hidden md:inline-block font-medium text-sm" aria-hidden="true">
+            {displayName}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

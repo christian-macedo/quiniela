@@ -83,7 +83,12 @@ export function PasskeyLoginButton({
 
   return (
     <div className={`space-y-3 ${className || ""}`}>
-      <Button onClick={handleAuthenticate} disabled={isLoading || !email} className="w-full">
+      <Button
+        onClick={handleAuthenticate}
+        disabled={isLoading}
+        aria-disabled={!email || isLoading}
+        className="w-full"
+      >
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
