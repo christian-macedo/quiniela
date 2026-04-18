@@ -36,7 +36,7 @@ export async function POST(
       );
     }
 
-    if (status && !VALID_STATUSES.includes(status)) {
+    if (status !== undefined && status !== null && !VALID_STATUSES.includes(status)) {
       return NextResponse.json(
         { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
         { status: 400 }
