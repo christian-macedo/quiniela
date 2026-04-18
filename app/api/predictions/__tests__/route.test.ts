@@ -117,7 +117,7 @@ describe("POST /api/predictions", () => {
       if (table === "tournament_participants") return participantsQb;
       return predictionsQb;
     });
-    matchesResult.data = { tournament_id: TOURNAMENT_ID };
+    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "scheduled" };
     matchesResult.error = null;
     participantsResult.data = { user_id: USER_ID };
     participantsResult.error = null;
@@ -129,6 +129,40 @@ describe("POST /api/predictions", () => {
       predicted_away_score: 1,
     };
     predictionsResult.error = null;
+  });
+
+  // ── Input validation ───────────────────────────────────────────────────────
+
+  it("returns 400 when match_id is missing", async () => {
+    const response = await POST(
+      makeRequest({ predicted_home_score: 1, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("match_id");
+  });
+
+  it("returns 400 when predicted scores are negative", async () => {
+    const response = await POST(
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: -1, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("Scores must be integers");
+  });
+
+  it("returns 400 when predicted scores are not integers", async () => {
+    const response = await POST(
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: 1.5, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it("returns 400 when predicted scores exceed 99", async () => {
+    const response = await POST(
+      makeRequest({ match_id: MATCH_ID, predicted_home_score: 100, predicted_away_score: 0 })
+    );
+    expect(response.status).toBe(400);
   });
 
   // ── Guard checks ───────────────────────────────────────────────────────────
@@ -155,6 +189,22 @@ describe("POST /api/predictions", () => {
 
     const response = await POST(makeRequest(validBody));
     expect(response.status).toBe(404);
+  });
+
+  it("returns 422 when match is completed", async () => {
+    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "completed" };
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(422);
+    const body = await response.json();
+    expect(body.error).toContain("Predictions are closed");
+  });
+
+  it("returns 422 when match is cancelled", async () => {
+    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "cancelled" };
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(422);
   });
 
   it("returns 403 when user is not a tournament participant", async () => {

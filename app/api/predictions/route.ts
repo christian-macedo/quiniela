@@ -21,15 +21,39 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { match_id, predicted_home_score, predicted_away_score } = body;
 
-    // Get the match to find the tournament_id
+    if (!match_id || typeof match_id !== "string") {
+      return NextResponse.json({ error: "match_id is required" }, { status: 400 });
+    }
+
+    if (
+      typeof predicted_home_score !== "number" ||
+      !Number.isInteger(predicted_home_score) ||
+      predicted_home_score < 0 ||
+      predicted_home_score > 99 ||
+      typeof predicted_away_score !== "number" ||
+      !Number.isInteger(predicted_away_score) ||
+      predicted_away_score < 0 ||
+      predicted_away_score > 99
+    ) {
+      return NextResponse.json({ error: "Scores must be integers between 0 and 99" }, { status: 400 });
+    }
+
+    // Get the match to find the tournament_id and check it is open for predictions
     const { data: match, error: matchError } = await supabase
       .from("matches")
-      .select("tournament_id")
+      .select("tournament_id, status")
       .eq("id", match_id)
       .single();
 
     if (matchError || !match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
+    }
+
+    if (match.status === "completed" || match.status === "cancelled") {
+      return NextResponse.json(
+        { error: "Predictions are closed for this match" },
+        { status: 422 }
+      );
     }
 
     // Check if user is a participant in this tournament
