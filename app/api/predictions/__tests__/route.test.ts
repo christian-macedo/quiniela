@@ -117,7 +117,7 @@ describe("POST /api/predictions", () => {
       if (table === "tournament_participants") return participantsQb;
       return predictionsQb;
     });
-    matchesResult.data = { tournament_id: TOURNAMENT_ID };
+    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "scheduled" };
     matchesResult.error = null;
     participantsResult.data = { user_id: USER_ID };
     participantsResult.error = null;
@@ -203,6 +203,22 @@ describe("POST /api/predictions", () => {
 
     const response = await POST(makeRequest(validBody));
     expect(response.status).toBe(404);
+  });
+
+  it("returns 422 when match is completed", async () => {
+    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "completed" };
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(422);
+    const body = await response.json();
+    expect(body.error).toContain("Predictions are closed");
+  });
+
+  it("returns 422 when match is cancelled", async () => {
+    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "cancelled" };
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(422);
   });
 
   it("returns 403 when user is not a tournament participant", async () => {
