@@ -65,14 +65,23 @@ export async function PATCH(
 
     if (updateError) throw updateError;
 
-    // If approved, add user to tournament_participants
+    // If approved, add user to tournament_participants.
+    // These two operations are not in a single DB transaction — if the insert fails
+    // we roll the request status back to pending to avoid a stuck "approved" state.
     if (action === "approve") {
       const { error: participantError } = await supabase.from("tournament_participants").insert({
         tournament_id: joinRequest.tournament_id,
         user_id: joinRequest.user_id,
       });
 
-      if (participantError) throw participantError;
+      if (participantError) {
+        // Best-effort rollback: reset the request to pending so admin can retry
+        await supabase
+          .from("tournament_join_requests")
+          .update({ status: "pending", reviewed_at: null, reviewed_by: null })
+          .eq("id", requestId);
+        throw participantError;
+      }
     }
 
     return NextResponse.json(updatedRequest);

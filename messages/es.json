@@ -486,11 +486,9 @@
       "requestJoinButton": "Solicitar Unirse",
       "requesting": "Enviando Solicitud...",
       "requestPending": "Solicitud Pendiente — esperando aprobación del administrador",
-      "requestSent": "Tu solicitud de unirse ha sido enviada",
       "requestRejected": "Tu solicitud anterior no fue aprobada. Puedes enviar una nueva solicitud.",
       "requestAgain": "Solicitar Unirse de Nuevo",
-      "cancelRequest": "Cancelar Solicitud",
-      "requestCancelled": "Solicitud de unirse cancelada"
+      "cancelRequest": "Cancelar Solicitud"
     },
     "completed": {
       "title": "Partidos Completados",
@@ -642,8 +640,6 @@
       "history": "Historial",
       "approve": "Aprobar",
       "reject": "Rechazar",
-      "approveSuccess": "Usuario aprobado y agregado al torneo",
-      "rejectSuccess": "Solicitud de unirse rechazada",
       "requestedOn": "Solicitado"
     },
     "scoring": {
@@ -766,6 +762,10 @@
     "goBack": "Volver",
     "toggleTheme": "Cambiar tema",
     "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "closeDialog": "Cerrar diálogo"
+  },
+  "action": {
+    "close": "Cerrar"
   }
 }

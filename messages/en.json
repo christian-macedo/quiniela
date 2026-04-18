@@ -486,11 +486,9 @@
       "requestJoinButton": "Request to Join",
       "requesting": "Sending Request...",
       "requestPending": "Request Pending — awaiting admin approval",
-      "requestSent": "Your join request has been submitted",
       "requestRejected": "Your previous request was not approved. You may submit a new request.",
       "requestAgain": "Request to Join Again",
-      "cancelRequest": "Cancel Request",
-      "requestCancelled": "Join request cancelled"
+      "cancelRequest": "Cancel Request"
     },
     "completed": {
       "title": "Completed Matches",
@@ -642,8 +640,6 @@
       "history": "History",
       "approve": "Approve",
       "reject": "Reject",
-      "approveSuccess": "User approved and added to tournament",
-      "rejectSuccess": "Join request rejected",
       "requestedOn": "Requested"
     },
     "scoring": {
@@ -766,6 +762,10 @@
     "goBack": "Go back",
     "toggleTheme": "Toggle theme",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "closeDialog": "Close dialog"
+  },
+  "action": {
+    "close": "Close"
   }
 }

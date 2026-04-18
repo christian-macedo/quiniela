@@ -53,7 +53,7 @@ export function UserJoinRequestsDialog({
   // Move focus to close button when dialog opens
   useEffect(() => {
     if (open) {
-      setTimeout(() => closeButtonRef.current?.focus(), 0);
+      queueMicrotask(() => closeButtonRef.current?.focus());
     }
   }, [open]);
 
@@ -124,17 +124,32 @@ export function UserJoinRequestsDialog({
             ref={closeButtonRef}
             variant="ghost"
             size="icon"
-            aria-label="Close dialog"
+            aria-label={tCommon("action.close")}
             onClick={onClose}
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-4 border-b pb-2" role="tablist">
+        {/* Tabs — WAI-ARIA Tabs pattern: roving tabindex + arrow key navigation */}
+        <div
+          className="flex gap-2 mb-4 border-b pb-2"
+          role="tablist"
+          onKeyDown={(e) => {
+            const tabs: TabKey[] = ["pending", "history"];
+            const currentIdx = tabs.indexOf(activeTab);
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              setActiveTab(tabs[(currentIdx + 1) % tabs.length]);
+            } else if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              setActiveTab(tabs[(currentIdx - 1 + tabs.length) % tabs.length]);
+            }
+          }}
+        >
           <button
             role="tab"
+            tabIndex={activeTab === "pending" ? 0 : -1}
             aria-selected={activeTab === "pending"}
             aria-controls="tab-panel-pending"
             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
@@ -151,6 +166,7 @@ export function UserJoinRequestsDialog({
           </button>
           <button
             role="tab"
+            tabIndex={activeTab === "history" ? 0 : -1}
             aria-selected={activeTab === "history"}
             aria-controls="tab-panel-history"
             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
