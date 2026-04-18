@@ -41,15 +41,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the match to find the tournament_id
+    // Get the match to find the tournament_id and check it is open for predictions
     const { data: match, error: matchError } = await supabase
       .from("matches")
-      .select("tournament_id")
+      .select("tournament_id, status")
       .eq("id", match_id)
       .single();
 
     if (matchError || !match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
+    }
+
+    if (match.status === "completed" || match.status === "cancelled") {
+      return NextResponse.json(
+        { error: "Predictions are closed for this match" },
+        { status: 422 }
+      );
     }
 
     // Check if user is a participant in this tournament

@@ -19,22 +19,25 @@ CREATE POLICY "Active users predictions are viewable"
     )
   );
 
--- 6b: Add tournament participation check to INSERT policy
+-- 6b: Add tournament participation check to INSERT policy (admin bypass mirrors UPDATE)
 DROP POLICY IF EXISTS "Users can insert their own predictions" ON public.predictions;
 CREATE POLICY "Users can insert their own predictions"
   ON public.predictions FOR INSERT
   WITH CHECK (
-    auth.uid() = user_id
-    AND EXISTS (
-      SELECT 1 FROM public.users
-      WHERE id = auth.uid() AND status = 'active'
+    (
+      auth.uid() = user_id
+      AND EXISTS (
+        SELECT 1 FROM public.users
+        WHERE id = auth.uid() AND status = 'active'
+      )
+      AND EXISTS (
+        SELECT 1 FROM public.matches m
+        JOIN public.tournament_participants tp
+          ON tp.tournament_id = m.tournament_id AND tp.user_id = auth.uid()
+        WHERE m.id = match_id
+      )
     )
-    AND EXISTS (
-      SELECT 1 FROM public.matches m
-      JOIN public.tournament_participants tp
-        ON tp.tournament_id = m.tournament_id AND tp.user_id = auth.uid()
-      WHERE m.id = match_id
-    )
+    OR public.is_admin(auth.uid())
   );
 
 -- 6b: Add tournament participation check to UPDATE policy (preserve admin bypass)
