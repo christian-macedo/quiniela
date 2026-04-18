@@ -151,6 +151,10 @@ export async function verifyUserRegistrationResponse(
   const verification = await verifyRegistrationResponse(opts);
 
   if (!verification.verified || !verification.registrationInfo) {
+    console.warn("[WebAuthn] Registration verification failed", {
+      expectedOrigin: rpConfig.origin,
+      userId,
+    });
     throw new Error("Registration verification failed");
   }
 
@@ -303,6 +307,13 @@ export async function verifyUserAuthenticationResponse(
   const verification = await verifyAuthenticationResponse(opts);
 
   if (!verification.verified) {
+    console.warn(
+      "[WebAuthn] Authentication verification failed — possible phishing or origin mismatch",
+      {
+        expectedOrigin: rpConfig.origin,
+        credentialId: credentialID,
+      }
+    );
     throw new Error("Authentication verification failed");
   }
 

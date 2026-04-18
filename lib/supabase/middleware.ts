@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+// App routes that require an active (non-deactivated) user session.
+// Auth routes and public routes are excluded — they don't need a status check.
+const APP_ROUTE_PREFIX = /^\/(tournaments|teams|admin|profile)/;
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -27,8 +31,27 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refreshing the auth token
-  await supabase.auth.getUser();
+  // Refresh the auth token
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Block deactivated users at the edge before any page renders.
+  // Only check app routes — no need to check auth/public pages.
+  if (user && APP_ROUTE_PREFIX.test(request.nextUrl.pathname)) {
+    const { data: profile } = await supabase
+      .from("users")
+      .select("status")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.status === "deactivated") {
+      await supabase.auth.signOut();
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("error", "account_deactivated");
+      return NextResponse.redirect(loginUrl);
+    }
+  }
 
   return supabaseResponse;
 }
