@@ -25,11 +25,14 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
     hamburgerRef.current?.focus();
   };
 
-  // Close on Escape key
+  // Close on Escape key — logic inlined to avoid stale-closure lint warning
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeMenu();
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        hamburgerRef.current?.focus();
+      }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
@@ -87,7 +90,7 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
           </div>
 
           {/* Menu Items */}
-          <nav className="flex-1 overflow-y-auto" aria-label={t("navigation.mobileMenu")}>
+          <nav className="flex-1 overflow-y-auto">
             <div className="flex flex-col p-4 space-y-1">
               <div className="mb-3">
                 <LanguageSwitcher />

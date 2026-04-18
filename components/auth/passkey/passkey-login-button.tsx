@@ -87,7 +87,7 @@ export function PasskeyLoginButton({
         onClick={handleAuthenticate}
         disabled={isLoading}
         aria-disabled={!email || isLoading}
-        className="w-full"
+        className="w-full aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>
@@ -103,7 +103,10 @@ export function PasskeyLoginButton({
       </Button>
 
       {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
+        <div
+          role="alert"
+          className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm"
+        >
           {error}
         </div>
       )}
