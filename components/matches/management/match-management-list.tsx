@@ -106,7 +106,10 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger
+              className="w-full sm:w-[180px]"
+              aria-label={t("management.filterByStatus")}
+            >
               <SelectValue placeholder={t("management.filterByStatus")} />
             </SelectTrigger>
             <SelectContent>
@@ -120,7 +123,10 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
 
           {rounds.length > 0 && (
             <Select value={roundFilter} onValueChange={setRoundFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger
+                className="w-full sm:w-[180px]"
+                aria-label={t("management.filterByRound")}
+              >
                 <SelectValue placeholder={t("management.filterByRound")} />
               </SelectTrigger>
               <SelectContent>

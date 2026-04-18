@@ -70,7 +70,7 @@ export function TournamentManagementList({
           </div>
 
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]" aria-label={t("filterByStatus")}>
               <SelectValue placeholder={t("filterByStatus")} />
             </SelectTrigger>
             <SelectContent>
