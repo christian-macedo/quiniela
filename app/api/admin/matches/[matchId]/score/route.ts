@@ -3,6 +3,9 @@ import { checkAdminPermission } from "@/lib/middleware/admin-check";
 import { NextRequest, NextResponse } from "next/server";
 import { calculatePoints } from "@/lib/utils/scoring";
 import { getCurrentUTC } from "@/lib/utils/date";
+import type { MatchStatus } from "@/types/database";
+
+const VALID_STATUSES: MatchStatus[] = ["scheduled", "in_progress", "completed", "cancelled"];
 
 export async function POST(
   request: NextRequest,
@@ -16,6 +19,29 @@ export async function POST(
     const { matchId } = await params;
     const body = await request.json();
     const { home_score, away_score, status } = body;
+
+    if (
+      typeof home_score !== "number" ||
+      !Number.isInteger(home_score) ||
+      home_score < 0 ||
+      home_score > 99 ||
+      typeof away_score !== "number" ||
+      !Number.isInteger(away_score) ||
+      away_score < 0 ||
+      away_score > 99
+    ) {
+      return NextResponse.json(
+        { error: "Scores must be integers between 0 and 99" },
+        { status: 400 }
+      );
+    }
+
+    if (status !== undefined && status !== null && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json(
+        { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
+        { status: 400 }
+      );
+    }
 
     // Get match details to retrieve multiplier and current status
     const { data: matchData, error: matchFetchError } = await supabase
