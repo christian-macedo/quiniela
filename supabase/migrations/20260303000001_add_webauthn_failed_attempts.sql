@@ -46,4 +46,4 @@ END;
 $$;
 
 -- Grant execute permission for the new function
-GRANT EXECUTE ON FUNCTION increment_credential_failed_attempts(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION increment_credential_failed_attempts(TEXT) TO authenticated;
