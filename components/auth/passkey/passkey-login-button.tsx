@@ -83,22 +83,30 @@ export function PasskeyLoginButton({
 
   return (
     <div className={`space-y-3 ${className || ""}`}>
-      <Button onClick={handleAuthenticate} disabled={isLoading || !email} className="w-full">
+      <Button
+        onClick={handleAuthenticate}
+        disabled={isLoading}
+        aria-disabled={!email || isLoading}
+        className="w-full aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+      >
         {isLoading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
             {tCommon("status.authenticating")}
           </>
         ) : (
           <>
-            <Fingerprint className="mr-2 h-4 w-4" />
+            <Fingerprint className="mr-2 h-4 w-4" aria-hidden="true" />
             {t("signInWithPasskey")}
           </>
         )}
       </Button>
 
       {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm">
+        <div
+          role="alert"
+          className="bg-destructive/15 text-destructive px-4 py-3 rounded-md text-sm"
+        >
           {error}
         </div>
       )}

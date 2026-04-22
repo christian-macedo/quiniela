@@ -740,6 +740,8 @@
     "goBack": "Go back",
     "toggleTheme": "Toggle theme",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "mobileMenu": "Mobile navigation",
+    "accountMenu": "{name}'s account menu"
   }
 }

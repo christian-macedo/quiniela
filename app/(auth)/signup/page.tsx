@@ -54,12 +54,6 @@ export default function SignupPage() {
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_70%)]" />
 
-      <div className="absolute top-4 right-4 z-10">
-        <div className="backdrop-blur-sm bg-background/50 rounded-lg p-1">
-          <LanguageSwitcher />
-        </div>
-      </div>
-
       <Card className="w-full max-w-md relative animate-scale-in">
         <CardHeader>
           <CardTitle className="font-display text-3xl uppercase tracking-tight">
@@ -108,7 +102,11 @@ export default function SignupPage() {
                 minLength={6}
               />
             </div>
-            {error && <div className="text-sm text-destructive">{error}</div>}
+            {error && (
+              <div role="alert" className="text-sm text-destructive">
+                {error}
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? t("creatingAccount") : t("signUpButton")}
             </Button>
@@ -121,6 +119,13 @@ export default function SignupPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Language switcher — placed after main card so form fields receive focus first */}
+      <div className="absolute top-4 right-4 z-10">
+        <div className="backdrop-blur-sm bg-background/50 rounded-lg p-1">
+          <LanguageSwitcher />
+        </div>
+      </div>
     </div>
   );
 }

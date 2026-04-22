@@ -40,9 +40,6 @@ export default function ForgotPasswordPage() {
   if (submitted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
-        <div className="absolute top-4 right-4">
-          <LanguageSwitcher />
-        </div>
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl">{t("successTitle")}</CardTitle>
@@ -57,15 +54,15 @@ export default function ForgotPasswordPage() {
             </Link>
           </CardContent>
         </Card>
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary p-4 relative">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
-      </div>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">{t("title")}</CardTitle>
@@ -86,7 +83,11 @@ export default function ForgotPasswordPage() {
                 required
               />
             </div>
-            {error && <div className="text-sm text-destructive">{error}</div>}
+            {error && (
+              <div role="alert" className="text-sm text-destructive">
+                {error}
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? t("sending") : t("sendResetLink")}
             </Button>
@@ -98,6 +99,9 @@ export default function ForgotPasswordPage() {
           </div>
         </CardContent>
       </Card>
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
     </div>
   );
 }
