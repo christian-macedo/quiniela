@@ -311,7 +311,7 @@ export async function verifyUserAuthenticationResponse(
       "[WebAuthn] Authentication verification failed — possible phishing or origin mismatch",
       {
         expectedOrigin: rpConfig.origin,
-        credentialId: credentialID,
+        credentialIdPrefix: credentialID?.slice(0, 8),
       }
     );
     throw new Error("Authentication verification failed");
