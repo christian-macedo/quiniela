@@ -18,25 +18,13 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const openMenu = () => setIsOpen(true);
   const closeMenu = () => {
     setIsOpen(false);
     hamburgerRef.current?.focus();
   };
-
-  // Close on Escape key — logic inlined to avoid stale-closure lint warning
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsOpen(false);
-        hamburgerRef.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
 
   // Move focus to first nav link when menu opens
   useEffect(() => {
@@ -45,14 +33,56 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
     }
   }, [isOpen]);
 
+  // Scroll lock, focus trap, and Escape handler — active only while menu is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const mainContent = document.getElementById("main-content");
+    if (mainContent) mainContent.setAttribute("inert", "");
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        hamburgerRef.current?.focus();
+        return;
+      }
+
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      mainContent?.removeAttribute("inert");
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
   return (
     <>
       {/* Hamburger Button */}
       <button
         ref={hamburgerRef}
-        onClick={openMenu}
+        onClick={isOpen ? closeMenu : openMenu}
         className="md:hidden p-2"
-        aria-label={t("navigation.openMenu")}
+        aria-label={isOpen ? t("navigation.closeMenu") : t("navigation.openMenu")}
         aria-expanded={isOpen}
         aria-controls="mobile-nav-menu"
       >
@@ -71,6 +101,7 @@ export function MobileNav({ user, onSignOut }: MobileNavProps) {
       {/* Mobile Menu Sidebar */}
       <div
         id="mobile-nav-menu"
+        ref={dialogRef}
         role="dialog"
         aria-label={t("navigation.mobileMenu")}
         aria-modal="true"

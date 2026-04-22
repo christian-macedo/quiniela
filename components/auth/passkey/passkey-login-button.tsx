@@ -91,12 +91,12 @@ export function PasskeyLoginButton({
       >
         {isLoading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
             {tCommon("status.authenticating")}
           </>
         ) : (
           <>
-            <Fingerprint className="mr-2 h-4 w-4" />
+            <Fingerprint className="mr-2 h-4 w-4" aria-hidden="true" />
             {t("signInWithPasskey")}
           </>
         )}
