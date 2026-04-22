@@ -206,6 +206,16 @@ When a match is scored (via `/api/matches/[matchId]/score`):
 - `GET /api/admin/users` - Get all users with stats (includes status)
 - `PATCH /api/admin/users/[userId]/permissions` - Toggle admin permissions
 
+### Passkey Authentication
+
+- `POST /api/auth/passkey/authenticate-options` - Generate auth challenge (no auth required)
+- `POST /api/auth/passkey/authenticate-verify` - Verify response and create session
+- `POST /api/auth/passkey/register-options` - Generate registration challenge (auth required)
+- `POST /api/auth/passkey/register-verify` - Verify and store new credential (auth required)
+- `GET /api/auth/passkey/list` - List user's registered passkeys (auth required)
+- `PATCH /api/auth/passkey/[id]/rename` - Rename a passkey (auth required)
+- `DELETE /api/auth/passkey/[id]` - Delete a passkey (auth required)
+
 ### Match Operations
 
 - `POST /api/matches/[matchId]/score` - Score match and calculate prediction points
@@ -258,6 +268,20 @@ Pre-commit runs Prettier + ESLint on staged files. Pre-push runs type checking +
 The project uses Vitest with React Testing Library. Tests are co-located in `__tests__/` folders. See `.claude/rules/testing.md` for commands, mock patterns, and the critical `vi.hoisted()` Supabase mocking pattern.
 
 **Test requirement**: Every new API route and middleware must ship with a co-located `__tests__/` test file. A PR without tests for a new route will be blocked at review. See `.claude/rules/testing.md` for the full requirements table.
+
+## Accessibility Testing
+
+Playwright + axe-core audits run WCAG 2.1 AA compliance across all pages. Tests live in `__tests__/accessibility/` organized by area (`auth/`, `app/`, `admin/`, `shared/`).
+
+```bash
+npm run audit:a11y:setup    # One-time: run Playwright auth setup
+npm run audit:a11y          # Run all accessibility audit tests
+npm run audit:a11y:report   # Open Playwright HTML report
+npm run audit:a11y:summary  # Generate markdown summary report
+npm run audit:a11y:full     # Run tests + generate summary in one command
+```
+
+Accessibility tests are **required** for new pages and components with interactive elements. See `.claude/rules/testing.md` for when Playwright vs Vitest tests are required, and `.claude/rules/accessibility.md` for WCAG 2.1 AA patterns.
 
 ## Common Gotchas
 

@@ -12,6 +12,8 @@ npm run test:coverage # Run with coverage report
 
 ## When Tests Are Required
 
+### Vitest (unit/integration)
+
 | Change type                                 | Required test file                                              |
 | ------------------------------------------- | --------------------------------------------------------------- |
 | New `app/api/**/route.ts`                   | `__tests__/route.test.ts` covering auth guard + success + error |
@@ -20,6 +22,16 @@ npm run test:coverage # Run with coverage report
 | New `lib/utils/*.ts`                        | `__tests__/*.test.ts` covering all branches                     |
 
 Tests are **optional** for Server Components (data-fetch only) and Client Components (pure display).
+
+### Playwright (accessibility audits)
+
+| Change type                                         | Required                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| New page with interactive elements (forms, buttons) | Add spec to `__tests__/accessibility/app/` or `auth/` or `admin/` |
+| New navigation structure or layout change           | Update `__tests__/accessibility/shared/navigation.spec.ts`        |
+| Pre-existing pages                                  | Not required per-PR, but run `audit:a11y:full` before releases    |
+
+Playwright tests are **not** co-located — they live in `__tests__/accessibility/` organized by area.
 
 ## File Location Convention
 
