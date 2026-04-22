@@ -60,7 +60,10 @@ export function TournamentManagementList({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
+              aria-hidden="true"
+            />
             <Input
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
@@ -93,8 +96,9 @@ export function TournamentManagementList({
                 <button
                   onClick={() => setSelectedStatus("all")}
                   className="ml-1 hover:text-destructive"
+                  aria-label={tCommon("actions.clearFilters")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}

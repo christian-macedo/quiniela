@@ -96,7 +96,10 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              aria-hidden="true"
+            />
             <Input
               placeholder={t("management.searchTeams")}
               value={searchQuery}
@@ -155,8 +158,9 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
                   size="sm"
                   className="h-auto p-0 ml-1 hover:text-destructive"
                   onClick={() => setSearchQuery("")}
+                  aria-label={tCommon("actions.clearFilters")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </Button>
               </Badge>
             )}
@@ -168,8 +172,9 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
                   size="sm"
                   className="h-auto p-0 ml-1 hover:text-destructive"
                   onClick={() => setStatusFilter("all")}
+                  aria-label={tCommon("actions.clearFilters")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </Button>
               </Badge>
             )}
@@ -181,8 +186,9 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
                   size="sm"
                   className="h-auto p-0 ml-1 hover:text-destructive"
                   onClick={() => setRoundFilter("all")}
+                  aria-label={tCommon("actions.clearFilters")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </Button>
               </Badge>
             )}
