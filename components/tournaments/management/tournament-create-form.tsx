@@ -131,7 +131,7 @@ export function TournamentCreateForm() {
                 setFormData({ ...formData, status: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger id="status">
                 <SelectValue placeholder={t("selectStatus")} />
               </SelectTrigger>
               <SelectContent>

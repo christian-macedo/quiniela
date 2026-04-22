@@ -112,9 +112,12 @@ export function TournamentDetailView({
     setRemovingTeamId(teamId);
 
     try {
-      const response = await fetch(`/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -189,8 +192,8 @@ export function TournamentDetailView({
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div className="flex items-start gap-4">
           <Link href="/tournaments/manage">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+            <Button variant="ghost" size="icon" aria-label={tCommon("actions.back")}>
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             </Button>
           </Link>
           <div>
@@ -268,7 +271,7 @@ export function TournamentDetailView({
           {/* Add Team */}
           <div className="flex gap-2">
             <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="flex-1" aria-label={t("detail.selectTeamToAdd")}>
                 <SelectValue placeholder={t("detail.selectTeamToAdd")} />
               </SelectTrigger>
               <SelectContent>
@@ -285,11 +288,15 @@ export function TournamentDetailView({
                 )}
               </SelectContent>
             </Select>
-            <Button onClick={handleAddTeam} disabled={!selectedTeamId || isAddingTeam}>
+            <Button
+              onClick={handleAddTeam}
+              disabled={!selectedTeamId || isAddingTeam}
+              aria-label={tCommon("actions.add")}
+            >
               {isAddingTeam ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4" aria-hidden="true" />
               )}
             </Button>
           </div>
@@ -312,12 +319,12 @@ export function TournamentDetailView({
                     size="icon"
                     onClick={() => handleRemoveTeam(team.id)}
                     disabled={removingTeamId === team.id}
-                    title="Remove from tournament"
+                    aria-label={t("detail.removeFromTournament")}
                   >
                     {removingTeamId === team.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                     ) : (
-                      <X className="h-4 w-4" />
+                      <X className="h-4 w-4" aria-hidden="true" />
                     )}
                   </Button>
                 </div>
@@ -339,7 +346,7 @@ export function TournamentDetailView({
           {/* Add Participant */}
           <div className="flex gap-2">
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="flex-1" aria-label={t("detail.selectUserToAdd")}>
                 <SelectValue placeholder={t("detail.selectUserToAdd")} />
               </SelectTrigger>
               <SelectContent>
@@ -359,11 +366,12 @@ export function TournamentDetailView({
             <Button
               onClick={handleAddParticipant}
               disabled={!selectedUserId || isAddingParticipant}
+              aria-label={tCommon("actions.add")}
             >
               {isAddingParticipant ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4" aria-hidden="true" />
               )}
             </Button>
           </div>
