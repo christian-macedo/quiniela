@@ -22,7 +22,9 @@
     "audit:a11y": "playwright test --project=audit",
     "audit:a11y:report": "playwright show-report playwright-report",
     "audit:a11y:summary": "tsx __tests__/accessibility/reports/generate-summary.ts",
-    "audit:a11y:full": "playwright test && tsx __tests__/accessibility/reports/generate-summary.ts"
+    "audit:a11y:full": "playwright test && tsx __tests__/accessibility/reports/generate-summary.ts",
+    "audit:deps": "npm audit --omit=dev --audit-level=high",
+    "audit:deps:full": "npm audit --omit=dev --audit-level=moderate"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
