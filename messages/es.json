@@ -467,6 +467,12 @@
       },
       "info": {
         "alreadySubmitted": "Pronóstico ya enviado"
+      },
+      "joinRequest": {
+        "sent": "Tu solicitud de unirse ha sido enviada",
+        "cancelled": "Solicitud de unirse cancelada",
+        "failed": "Error al enviar la solicitud de unirse",
+        "cancelFailed": "Error al cancelar la solicitud de unirse"
       }
     },
     "backToTournament": "Volver al Torneo",
@@ -476,8 +482,13 @@
     "completedMatchesSubtitle": "Ve tus pronósticos y puntos ganados",
     "notParticipant": {
       "title": "No Eres Participante",
-      "message": "Actualmente no estás registrado como participante en este torneo.",
-      "contact": "Contacta a un administrador para ser agregado a la lista de participantes."
+      "message": "Actualmente no estás registrado como participante en este torneo. Solicita acceso para comenzar a hacer pronósticos.",
+      "requestJoinButton": "Solicitar Unirse",
+      "requesting": "Enviando Solicitud...",
+      "requestPending": "Solicitud Pendiente — esperando aprobación del administrador",
+      "requestRejected": "Tu solicitud anterior no fue aprobada. Puedes enviar una nueva solicitud.",
+      "requestAgain": "Solicitar Unirse de Nuevo",
+      "cancelRequest": "Cancelar Solicitud"
     },
     "completed": {
       "title": "Partidos Completados",
@@ -593,11 +604,14 @@
         "adminGranted": "Permisos de administrador otorgados a {name}",
         "adminRevoked": "Permisos de administrador revocados de {name}",
         "userDeactivated": "Usuario {name} desactivado exitosamente",
-        "userActivated": "Usuario {name} activado exitosamente"
+        "userActivated": "Usuario {name} activado exitosamente",
+        "approveSuccess": "Usuario aprobado y agregado al torneo",
+        "rejectSuccess": "Solicitud de unirse rechazada"
       },
       "error": {
         "failedToUpdatePermissions": "Error al actualizar permisos",
-        "failedToUpdateStatus": "Error al actualizar estado del usuario"
+        "failedToUpdateStatus": "Error al actualizar estado del usuario",
+        "failedToProcessRequest": "Error al procesar solicitud de unirse"
       }
     },
     "users": {
@@ -618,7 +632,15 @@
       "revokeAdmin": "Revocar Admin",
       "anonymous": "Anónimo",
       "adminView": "Vista Admin",
-      "failedToUpdateStatus": "Error al actualizar estado de administrador"
+      "failedToUpdateStatus": "Error al actualizar estado de administrador",
+      "viewRequests": "Ver Solicitudes",
+      "joinRequests": "Solicitudes de Unirse",
+      "noRequests": "No hay solicitudes de unirse",
+      "pending": "Pendiente",
+      "history": "Historial",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "requestedOn": "Solicitado"
     },
     "scoring": {
       "title": "Puntuar Partido",
@@ -740,6 +762,10 @@
     "goBack": "Volver",
     "toggleTheme": "Cambiar tema",
     "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "closeDialog": "Cerrar diálogo"
+  },
+  "action": {
+    "close": "Cerrar"
   }
 }

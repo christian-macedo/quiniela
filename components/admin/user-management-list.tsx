@@ -6,9 +6,10 @@ import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { AdminUserView, UserStatus } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff, UserCheck, UserX } from "lucide-react";
+import { Shield, ShieldOff, UserCheck, UserX, ClipboardList } from "lucide-react";
 import { formatLocalDate } from "@/lib/utils/date";
 import { getPublicUserDisplay } from "@/lib/utils/privacy";
+import { UserJoinRequestsDialog } from "@/components/admin/user-join-requests-dialog";
 
 interface UserWithStats extends AdminUserView {
   is_admin: boolean;
@@ -31,6 +32,12 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
   const [users, setUsers] = useState<UserWithStats[]>(initialUsers);
   const [loading, setLoading] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "deactivated">("all");
+  const [joinRequestsUser, setJoinRequestsUser] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  // Track the button that opened the dialog so focus can be returned on close
+  const [viewRequestsTrigger, setViewRequestsTrigger] = useState<HTMLButtonElement | null>(null);
 
   const filteredUsers = users.filter((user) => {
     if (filterStatus === "all") return true;
@@ -99,6 +106,18 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
     } finally {
       setLoading(null);
     }
+  }
+
+  function openJoinRequests(user: UserWithStats, triggerButton: HTMLButtonElement) {
+    setViewRequestsTrigger(triggerButton);
+    setJoinRequestsUser({ id: user.id, name: getPublicUserDisplay(user) });
+  }
+
+  function closeJoinRequests() {
+    setJoinRequestsUser(null);
+    // Return focus to the trigger button
+    viewRequestsTrigger?.focus();
+    setViewRequestsTrigger(null);
   }
 
   return (
@@ -171,6 +190,15 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
             <Button
               variant="outline"
               size="sm"
+              onClick={(e) => openJoinRequests(user, e.currentTarget)}
+              aria-label={`View join requests for ${getPublicUserDisplay(user)}`}
+            >
+              <ClipboardList className="h-4 w-4 mr-1" aria-hidden="true" />
+              {t("users.viewRequests")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => toggleAdminStatus(user.id, user.is_admin)}
               disabled={loading === user.id}
             >
@@ -207,6 +235,15 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
           </div>
         </div>
       ))}
+
+      {joinRequestsUser && (
+        <UserJoinRequestsDialog
+          userId={joinRequestsUser.id}
+          userName={joinRequestsUser.name}
+          open={true}
+          onClose={closeJoinRequests}
+        />
+      )}
     </div>
   );
 }
