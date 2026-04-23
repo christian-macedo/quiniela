@@ -31,13 +31,13 @@ test("keyboard: Tab order reaches email → passkey button → password → subm
   expect.soft(submitIdx).toBeGreaterThan(emailIdx);
 });
 
-test("finding A06: login error div has no role=alert", async ({ page }) => {
+test("A06 (fixed): login error has role=alert and is announced to screen readers", async ({
+  page,
+}) => {
   await page.goto(PAGE_URL);
-  // Trigger an error by submitting with wrong credentials
   await page.getByLabel(/email/i).fill("wrong@example.com");
   await page.getByLabel(/password/i).fill("wrongpassword");
   await page.getByRole("button", { name: /log in|sign in/i }).click();
-  // Wait for error to appear
   await page
     .locator(".text-destructive")
     .waitFor({ timeout: 8_000 })
@@ -46,8 +46,7 @@ test("finding A06: login error div has no role=alert", async ({ page }) => {
   const isVisible = await errorDiv.isVisible().catch(() => false);
   if (isVisible) {
     const role = await errorDiv.getAttribute("role");
-    // DOCUMENT the finding: error div should have role="alert" but does not
-    expect.soft(role).toBe("alert"); // Expected to FAIL — Finding A06
+    expect.soft(role).toBe("alert");
   }
 });
 

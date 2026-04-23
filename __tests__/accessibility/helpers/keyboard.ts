@@ -50,7 +50,7 @@ export async function collectFocusOrder(
       id: el.id || el.getAttribute("data-testid") || "",
     }));
 
-    const key = `${info.tag}:${info.text}:${info.ariaLabel}`;
+    const key = `${info.tag}:${info.text}:${info.ariaLabel}:${info.id}`;
     if (seen.has(key) && i > 0) break; // Focus looped
     seen.add(key);
 

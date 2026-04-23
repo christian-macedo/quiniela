@@ -26,12 +26,23 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
     {
+      // Most audit specs run as a regular (non-admin) user
       name: "audit",
-      testMatch: "**/accessibility/**/*.spec.ts",
+      testMatch: "**/accessibility/(auth|app|shared)/**/*.spec.ts",
       dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
         storageState: "__tests__/.auth/user.json",
+      },
+    },
+    {
+      // Admin specs run as an admin user
+      name: "audit-admin",
+      testMatch: "**/accessibility/admin/**/*.spec.ts",
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "__tests__/.auth/admin.json",
       },
     },
   ],

@@ -110,9 +110,7 @@ test.describe("mobile nav (375px)", () => {
     await page.keyboard.press("Escape");
   });
 
-  test("finding A07: focus does NOT return to hamburger after mobile nav closes", async ({
-    page,
-  }) => {
+  test("A07 (fixed): focus returns to hamburger after mobile nav closes", async ({ page }) => {
     await page.goto(PAGE_URL);
     const hamburger = page.getByRole("button", { name: /toggle menu|open menu/i }).first();
     const isVisible = await hamburger.isVisible().catch(() => false);
@@ -120,15 +118,7 @@ test.describe("mobile nav (375px)", () => {
 
     await hamburger.click();
     await page.keyboard.press("Escape");
-    await page.waitForTimeout(300); // Wait for animation
 
-    // Check if focus is on the hamburger button after close
-    const focusedElement = page.locator(":focus");
-    const isFocusedOnHamburger = await hamburger
-      .evaluate((el) => el === document.activeElement)
-      .catch(() => false);
-
-    // Expected to FAIL — Finding A07: focus doesn't return to trigger
-    expect.soft(isFocusedOnHamburger).toBe(true);
+    await expect.soft(hamburger).toBeFocused({ timeout: 2_000 });
   });
 });

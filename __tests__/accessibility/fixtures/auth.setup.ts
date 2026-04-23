@@ -8,6 +8,8 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL ?? "";
 const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD ?? "";
+const USER_EMAIL = process.env.TEST_USER_EMAIL ?? "";
+const USER_PASSWORD = process.env.TEST_USER_PASSWORD ?? "";
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error(
@@ -16,6 +18,9 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   throw new Error("Missing TEST_ADMIN_EMAIL or TEST_ADMIN_PASSWORD in .env.local");
+}
+if (!USER_EMAIL || !USER_PASSWORD) {
+  throw new Error("Missing TEST_USER_EMAIL or TEST_USER_PASSWORD in .env.local");
 }
 
 /**
@@ -80,7 +85,7 @@ async function loginViaApi(
     await page
       .context()
       .addCookies([
-        { name: cookieName, value: chunks[0], url: baseURL, httpOnly: false, sameSite: "Lax" },
+        { name: cookieName, value: chunks[0], url: baseURL, httpOnly: true, sameSite: "Lax" },
       ]);
   } else {
     await page.context().addCookies(
@@ -88,7 +93,7 @@ async function loginViaApi(
         name: `${cookieName}.${i}`,
         value: chunk,
         url: baseURL,
-        httpOnly: false,
+        httpOnly: true,
         sameSite: "Lax" as const,
       }))
     );
@@ -103,7 +108,7 @@ async function loginViaApi(
 }
 
 setup("authenticate as user", async ({ page }) => {
-  await loginViaApi(page, ADMIN_EMAIL, ADMIN_PASSWORD, USER_FILE);
+  await loginViaApi(page, USER_EMAIL, USER_PASSWORD, USER_FILE);
 });
 
 setup("authenticate as admin", async ({ page }) => {
