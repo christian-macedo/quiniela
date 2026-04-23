@@ -640,7 +640,11 @@
       "history": "History",
       "approve": "Approve",
       "reject": "Reject",
-      "requestedOn": "Requested"
+      "requestedOn": "Requested",
+      "approveAriaLabel": "Approve join request for {name}",
+      "rejectAriaLabel": "Reject join request for {name}",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected"
     },
     "scoring": {
       "title": "Score Match",

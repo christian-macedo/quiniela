@@ -640,7 +640,11 @@
       "history": "Historial",
       "approve": "Aprobar",
       "reject": "Rechazar",
-      "requestedOn": "Solicitado"
+      "requestedOn": "Solicitado",
+      "approveAriaLabel": "Aprobar solicitud de unión para {name}",
+      "rejectAriaLabel": "Rechazar solicitud de unión para {name}",
+      "statusApproved": "Aprobado",
+      "statusRejected": "Rechazado"
     },
     "scoring": {
       "title": "Puntuar Partido",

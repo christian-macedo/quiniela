@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
@@ -57,15 +57,49 @@ export function UserJoinRequestsDialog({
     }
   }, [open]);
 
-  // Close on Escape
+  // Scroll lock, focus trap, and Escape handler — active only while dialog is open
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [onClose]
+  );
+
   useEffect(() => {
     if (!open) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const mainContent = document.getElementById("main-content");
+    if (mainContent) mainContent.setAttribute("inert", "");
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      mainContent?.removeAttribute("inert");
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, handleKeyDown]);
 
   async function handleAction(requestId: string, action: "approve" | "reject") {
     setProcessingId(requestId);
@@ -98,7 +132,6 @@ export function UserJoinRequestsDialog({
 
   const pendingRequests = requests.filter((r) => r.status === "pending");
   const historyRequests = requests.filter((r) => r.status !== "pending");
-  const displayRequests = activeTab === "pending" ? pendingRequests : historyRequests;
 
   return (
     <>
@@ -107,6 +140,7 @@ export function UserJoinRequestsDialog({
 
       {/* Dialog panel */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="join-requests-dialog-title"
@@ -178,68 +212,83 @@ export function UserJoinRequestsDialog({
           </button>
         </div>
 
-        {/* Tab content */}
-        <div
-          id={`tab-panel-${activeTab}`}
-          role="tabpanel"
-          className="flex-1 overflow-y-auto space-y-3"
-        >
-          {loading && (
-            <p className="text-center text-muted-foreground py-4">{tCommon("status.loading")}</p>
-          )}
+        {/* Tab panels — always rendered so aria-controls links resolve correctly; hidden panel removed from a11y tree */}
+        {(["pending", "history"] as TabKey[]).map((tab) => {
+          const tabRequests = tab === "pending" ? pendingRequests : historyRequests;
+          return (
+            <div
+              key={tab}
+              id={`tab-panel-${tab}`}
+              role="tabpanel"
+              hidden={activeTab !== tab}
+              className="flex-1 overflow-y-auto space-y-3"
+            >
+              {loading && (
+                <p className="text-center text-muted-foreground py-4">
+                  {tCommon("status.loading")}
+                </p>
+              )}
 
-          {!loading && displayRequests.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">{t("users.noRequests")}</p>
-          )}
+              {!loading && tabRequests.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">{t("users.noRequests")}</p>
+              )}
 
-          {!loading &&
-            displayRequests.map((request) => (
-              <div key={request.id} className="border rounded-lg p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      {request.tournament?.name ?? request.tournament_id}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {t("users.requestedOn")}: {formatLocalDate(request.created_at)}
-                    </p>
-                    {request.status !== "pending" && (
-                      <Badge
-                        variant={request.status === "approved" ? "default" : "destructive"}
-                        className="mt-1"
-                      >
-                        {request.status}
-                      </Badge>
-                    )}
-                  </div>
+              {!loading &&
+                tabRequests.map((request) => (
+                  <div key={request.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="font-medium">
+                          {request.tournament?.name ?? request.tournament_id}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {t("users.requestedOn")}: {formatLocalDate(request.created_at)}
+                        </p>
+                        {request.status !== "pending" && (
+                          <Badge
+                            variant={request.status === "approved" ? "default" : "destructive"}
+                            className="mt-1"
+                          >
+                            {request.status === "approved"
+                              ? t("users.statusApproved")
+                              : t("users.statusRejected")}
+                          </Badge>
+                        )}
+                      </div>
 
-                  {request.status === "pending" && (
-                    <div className="flex gap-2 shrink-0">
-                      <Button
-                        size="sm"
-                        onClick={() => handleAction(request.id, "approve")}
-                        disabled={processingId === request.id}
-                        aria-label={`Approve join request for ${request.tournament?.name}`}
-                      >
-                        <Check className="h-4 w-4 mr-1" aria-hidden="true" />
-                        {t("users.approve")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleAction(request.id, "reject")}
-                        disabled={processingId === request.id}
-                        aria-label={`Reject join request for ${request.tournament?.name}`}
-                      >
-                        <XCircle className="h-4 w-4 mr-1" aria-hidden="true" />
-                        {t("users.reject")}
-                      </Button>
+                      {request.status === "pending" && (
+                        <div className="flex gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            onClick={() => handleAction(request.id, "approve")}
+                            disabled={processingId === request.id}
+                            aria-label={t("users.approveAriaLabel", {
+                              name: request.tournament?.name ?? request.tournament_id,
+                            })}
+                          >
+                            <Check className="h-4 w-4 mr-1" aria-hidden="true" />
+                            {t("users.approve")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleAction(request.id, "reject")}
+                            disabled={processingId === request.id}
+                            aria-label={t("users.rejectAriaLabel", {
+                              name: request.tournament?.name ?? request.tournament_id,
+                            })}
+                          >
+                            <XCircle className="h-4 w-4 mr-1" aria-hidden="true" />
+                            {t("users.reject")}
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
-        </div>
+                  </div>
+                ))}
+            </div>
+          );
+        })}
       </div>
     </>
   );

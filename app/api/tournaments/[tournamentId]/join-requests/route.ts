@@ -22,12 +22,14 @@ export async function POST(
     }
 
     // Check if user is already a participant
-    const { data: participant } = await supabase
+    const { data: participant, error: participantError } = await supabase
       .from("tournament_participants")
       .select("user_id")
       .eq("tournament_id", tournamentId)
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
+
+    if (participantError) throw participantError;
 
     if (participant) {
       return NextResponse.json(
@@ -37,13 +39,15 @@ export async function POST(
     }
 
     // Check if user already has a pending request for this tournament
-    const { data: existingRequest } = await supabase
+    const { data: existingRequest, error: existingError } = await supabase
       .from("tournament_join_requests")
       .select("id, status")
       .eq("tournament_id", tournamentId)
       .eq("user_id", user.id)
       .eq("status", "pending")
-      .single();
+      .maybeSingle();
+
+    if (existingError) throw existingError;
 
     if (existingRequest) {
       return NextResponse.json(
