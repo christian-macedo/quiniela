@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { checkAdminPermission } from "@/lib/middleware/admin-check";
+import { maskEmail } from "@/lib/utils/privacy";
 
 export async function GET(request: NextRequest) {
   const adminError = await checkAdminPermission();
@@ -53,7 +54,12 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({ requests: requests || [], counts });
+    const sanitized = (requests || []).map((r) => ({
+      ...r,
+      user: r.user ? { ...r.user, email: maskEmail(r.user.email) } : r.user,
+    }));
+
+    return NextResponse.json({ requests: sanitized, counts });
   } catch (error) {
     console.error("Error fetching join requests:", error);
     return NextResponse.json({ error: "Failed to fetch join requests" }, { status: 500 });

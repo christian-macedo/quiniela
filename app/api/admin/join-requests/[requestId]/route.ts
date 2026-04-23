@@ -76,10 +76,16 @@ export async function PATCH(
 
       if (participantError) {
         // Best-effort rollback: reset the request to pending so admin can retry
-        await supabase
+        const { error: rollbackError } = await supabase
           .from("tournament_join_requests")
           .update({ status: "pending", reviewed_at: null, reviewed_by: null })
           .eq("id", requestId);
+        if (rollbackError) {
+          console.error(
+            "Critical: rollback failed — request stuck in approved state:",
+            rollbackError
+          );
+        }
         throw participantError;
       }
     }

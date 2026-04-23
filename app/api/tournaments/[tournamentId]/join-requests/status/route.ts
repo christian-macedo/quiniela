@@ -23,14 +23,16 @@ export async function GET(
     }
 
     // Find the most recent join request for this user and tournament
-    const { data: request } = await supabase
+    const { data: request, error: requestError } = await supabase
       .from("tournament_join_requests")
       .select("id, status, created_at")
       .eq("tournament_id", tournamentId)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
+
+    if (requestError) throw requestError;
 
     if (!request) {
       const result: JoinRequestStatusCheck = { hasRequest: false };
