@@ -4,15 +4,18 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { PredictionForm } from "@/components/predictions/prediction-form";
 import { PredictionResultCard } from "@/components/predictions/prediction-result-card";
-import { MatchWithTeams, Prediction } from "@/types/database";
+import { MatchWithTeams, Prediction, JoinRequestStatusCheck } from "@/types/database";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 export default function PredictionsPage() {
   const t = useTranslations("predictions");
   const tCommon = useTranslations("common");
+  const toast = useFeatureToast("predictions");
   const params = useParams();
   const tournamentId = params.tournamentId as string;
   const [scheduledMatches, setScheduledMatches] = useState<MatchWithTeams[]>([]);
@@ -20,7 +23,21 @@ export default function PredictionsPage() {
   const [predictions, setPredictions] = useState<Record<string, Prediction>>({});
   const [loading, setLoading] = useState(true);
   const [isParticipant, setIsParticipant] = useState(true);
+  const [joinRequestStatus, setJoinRequestStatus] = useState<JoinRequestStatusCheck | null>(null);
+  const [isRequestingJoin, setIsRequestingJoin] = useState(false);
   const supabase = createClient();
+
+  const loadJoinRequestStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/tournaments/${tournamentId}/join-requests/status`);
+      if (response.ok) {
+        const data: JoinRequestStatusCheck = await response.json();
+        setJoinRequestStatus(data);
+      }
+    } catch {
+      // Non-critical, silently fail
+    }
+  }, [tournamentId]);
 
   const loadData = useCallback(async () => {
     const {
@@ -38,7 +55,13 @@ export default function PredictionsPage() {
       .eq("user_id", user.id)
       .single();
 
-    setIsParticipant(!!participant);
+    const participantStatus = !!participant;
+    setIsParticipant(participantStatus);
+
+    // Load join request status if not a participant
+    if (!participantStatus) {
+      await loadJoinRequestStatus();
+    }
 
     // Load scheduled matches
     const { data: scheduledMatchesData } = await supabase
@@ -89,7 +112,7 @@ export default function PredictionsPage() {
     });
     setPredictions(predictionsMap);
     setLoading(false);
-  }, [supabase, tournamentId]);
+  }, [supabase, tournamentId, loadJoinRequestStatus]);
 
   useEffect(() => {
     loadData();
@@ -97,7 +120,7 @@ export default function PredictionsPage() {
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
     if (!isParticipant) {
-      alert(t("mustBeParticipant"));
+      toast.error("common:error.unauthorized");
       return;
     }
 
@@ -114,9 +137,48 @@ export default function PredictionsPage() {
     if (response.ok) {
       loadData();
     } else if (response.status === 403) {
-      const data = await response.json();
-      alert(data.error || t("notAuthorized"));
+      toast.error("common:error.unauthorized");
       setIsParticipant(false);
+    }
+  }
+
+  async function handleRequestJoin() {
+    setIsRequestingJoin(true);
+    try {
+      const response = await fetch(`/api/tournaments/${tournamentId}/join-requests`, {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        toast.success("joinRequest.sent");
+        await loadJoinRequestStatus();
+      } else {
+        toast.error("joinRequest.failed");
+      }
+    } catch {
+      toast.error("joinRequest.failed");
+    } finally {
+      setIsRequestingJoin(false);
+    }
+  }
+
+  async function handleCancelRequest() {
+    if (!joinRequestStatus?.requestId) return;
+
+    try {
+      const response = await fetch(
+        `/api/tournaments/${tournamentId}/join-requests/${joinRequestStatus.requestId}`,
+        { method: "DELETE" }
+      );
+
+      if (response.ok) {
+        toast.success("joinRequest.cancelled");
+        setJoinRequestStatus({ hasRequest: false });
+      } else {
+        toast.error("joinRequest.cancelFailed");
+      }
+    } catch {
+      toast.error("joinRequest.cancelFailed");
     }
   }
 
@@ -145,8 +207,43 @@ export default function PredictionsPage() {
 
       {!isParticipant && (
         <div className="mb-8 p-6 bg-muted/50 border rounded-lg text-center">
-          <h3 className="text-lg font-semibold mb-2">{t("notParticipant")}</h3>
-          <p className="text-muted-foreground">{t("notParticipantMessage")}</p>
+          <h3 className="text-lg font-semibold mb-2">{t("notParticipant.title")}</h3>
+          <p className="text-muted-foreground mb-4">{t("notParticipant.message")}</p>
+
+          {/* No request yet — show request button */}
+          {(!joinRequestStatus || !joinRequestStatus.hasRequest) && (
+            <Button onClick={handleRequestJoin} disabled={isRequestingJoin}>
+              {isRequestingJoin
+                ? t("notParticipant.requesting")
+                : t("notParticipant.requestJoinButton")}
+            </Button>
+          )}
+
+          {/* Pending request */}
+          {joinRequestStatus?.hasRequest && joinRequestStatus.status === "pending" && (
+            <div className="flex flex-col items-center gap-3">
+              <Badge variant="outline" className="text-sm px-3 py-1">
+                {t("notParticipant.requestPending")}
+              </Badge>
+              <Button variant="outline" size="sm" onClick={handleCancelRequest}>
+                {t("notParticipant.cancelRequest")}
+              </Button>
+            </div>
+          )}
+
+          {/* Rejected request — allow re-applying */}
+          {joinRequestStatus?.hasRequest && joinRequestStatus.status === "rejected" && (
+            <div className="flex flex-col items-center gap-3">
+              <p role="alert" className="text-sm text-destructive">
+                {t("notParticipant.requestRejected")}
+              </p>
+              <Button onClick={handleRequestJoin} disabled={isRequestingJoin}>
+                {isRequestingJoin
+                  ? t("notParticipant.requesting")
+                  : t("notParticipant.requestAgain")}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
@@ -179,7 +276,7 @@ export default function PredictionsPage() {
             </div>
             {scheduledMatches.length === 0 ? (
               <div className="text-center py-12 border rounded-lg bg-muted/50">
-                <p className="text-muted-foreground">{t("noUpcomingMatches")}</p>
+                <p className="text-muted-foreground">{t("upcoming.empty")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

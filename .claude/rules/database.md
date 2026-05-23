@@ -11,6 +11,9 @@ The application is built around a **tournament-centric architecture** with these
 5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url, is_admin, status) — see `docs/AUTHORIZATION.md` (User Status & Deactivation section) for status details
 6. **predictions**: User predictions for matches (predicted scores, points_earned)
 7. **tournament_rankings**: Database VIEW that dynamically calculates rankings from predictions (total_points, rank) — filters out deactivated users
+8. **tournament_participants**: Many-to-many junction table linking users to tournaments for participation tracking (tournament_id, user_id, joined_at)
+9. **webauthn_credentials**: Registered passkey credentials per user (credential_id, public_key, counter, transports, device_type, failed_attempts, last_used_at)
+10. **webauthn_challenges**: Temporary single-use challenge tokens for registration and authentication flows (challenge, type, expires_at)
 
 ## Key Relationships
 
@@ -18,12 +21,15 @@ The application is built around a **tournament-centric architecture** with these
 - Matches belong to one tournament and reference two teams (home/away)
 - Predictions link users to matches (one prediction per user per match)
 - Rankings are scoped per user per tournament
+- Users can join multiple tournaments (`users → tournament_participants`, many-to-many)
+- Users can have multiple passkeys (`users → webauthn_credentials`, one-to-many)
+- Challenges are short-lived, single-use, and linked to a user during registration or login
 
 ## Schema Locations
 
 - **Migrations**: `supabase/migrations/` — the source of truth for database schema
 - **Seed data**: `supabase/seed.sql` — test accounts and sample data
-- **TypeScript types**: `types/database.ts`
+- **TypeScript types**: `types/database.ts` (core schema) and `types/webauthn.ts` (WebAuthn/Passkey types)
 
 ## Database Setup
 

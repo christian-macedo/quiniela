@@ -467,6 +467,12 @@
       },
       "info": {
         "alreadySubmitted": "Prediction already submitted"
+      },
+      "joinRequest": {
+        "sent": "Your join request has been submitted",
+        "cancelled": "Join request cancelled",
+        "failed": "Failed to submit join request",
+        "cancelFailed": "Failed to cancel join request"
       }
     },
     "backToTournament": "Back to Tournament",
@@ -475,9 +481,14 @@
     "completedMatches": "Completed Matches",
     "completedMatchesSubtitle": "View your predictions and points earned",
     "notParticipant": {
-      "title": "Not a Participant",
-      "message": "You are not currently registered as a participant in this tournament.",
-      "contact": "Contact an administrator to be added to the participant list."
+      "title": "You are not a Participant",
+      "message": "You are not currently registered as a participant in this tournament. Request access to start making predictions.",
+      "requestJoinButton": "Request to Join",
+      "requesting": "Sending Request...",
+      "requestPending": "Request Pending — awaiting admin approval",
+      "requestRejected": "Your previous request was not approved. You may submit a new request.",
+      "requestAgain": "Request to Join Again",
+      "cancelRequest": "Cancel Request"
     },
     "completed": {
       "title": "Completed Matches",
@@ -593,11 +604,14 @@
         "adminGranted": "Admin permissions granted to {name}",
         "adminRevoked": "Admin permissions revoked from {name}",
         "userDeactivated": "User {name} deactivated successfully",
-        "userActivated": "User {name} activated successfully"
+        "userActivated": "User {name} activated successfully",
+        "approveSuccess": "User approved and added to tournament",
+        "rejectSuccess": "Join request rejected"
       },
       "error": {
         "failedToUpdatePermissions": "Failed to update permissions",
-        "failedToUpdateStatus": "Failed to update user status"
+        "failedToUpdateStatus": "Failed to update user status",
+        "failedToProcessRequest": "Failed to process join request"
       }
     },
     "users": {
@@ -618,7 +632,15 @@
       "revokeAdmin": "Revoke Admin",
       "anonymous": "Anonymous",
       "adminView": "Admin View",
-      "failedToUpdateStatus": "Failed to update admin status"
+      "failedToUpdateStatus": "Failed to update admin status",
+      "viewRequests": "View Requests",
+      "joinRequests": "Join Requests",
+      "noRequests": "No join requests",
+      "pending": "Pending",
+      "history": "History",
+      "approve": "Approve",
+      "reject": "Reject",
+      "requestedOn": "Requested"
     },
     "scoring": {
       "title": "Score Match",
@@ -740,6 +762,10 @@
     "goBack": "Go back",
     "toggleTheme": "Toggle theme",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "closeDialog": "Close dialog"
+  },
+  "action": {
+    "close": "Close"
   }
 }
