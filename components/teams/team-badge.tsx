@@ -36,7 +36,7 @@ export function TeamBadge({ team, size = "md", showName = true, className }: Tea
             size === "lg" && "text-lg"
           )}
         >
-          {team.short_name}
+          {team.name}
         </span>
       )}
     </div>
