@@ -145,33 +145,33 @@ export default function PredictionsPage() {
 
       {!isParticipant && (
         <div className="mb-8 p-6 bg-muted/50 border rounded-lg text-center">
-          <h3 className="text-lg font-semibold mb-2">{t("notParticipant")}</h3>
-          <p className="text-muted-foreground">{t("notParticipantMessage")}</p>
+          <h3 className="text-lg font-semibold mb-2">{t("notParticipant.title")}</h3>
+          <p className="text-muted-foreground">{t("notParticipant.message")}</p>
         </div>
       )}
 
-      <div className="space-y-12">
-        {/* Completed Matches Section */}
-        {completedWithPredictions.length > 0 && (
-          <div>
-            <div className="mb-4">
-              <h2 className="text-2xl font-bold">{t("completedMatches")}</h2>
-              <p className="text-sm text-muted-foreground">{t("completedMatchesSubtitle")}</p>
+      {isParticipant && (
+        <div className="space-y-12">
+          {/* Completed Matches Section */}
+          {completedWithPredictions.length > 0 && (
+            <div>
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold">{t("completedMatches")}</h2>
+                <p className="text-sm text-muted-foreground">{t("completedMatchesSubtitle")}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {completedWithPredictions.map((match) => (
+                  <PredictionResultCard
+                    key={match.id}
+                    match={match}
+                    prediction={predictions[match.id]}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {completedWithPredictions.map((match) => (
-                <PredictionResultCard
-                  key={match.id}
-                  match={match}
-                  prediction={predictions[match.id]}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Upcoming Matches Section */}
-        {isParticipant && (
+          {/* Upcoming Matches Section */}
           <div>
             <div className="mb-4">
               <h2 className="text-2xl font-bold">{t("upcomingMatches")}</h2>
@@ -194,8 +194,8 @@ export default function PredictionsPage() {
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

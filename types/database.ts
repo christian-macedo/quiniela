@@ -129,6 +129,7 @@ export type PrivacyProtectedUser = Pick<
  */
 export type AdminUserView = PublicUserProfile & {
   email: string; // Masked email string
+  is_admin: boolean;
 };
 
 /**

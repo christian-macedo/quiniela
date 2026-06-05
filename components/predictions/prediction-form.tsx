@@ -89,7 +89,7 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
                 onChange={(e) => setHomeScore(e.target.value)}
                 disabled={isLocked || isSubmitting}
                 className="w-20 text-center text-2xl font-display font-bold bg-surface-sunken"
-                placeholder="0"
+                placeholder="#"
               />
               <span className="text-muted-foreground font-bold">:</span>
               <Input
@@ -100,12 +100,12 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
                 onChange={(e) => setAwayScore(e.target.value)}
                 disabled={isLocked || isSubmitting}
                 className="w-20 text-center text-2xl font-display font-bold bg-surface-sunken"
-                placeholder="0"
+                placeholder="#"
               />
             </div>
 
             <div className="flex-1 flex justify-end">
-              <TeamBadge team={match.away_team} size="sm" showName={true} />
+              <TeamBadge team={match.away_team} size="sm" showName={true} reverse={true} />
             </div>
           </div>
         </CardContent>

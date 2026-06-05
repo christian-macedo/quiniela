@@ -479,6 +479,8 @@
       "message": "You are not currently registered as a participant in this tournament.",
       "contact": "Contact an administrator to be added to the participant list."
     },
+    "mustBeParticipant": "You must be a participant in this tournament to submit predictions.",
+    "notAuthorized": "You are not authorized to submit predictions for this tournament.",
     "completed": {
       "title": "Completed Matches",
       "subtitle": "View your predictions and points earned"

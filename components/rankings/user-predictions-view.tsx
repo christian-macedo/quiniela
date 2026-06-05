@@ -232,7 +232,7 @@ function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
           </div>
 
           <div className="flex-1 flex justify-end">
-            <TeamBadge team={match.away_team} size="sm" showName={true} />
+            <TeamBadge team={match.away_team} size="sm" showName={true} reverse={true} />
           </div>
         </div>
 

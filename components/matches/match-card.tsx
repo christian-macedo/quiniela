@@ -84,7 +84,7 @@ export function MatchCard({ match }: MatchCardProps) {
               )}
 
               <div className={`flex-1 flex justify-end ${awayWins ? "font-semibold" : ""}`}>
-                <TeamBadge team={match.away_team} size="md" showName={true} />
+                <TeamBadge team={match.away_team} size="md" showName={true} reverse={true} />
               </div>
             </div>
 

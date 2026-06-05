@@ -6,7 +6,7 @@ import { TeamBadge } from "@/components/teams/team-badge";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDateTime } from "@/lib/utils/date";
-import { Zap } from "lucide-react";
+import { Zap, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface PredictionWithUser extends Prediction {
@@ -82,7 +82,7 @@ export function MatchDetailView({ match, predictions, currentUserId }: MatchDeta
             )}
 
             <div className="flex-1 flex justify-center">
-              <TeamBadge team={match.away_team} size="lg" showName={true} />
+              <TeamBadge team={match.away_team} size="lg" showName={true} reverse={true} />
             </div>
           </div>
 
@@ -178,6 +178,7 @@ function PredictionRow({
 }: PredictionRowProps) {
   const t = useTranslations("matches.details");
   const tCommon = useTranslations("common");
+  const tResults = useTranslations("predictions.results");
   const getInitials = (name: string | null) => {
     if (!name) return "U";
     return name
@@ -189,62 +190,80 @@ function PredictionRow({
   };
 
   const showPrediction = isCompleted || isCancelled || isCurrentUser;
+  const showBreakdown =
+    showPrediction && isCompleted && !isCancelled && prediction.points_earned > 0;
 
   return (
     <div
-      className={`flex items-center justify-between p-3 rounded-lg ${
+      className={`p-3 rounded-lg ${
         isCurrentUser ? "bg-primary/10 border border-primary/20" : "bg-muted/50"
       }`}
     >
-      {/* User Info */}
-      <div className="flex items-center gap-3">
-        <Avatar className="h-8 w-8">
-          <AvatarImage
-            src={prediction.user.avatar_url || undefined}
-            alt={prediction.user.screen_name || "User"}
-          />
-          <AvatarFallback>{getInitials(prediction.user.screen_name)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-medium">
-            {prediction.user.screen_name || t("anonymous")}
-            {isCurrentUser && <span className="ml-2 text-xs text-primary">{t("you")}</span>}
-          </p>
+      <div className="flex items-center justify-between">
+        {/* User Info */}
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={prediction.user.avatar_url || undefined}
+              alt={prediction.user.screen_name || "User"}
+            />
+            <AvatarFallback>{getInitials(prediction.user.screen_name)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-medium">
+              {prediction.user.screen_name || t("anonymous")}
+              {isCurrentUser && <span className="ml-2 text-xs text-primary">{t("you")}</span>}
+            </p>
+          </div>
+        </div>
+
+        {/* Prediction Score or Hidden */}
+        <div className="flex items-center gap-4">
+          {showPrediction ? (
+            <>
+              <div className="text-center">
+                <p className="text-lg font-bold font-display">
+                  {prediction.predicted_home_score} : {prediction.predicted_away_score}
+                </p>
+              </div>
+              {isCompleted && !isCancelled && (
+                <div className="text-center min-w-[60px]">
+                  <Badge
+                    variant={prediction.points_earned > 0 ? "default" : "outline"}
+                    className={
+                      prediction.points_earned >= 3 * match.multiplier
+                        ? "bg-success"
+                        : prediction.points_earned > 0
+                          ? "bg-info"
+                          : ""
+                    }
+                  >
+                    {prediction.points_earned} {tCommon("labels.pts")}
+                  </Badge>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center">
+              <span className="text-muted-foreground italic text-sm">{t("hiddenUntilEnd")}</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Prediction Score or Hidden */}
-      <div className="flex items-center gap-4">
-        {showPrediction ? (
-          <>
-            <div className="text-center">
-              <p className="text-lg font-bold font-display">
-                {prediction.predicted_home_score} : {prediction.predicted_away_score}
-              </p>
-            </div>
-            {isCompleted && !isCancelled && (
-              <div className="text-center min-w-[60px]">
-                <Badge
-                  variant={prediction.points_earned > 0 ? "default" : "outline"}
-                  className={
-                    prediction.points_earned >= 3 * match.multiplier
-                      ? "bg-success"
-                      : prediction.points_earned > 0
-                        ? "bg-info"
-                        : ""
-                  }
-                >
-                  {prediction.points_earned} {tCommon("labels.pts")}
-                </Badge>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center">
-            <span className="text-muted-foreground italic text-sm">{t("hiddenUntilEnd")}</span>
-          </div>
-        )}
-      </div>
+      {/* Points explanation */}
+      {showBreakdown && (
+        <div className="text-right text-xs text-muted-foreground mt-2">
+          {prediction.points_earned === 3 * match.multiplier && (
+            <span className="inline-flex items-center justify-end gap-1">
+              <Sparkles className="h-3 w-3 text-success" />
+              {tResults("exactMatch")}
+            </span>
+          )}
+          {prediction.points_earned === 2 * match.multiplier && tResults("correctDifference")}
+          {prediction.points_earned === 1 * match.multiplier && tResults("correctWinner")}
+        </div>
+      )}
     </div>
   );
 }
