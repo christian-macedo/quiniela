@@ -62,7 +62,7 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
         {/* Match Result */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <TeamBadge team={match.home_team} size="sm" showName={true} />
             </div>
 
@@ -76,7 +76,7 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
               </div>
             </div>
 
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 min-w-0 flex justify-end">
               <TeamBadge team={match.away_team} size="sm" showName={true} reverse={true} />
             </div>
           </div>

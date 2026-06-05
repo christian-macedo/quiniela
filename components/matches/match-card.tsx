@@ -69,12 +69,12 @@ export function MatchCard({ match }: MatchCardProps) {
 
             {/* Teams and Score */}
             <div className="flex items-center justify-between gap-4">
-              <div className={`flex-1 ${homeWins ? "font-semibold" : ""}`}>
+              <div className={`flex-1 min-w-0 ${homeWins ? "font-semibold" : ""}`}>
                 <TeamBadge team={match.home_team} size="md" showName={true} />
               </div>
 
               {isCompleted && match.home_score !== null && match.away_score !== null ? (
-                <div className="flex items-center gap-3 font-display text-3xl font-bold animate-score-pop">
+                <div className="flex items-center gap-3 font-display text-2xl sm:text-3xl font-bold animate-score-pop">
                   <span>{match.home_score}</span>
                   <span className="text-muted-foreground">:</span>
                   <span>{match.away_score}</span>
@@ -83,7 +83,7 @@ export function MatchCard({ match }: MatchCardProps) {
                 <div className="text-xl font-semibold text-muted-foreground">{tCommon("vs")}</div>
               )}
 
-              <div className={`flex-1 flex justify-end ${awayWins ? "font-semibold" : ""}`}>
+              <div className={`flex-1 min-w-0 flex justify-end ${awayWins ? "font-semibold" : ""}`}>
                 <TeamBadge team={match.away_team} size="md" showName={true} reverse={true} />
               </div>
             </div>

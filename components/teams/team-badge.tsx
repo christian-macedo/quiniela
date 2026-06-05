@@ -24,8 +24,16 @@ export function TeamBadge({
   className,
 }: TeamBadgeProps) {
   return (
-    <div className={cn("flex items-center gap-2", reverse && "flex-row-reverse", className)}>
-      <div className={cn("relative rounded-full overflow-hidden border", sizeClasses[size])}>
+    <div
+      className={cn(
+        "flex items-center gap-2 min-w-0",
+        reverse && "flex-row-reverse",
+        className
+      )}
+    >
+      <div
+        className={cn("relative rounded-full overflow-hidden border shrink-0", sizeClasses[size])}
+      >
         {team.logo_url ? (
           <Image src={team.logo_url} alt={team.name} fill className="object-cover" />
         ) : (
@@ -35,16 +43,28 @@ export function TeamBadge({
         )}
       </div>
       {showName && (
-        <span
-          className={cn(
-            "font-medium",
-            size === "sm" && "text-sm",
-            size === "md" && "text-base",
-            size === "lg" && "text-lg"
-          )}
-        >
-          {team.name}
-        </span>
+        <>
+          <span
+            className={cn(
+              "font-medium sm:hidden",
+              size === "sm" && "text-sm",
+              size === "md" && "text-base",
+              size === "lg" && "text-lg"
+            )}
+          >
+            {team.short_name}
+          </span>
+          <span
+            className={cn(
+              "font-medium hidden sm:inline truncate",
+              size === "sm" && "text-sm",
+              size === "md" && "text-base",
+              size === "lg" && "text-lg"
+            )}
+          >
+            {team.name}
+          </span>
+        </>
       )}
     </div>
   );
