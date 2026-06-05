@@ -112,9 +112,12 @@ export function TournamentDetailView({
     setRemovingTeamId(teamId);
 
     try {
-      const response = await fetch(`/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/admin/tournaments/${tournament.id}/teams?teamId=${teamId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -396,9 +399,11 @@ export function TournamentDetailView({
                           <p className="font-medium">{getPublicUserDisplay(participant.user)}</p>
                           <p className="text-xs text-muted-foreground flex items-center gap-1">
                             {maskEmail(participant.user.email)}
-                            <Badge variant="outline" className="text-xs ml-1">
-                              Admin
-                            </Badge>
+                            {participant.user.is_admin && (
+                              <Badge variant="outline" className="text-xs ml-1">
+                                {tCommon("navigation.admin")}
+                              </Badge>
+                            )}
                           </p>
                         </div>
                         <Badge variant="secondary">

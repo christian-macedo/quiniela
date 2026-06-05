@@ -479,6 +479,8 @@
       "message": "Actualmente no estás registrado como participante en este torneo.",
       "contact": "Contacta a un administrador para ser agregado a la lista de participantes."
     },
+    "mustBeParticipant": "Debes ser participante de este torneo para enviar pronósticos.",
+    "notAuthorized": "No estás autorizado para enviar pronósticos en este torneo.",
     "completed": {
       "title": "Partidos Completados",
       "subtitle": "Ve tus pronósticos y puntos ganados"

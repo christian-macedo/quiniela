@@ -6,6 +6,7 @@ interface TeamBadgeProps {
   team: Team;
   size?: "sm" | "md" | "lg";
   showName?: boolean;
+  reverse?: boolean;
   className?: string;
 }
 
@@ -15,9 +16,15 @@ const sizeClasses = {
   lg: "h-16 w-16",
 };
 
-export function TeamBadge({ team, size = "md", showName = true, className }: TeamBadgeProps) {
+export function TeamBadge({
+  team,
+  size = "md",
+  showName = true,
+  reverse = false,
+  className,
+}: TeamBadgeProps) {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-2", reverse && "flex-row-reverse", className)}>
       <div className={cn("relative rounded-full overflow-hidden border", sizeClasses[size])}>
         {team.logo_url ? (
           <Image src={team.logo_url} alt={team.name} fill className="object-cover" />

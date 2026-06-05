@@ -62,7 +62,8 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
         id,
         email,
         screen_name,
-        avatar_url
+        avatar_url,
+        is_admin
       )
     `
     )
@@ -94,7 +95,7 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
   // Fetch all users for the dropdown (admin page - will be masked in component)
   const { data: allUsers } = await supabase
     .from("users")
-    .select("id, screen_name, avatar_url, email")
+    .select("id, screen_name, avatar_url, email, is_admin")
     .order("screen_name");
 
   return (

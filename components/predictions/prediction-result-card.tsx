@@ -77,7 +77,7 @@ export function PredictionResultCard({ match, prediction }: PredictionResultCard
             </div>
 
             <div className="flex-1 flex justify-end">
-              <TeamBadge team={match.away_team} size="sm" showName={true} />
+              <TeamBadge team={match.away_team} size="sm" showName={true} reverse={true} />
             </div>
           </div>
           <div className="text-center text-xs font-medium text-muted-foreground">
