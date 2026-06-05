@@ -76,7 +76,7 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <TeamBadge team={match.home_team} size="sm" showName={true} />
             </div>
 
@@ -104,7 +104,7 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
               />
             </div>
 
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 min-w-0 flex justify-end">
               <TeamBadge team={match.away_team} size="sm" showName={true} reverse={true} />
             </div>
           </div>
