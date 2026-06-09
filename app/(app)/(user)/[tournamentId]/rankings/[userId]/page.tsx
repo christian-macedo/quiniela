@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { notFound } from "next/navigation";
+import { BackButton } from "@/components/layout/back-button";
+import { TournamentBreadcrumbs } from "@/components/layout/tournament-breadcrumbs";
 import { UserPredictionsView } from "@/components/rankings/user-predictions-view";
 import { getPublicUserDisplay } from "@/lib/utils/privacy";
 import { getTranslations } from "next-intl/server";
@@ -27,7 +27,7 @@ export default async function UserRankingDetailPage({
     .single();
 
   if (!tournament) {
-    redirect(`/${tournamentId}/rankings`);
+    notFound();
   }
 
   // Fetch the user being viewed (explicit field selection for privacy)
@@ -38,7 +38,7 @@ export default async function UserRankingDetailPage({
     .single();
 
   if (!viewedUser) {
-    redirect(`/${tournamentId}/rankings`);
+    notFound();
   }
 
   // Fetch user's ranking in this tournament
@@ -70,6 +70,14 @@ export default async function UserRankingDetailPage({
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
+      <TournamentBreadcrumbs
+        tournamentId={tournamentId}
+        tournamentName={tournament.name}
+        items={[
+          { label: t("breadcrumb"), href: `/${tournamentId}/rankings` },
+          { label: getPublicUserDisplay(viewedUser) },
+        ]}
+      />
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">
@@ -84,9 +92,7 @@ export default async function UserRankingDetailPage({
             {t("userPredictions.predictionsFor", { tournament: tournament.name })}
           </p>
         </div>
-        <Link href={`/${tournamentId}/rankings`}>
-          <Button variant="outline">{t("backToRankings")}</Button>
-        </Link>
+        <BackButton fallbackHref={`/${tournamentId}/rankings`} />
       </div>
       <UserPredictionsView
         user={viewedUser}

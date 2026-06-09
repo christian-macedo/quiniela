@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { TournamentDashboard } from "@/components/tournaments/tournament-dashboard";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
   params,
@@ -22,7 +22,7 @@ export default async function TournamentPage({
     .single();
 
   if (!tournament) {
-    redirect("/tournaments");
+    notFound();
   }
 
   // Fetch matches with teams
