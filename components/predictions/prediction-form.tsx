@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDateTime, isPastDate } from "@/lib/utils/date";
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, Pencil } from "lucide-react";
 
 interface PredictionFormProps {
   match: MatchWithTeams;
@@ -34,6 +34,7 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
   const isPastMatchDate = isPastDate(match.match_date);
   const isCompleted = match.status === "completed";
   const isLocked = isPastMatchDate || isCompleted;
+  const needsPrediction = !existingPrediction && !isLocked;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +49,11 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
   };
 
   return (
-    <Card className={isLocked ? "opacity-60" : ""}>
+    <Card
+      className={
+        isLocked ? "opacity-60" : needsPrediction ? "border-l-4 border-l-primary" : undefined
+      }
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">{formatLocalDateTime(match.match_date)}</CardTitle>
@@ -60,8 +65,14 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
             )}
             {existingPrediction && !isLocked && (
               <Badge variant="outline" className="text-success border-success">
-                <Check className="h-3 w-3 mr-1" />
+                <Check className="h-3 w-3 mr-1" aria-hidden="true" />
                 {t("form.predicted")}
+              </Badge>
+            )}
+            {needsPrediction && (
+              <Badge variant="outline" className="text-primary border-primary">
+                <Pencil className="h-3 w-3 mr-1" aria-hidden="true" />
+                {t("form.needsPrediction")}
               </Badge>
             )}
             {isLocked && (
