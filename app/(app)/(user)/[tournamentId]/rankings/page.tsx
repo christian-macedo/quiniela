@@ -1,8 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
 import { RankingsTable } from "@/components/rankings/rankings-table";
 import { RankingWithPublicUser } from "@/types/database";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/layout/back-button";
+import { TournamentBreadcrumbs } from "@/components/layout/tournament-breadcrumbs";
 import { getTranslations } from "next-intl/server";
 
 export default async function RankingsPage({
@@ -24,6 +25,10 @@ export default async function RankingsPage({
     .eq("id", tournamentId)
     .single();
 
+  if (!tournament) {
+    notFound();
+  }
+
   const { data: rankings } = await supabase
     .from("tournament_rankings")
     .select(
@@ -37,15 +42,18 @@ export default async function RankingsPage({
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
+      <TournamentBreadcrumbs
+        tournamentId={tournamentId}
+        tournamentName={tournament?.name ?? ""}
+        items={[{ label: t("breadcrumb") }]}
+      />
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">{tournament?.name}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/${tournamentId}`}>
-            <Button variant="outline">{t("backToTournament")}</Button>
-          </Link>
+          <BackButton fallbackHref={`/${tournamentId}`} />
         </div>
       </div>
       <RankingsTable

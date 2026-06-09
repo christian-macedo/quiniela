@@ -463,7 +463,9 @@
       },
       "error": {
         "failedToSubmit": "Error al enviar el pronóstico",
-        "failedToUpdate": "Error al actualizar pronóstico"
+        "failedToUpdate": "Error al actualizar pronóstico",
+        "mustBeParticipant": "Debes ser participante de este torneo para enviar pronósticos.",
+        "notAuthorized": "No estás autorizado para enviar pronósticos en este torneo."
       },
       "info": {
         "alreadySubmitted": "Pronóstico ya enviado"
@@ -534,6 +536,7 @@
   },
   "rankings": {
     "title": "Tabla de Posiciones del Torneo",
+    "breadcrumb": "Clasificaciones",
     "subtitle": "Mira cómo te clasificas contra otros jugadores",
     "backToTournament": "Volver al Torneo",
     "backToRankings": "Volver a Clasificaciones",

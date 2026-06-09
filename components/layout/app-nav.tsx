@@ -28,6 +28,17 @@ export function AppNav({ user }: AppNavProps) {
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
+  // Top-level routes that are NOT tournament dashboards. A tournament dashboard
+  // lives at the root level (`/{tournamentId}`), so any first path segment not in
+  // this set is treated as tournament context for the active-nav indicator.
+  const STATIC_TOP_LEVEL = new Set(["tournaments", "teams", "admin", "profile", "unauthorized"]);
+  const firstSegment = pathname.split("/")[1] ?? "";
+  const isManage = pathname.startsWith("/tournaments/manage");
+  const isTournamentContext =
+    !isManage &&
+    (firstSegment === "tournaments" ||
+      (firstSegment !== "" && !STATIC_TOP_LEVEL.has(firstSegment)));
+
   return (
     <nav className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -44,7 +55,7 @@ export function AppNav({ user }: AppNavProps) {
           <Link
             href="/tournaments"
             className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive("/tournaments") && !pathname.includes("/manage")
+              isTournamentContext
                 ? "text-primary border-b-2 border-primary"
                 : "text-muted-foreground hover:text-foreground"
             }`}

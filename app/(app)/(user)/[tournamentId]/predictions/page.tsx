@@ -4,17 +4,21 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { useFeatureToast } from "@/lib/hooks/use-feature-toast";
 import { PredictionResultCard } from "@/components/predictions/prediction-result-card";
 import { UpcomingMatchesFilters } from "@/components/predictions/upcoming-matches-filters";
 import { CollapsibleSection } from "@/components/predictions/collapsible-section";
 import { MatchWithTeams, Prediction } from "@/types/database";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/layout/back-button";
+import { TournamentBreadcrumbs } from "@/components/layout/tournament-breadcrumbs";
 import Link from "next/link";
 
 export default function PredictionsPage() {
   const t = useTranslations("predictions");
   const tCommon = useTranslations("common");
+  const toast = useFeatureToast("predictions");
   const params = useParams();
   const tournamentId = params.tournamentId as string;
   const [scheduledMatches, setScheduledMatches] = useState<MatchWithTeams[]>([]);
@@ -22,6 +26,7 @@ export default function PredictionsPage() {
   const [predictions, setPredictions] = useState<Record<string, Prediction>>({});
   const [loading, setLoading] = useState(true);
   const [isParticipant, setIsParticipant] = useState(true);
+  const [tournamentName, setTournamentName] = useState("");
   const supabase = createClient();
 
   const loadData = useCallback(async () => {
@@ -41,6 +46,15 @@ export default function PredictionsPage() {
       .single();
 
     setIsParticipant(!!participant);
+
+    // Load tournament name for the breadcrumb trail
+    const { data: tournament } = await supabase
+      .from("tournaments")
+      .select("name")
+      .eq("id", tournamentId)
+      .single();
+
+    setTournamentName(tournament?.name ?? "");
 
     // Load scheduled matches
     const { data: scheduledMatchesData } = await supabase
@@ -99,9 +113,11 @@ export default function PredictionsPage() {
 
   async function handleSubmitPrediction(matchId: string, homeScore: number, awayScore: number) {
     if (!isParticipant) {
-      alert(t("mustBeParticipant"));
+      toast.error("error.mustBeParticipant");
       return;
     }
+
+    const isUpdate = !!predictions[matchId];
 
     const response = await fetch("/api/predictions", {
       method: "POST",
@@ -114,10 +130,10 @@ export default function PredictionsPage() {
     });
 
     if (response.ok) {
+      toast.success(isUpdate ? "success.updated" : "success.submitted");
       loadData();
     } else if (response.status === 403) {
-      const data = await response.json();
-      alert(data.error || t("notAuthorized"));
+      toast.error("error.notAuthorized");
       setIsParticipant(false);
     }
   }
@@ -147,20 +163,27 @@ export default function PredictionsPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <TournamentBreadcrumbs
+        tournamentId={tournamentId}
+        tournamentName={tournamentName}
+        items={[{ label: t("title") }]}
+      />
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <Link href={`/${tournamentId}`}>
-          <Button variant="outline">{t("backToTournament")}</Button>
-        </Link>
+        <BackButton fallbackHref={`/${tournamentId}`} />
       </div>
 
       {!isParticipant && (
         <div className="mb-8 p-6 bg-muted/50 border rounded-lg text-center">
           <h3 className="text-lg font-semibold mb-2">{t("notParticipant.title")}</h3>
           <p className="text-muted-foreground">{t("notParticipant.message")}</p>
+          <p className="text-muted-foreground mt-2">{t("notParticipant.contact")}</p>
+          <Link href={`/${tournamentId}`} className="inline-block mt-4">
+            <Button variant="outline">{t("backToTournament")}</Button>
+          </Link>
         </div>
       )}
 

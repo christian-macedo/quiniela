@@ -463,7 +463,9 @@
       },
       "error": {
         "failedToSubmit": "Failed to submit prediction",
-        "failedToUpdate": "Failed to update prediction"
+        "failedToUpdate": "Failed to update prediction",
+        "mustBeParticipant": "You must be a participant in this tournament to submit predictions.",
+        "notAuthorized": "You are not authorized to submit predictions for this tournament."
       },
       "info": {
         "alreadySubmitted": "Prediction already submitted"
@@ -534,6 +536,7 @@
   },
   "rankings": {
     "title": "Tournament Leaderboard",
+    "breadcrumb": "Rankings",
     "subtitle": "See how you rank against other players",
     "backToTournament": "Back to Tournament",
     "backToRankings": "Back to Rankings",
