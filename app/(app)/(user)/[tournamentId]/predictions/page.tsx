@@ -4,10 +4,12 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { PredictionForm } from "@/components/predictions/prediction-form";
 import { PredictionResultCard } from "@/components/predictions/prediction-result-card";
+import { UpcomingMatchesFilters } from "@/components/predictions/upcoming-matches-filters";
+import { CollapsibleSection } from "@/components/predictions/collapsible-section";
 import { MatchWithTeams, Prediction } from "@/types/database";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 export default function PredictionsPage() {
@@ -131,6 +133,18 @@ export default function PredictionsPage() {
   // Filter completed matches to only show those with predictions
   const completedWithPredictions = completedMatches.filter((match) => predictions[match.id]);
 
+  // Upcoming progress summary
+  const totalUpcoming = scheduledMatches.length;
+  const predictedCount = scheduledMatches.filter((match) => predictions[match.id]).length;
+  const missingCount = totalUpcoming - predictedCount;
+
+  // Completed summary
+  const completedCount = completedWithPredictions.length;
+  const totalPoints = completedWithPredictions.reduce(
+    (sum, match) => sum + (predictions[match.id]?.points_earned ?? 0),
+    0
+  );
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8 flex justify-between items-center">
@@ -152,13 +166,48 @@ export default function PredictionsPage() {
 
       {isParticipant && (
         <div className="space-y-12">
-          {/* Completed Matches Section */}
-          {completedWithPredictions.length > 0 && (
-            <div>
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold">{t("completedMatches")}</h2>
-                <p className="text-sm text-muted-foreground">{t("completedMatchesSubtitle")}</p>
+          {/* Upcoming Matches Section (primary — what the user acts on) */}
+          <CollapsibleSection
+            title={t("upcomingMatches")}
+            subtitle={t("upcomingMatchesSubtitle")}
+            defaultOpen={true}
+            summary={
+              <span className="flex items-center gap-2">
+                <span>
+                  {t("summary.predictedOf", { predicted: predictedCount, total: totalUpcoming })}
+                </span>
+                {missingCount > 0 && (
+                  <Badge variant="outline" className="text-primary border-primary">
+                    {t("summary.missing", { count: missingCount })}
+                  </Badge>
+                )}
+              </span>
+            }
+          >
+            {scheduledMatches.length === 0 ? (
+              <div className="text-center py-12 border rounded-lg bg-muted/50">
+                <p className="text-muted-foreground">{t("noUpcomingMatches")}</p>
               </div>
+            ) : (
+              <UpcomingMatchesFilters
+                matches={scheduledMatches}
+                predictions={predictions}
+                onSubmitPrediction={handleSubmitPrediction}
+              />
+            )}
+          </CollapsibleSection>
+
+          {/* Completed Matches Section (secondary — grows over the tournament) */}
+          {completedWithPredictions.length > 0 && (
+            <CollapsibleSection
+              title={t("completedMatches")}
+              subtitle={t("completedMatchesSubtitle")}
+              defaultOpen={false}
+              summary={t("summary.matchesPoints", {
+                matches: completedCount,
+                points: totalPoints,
+              })}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {completedWithPredictions.map((match) => (
                   <PredictionResultCard
@@ -168,32 +217,8 @@ export default function PredictionsPage() {
                   />
                 ))}
               </div>
-            </div>
+            </CollapsibleSection>
           )}
-
-          {/* Upcoming Matches Section */}
-          <div>
-            <div className="mb-4">
-              <h2 className="text-2xl font-bold">{t("upcomingMatches")}</h2>
-              <p className="text-sm text-muted-foreground">{t("upcomingMatchesSubtitle")}</p>
-            </div>
-            {scheduledMatches.length === 0 ? (
-              <div className="text-center py-12 border rounded-lg bg-muted/50">
-                <p className="text-muted-foreground">{t("noUpcomingMatches")}</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {scheduledMatches.map((match) => (
-                  <PredictionForm
-                    key={match.id}
-                    match={match}
-                    existingPrediction={predictions[match.id]}
-                    onSubmit={(home, away) => handleSubmitPrediction(match.id, home, away)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       )}
     </div>

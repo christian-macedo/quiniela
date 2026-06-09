@@ -474,6 +474,30 @@
     "upcomingMatchesSubtitle": "Submit your score predictions before matches start",
     "completedMatches": "Completed Matches",
     "completedMatchesSubtitle": "View your predictions and points earned",
+    "noUpcomingMatches": "No upcoming matches available for predictions.",
+    "filters": {
+      "heading": "Filter matches",
+      "description": "Narrow down the upcoming matches to find the ones you want to predict.",
+      "filterByTeam": "Filter by team",
+      "allTeams": "All teams",
+      "team": "Team",
+      "removeTeamFilter": "Remove team filter",
+      "filterByDate": "Filter by date",
+      "allDates": "All dates",
+      "removeDateFilter": "Remove date filter",
+      "filterByRound": "Filter by stage",
+      "allRounds": "All Stages",
+      "round": "Stage",
+      "removeRoundFilter": "Remove stage filter",
+      "emptyOnly": "Only without prediction",
+      "removeEmptyFilter": "Remove empty predictions filter",
+      "noMatchesFiltered": "No matches match the selected filters"
+    },
+    "summary": {
+      "predictedOf": "{predicted}/{total} predicted",
+      "missing": "{count} missing",
+      "matchesPoints": "{matches} matches · {points} pts"
+    },
     "notParticipant": {
       "title": "Not a Participant",
       "message": "You are not currently registered as a participant in this tournament.",
@@ -495,6 +519,7 @@
       "updatePrediction": "Update Prediction",
       "saving": "Saving...",
       "predicted": "Predicted",
+      "needsPrediction": "Needs prediction",
       "locked": "Locked"
     },
     "results": {

@@ -474,6 +474,30 @@
     "upcomingMatchesSubtitle": "Envía tus pronósticos de puntuación antes de que comiencen los partidos",
     "completedMatches": "Partidos Completados",
     "completedMatchesSubtitle": "Ve tus pronósticos y puntos ganados",
+    "noUpcomingMatches": "No hay próximos partidos disponibles para pronósticos.",
+    "filters": {
+      "heading": "Filtrar partidos",
+      "description": "Acota los próximos partidos para encontrar los que quieres pronosticar.",
+      "filterByTeam": "Filtrar por equipo",
+      "allTeams": "Todos los equipos",
+      "team": "Equipo",
+      "removeTeamFilter": "Quitar filtro de equipo",
+      "filterByDate": "Filtrar por fecha",
+      "allDates": "Todas las fechas",
+      "removeDateFilter": "Quitar filtro de fecha",
+      "filterByRound": "Filtrar por fase",
+      "allRounds": "Todas las Fases",
+      "round": "Fase",
+      "removeRoundFilter": "Quitar filtro de fase",
+      "emptyOnly": "Solo sin pronóstico",
+      "removeEmptyFilter": "Quitar filtro de pronósticos vacíos",
+      "noMatchesFiltered": "Ningún partido coincide con los filtros seleccionados"
+    },
+    "summary": {
+      "predictedOf": "{predicted}/{total} pronosticados",
+      "missing": "{count} faltantes",
+      "matchesPoints": "{matches} partidos · {points} pts"
+    },
     "notParticipant": {
       "title": "No Eres Participante",
       "message": "Actualmente no estás registrado como participante en este torneo.",
@@ -495,6 +519,7 @@
       "updatePrediction": "Actualizar Pronóstico",
       "saving": "Guardando...",
       "predicted": "Pronosticado",
+      "needsPrediction": "Falta pronóstico",
       "locked": "Bloqueado"
     },
     "results": {
