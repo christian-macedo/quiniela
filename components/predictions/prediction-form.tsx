@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDateTime, isPastDate } from "@/lib/utils/date";
-import { Check, Lock, Pencil } from "lucide-react";
+import { Check, Lock, Pencil, Zap } from "lucide-react";
 
 interface PredictionFormProps {
   match: MatchWithTeams;
@@ -61,6 +61,12 @@ export function PredictionForm({ match, existingPrediction, onSubmit }: Predicti
             {match.round && (
               <Badge variant="outline" className="text-xs">
                 {match.round}
+              </Badge>
+            )}
+            {match.multiplier > 1 && (
+              <Badge variant="outline" className="text-warning border-warning">
+                <Zap className="h-3 w-3 mr-0.5" aria-hidden="true" />
+                {match.multiplier}x
               </Badge>
             )}
             {existingPrediction && !isLocked && (
