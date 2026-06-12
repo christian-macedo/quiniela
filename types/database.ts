@@ -85,6 +85,20 @@ export interface TournamentRanking {
   // created_at and updated_at are not available
 }
 
+/**
+ * Per-user prediction breakdown for a tournament (computed view).
+ * Counts how many predictions landed in each scoring category over completed
+ * matches. Mirrors the getBasePoints() categories in lib/utils/scoring.ts.
+ */
+export interface TournamentPredictionBreakdown {
+  user_id: string;
+  tournament_id: string;
+  exact_count: number;
+  goal_diff_count: number;
+  winner_count: number;
+  total_points: number;
+}
+
 // Extended types with relations
 export interface MatchWithTeams extends Match {
   home_team: Team;
@@ -136,5 +150,12 @@ export type AdminUserView = PublicUserProfile & {
  * Ranking with public user data - used in tournament leaderboards
  */
 export type RankingWithPublicUser = TournamentRanking & {
+  user: PublicUserProfile;
+};
+
+/**
+ * Prediction breakdown with public user data - used in the breakdown leaderboard tab
+ */
+export type BreakdownWithPublicUser = TournamentPredictionBreakdown & {
   user: PublicUserProfile;
 };
