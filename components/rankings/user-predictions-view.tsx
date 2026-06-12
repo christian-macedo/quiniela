@@ -134,7 +134,7 @@ export function UserPredictionsView({
                 <PredictionRow
                   key={prediction.id}
                   prediction={prediction}
-                  showDetails={isCurrentUser}
+                  showDetails={isCurrentUser || prediction.match.status !== "scheduled"}
                 />
               ))}
             </div>

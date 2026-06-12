@@ -403,7 +403,7 @@
       "noPredictions": "Aún no se han enviado pronósticos para este partido.",
       "multiplierNote": "¡Este partido tiene un multiplicador de puntuación de {multiplier}x! Los puntos ganados en consecuencia.",
       "you": "(Tú)",
-      "hiddenUntilEnd": "Oculto hasta que termine el partido",
+      "hiddenUntilStart": "Oculto hasta que el partido esté en juego",
       "anonymous": "Anónimo"
     },
     "management": {
@@ -530,7 +530,7 @@
       "exactMatch": "¡Puntuación exacta!",
       "correctDifference": "¡Diferencia de goles correcta!",
       "correctWinner": "¡Ganador correcto!",
-      "predictionHidden": "Pronóstico oculta",
+      "predictionHidden": "Oculto hasta que el partido esté en juego",
       "pointsEarned": "{points} puntos ganados"
     }
   },
