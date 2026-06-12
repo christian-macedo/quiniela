@@ -553,8 +553,7 @@
       "title": "Desglose de pronósticos",
       "exact": "Exactos",
       "goalDiff": "Diferencia",
-      "winner": "Ganador",
-      "noData": "Aún no hay partidos finalizados."
+      "winner": "Ganador"
     },
     "userPredictions": {
       "you": "Tú",

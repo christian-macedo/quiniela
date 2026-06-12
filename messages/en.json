@@ -553,8 +553,7 @@
       "title": "Prediction breakdown",
       "exact": "Exact",
       "goalDiff": "Goal diff",
-      "winner": "Winner",
-      "noData": "No completed matches yet."
+      "winner": "Winner"
     },
     "userPredictions": {
       "you": "You",

@@ -24,7 +24,7 @@ export function BreakdownTable({ breakdown, currentUserId, tournamentId }: Break
   if (breakdown.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t("breakdown.noData")}</p>
+        <p className="text-muted-foreground">{t("noRankings")}</p>
       </div>
     );
   }
