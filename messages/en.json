@@ -547,6 +547,15 @@
     "empty": "No rankings available yet.",
     "noRankings": "No rankings available yet.",
     "you": "You",
+    "breakdown": {
+      "tabLeaderboard": "Leaderboard",
+      "tabBreakdown": "Breakdown",
+      "title": "Prediction breakdown",
+      "exact": "Exact",
+      "goalDiff": "Goal diff",
+      "winner": "Winner",
+      "noData": "No completed matches yet."
+    },
     "userPredictions": {
       "you": "You",
       "predictionsFor": "Predictions for {tournament}",

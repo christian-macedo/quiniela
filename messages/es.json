@@ -547,6 +547,15 @@
     "empty": "Aún no hay clasificaciones disponibles.",
     "noRankings": "Aún no hay clasificaciones disponibles.",
     "you": "Tú",
+    "breakdown": {
+      "tabLeaderboard": "Clasificación",
+      "tabBreakdown": "Desglose",
+      "title": "Desglose de pronósticos",
+      "exact": "Exactos",
+      "goalDiff": "Diferencia",
+      "winner": "Ganador",
+      "noData": "Aún no hay partidos finalizados."
+    },
     "userPredictions": {
       "you": "Tú",
       "predictionsFor": "pronósticos para {tournament}",

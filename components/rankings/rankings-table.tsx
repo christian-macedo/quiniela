@@ -6,29 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
+import { getPodiumStyle, getRankColor } from "@/components/rankings/podium";
 import Link from "next/link";
 
 interface RankingsTableProps {
   rankings: RankingWithPublicUser[];
   currentUserId?: string;
   tournamentId: string;
-}
-
-function getPodiumStyle(rank: number): string {
-  if (rank === 1)
-    return "border-l-4 border-l-gold bg-gradient-to-r from-[hsl(var(--gold)/0.15)] to-transparent";
-  if (rank === 2)
-    return "border-l-4 border-l-silver bg-gradient-to-r from-[hsl(var(--silver)/0.1)] to-transparent";
-  if (rank === 3)
-    return "border-l-4 border-l-bronze bg-gradient-to-r from-[hsl(var(--bronze)/0.1)] to-transparent";
-  return "";
-}
-
-function getRankColor(rank: number): string {
-  if (rank === 1) return "text-gold";
-  if (rank === 2) return "text-silver";
-  if (rank === 3) return "text-bronze";
-  return "text-muted-foreground";
 }
 
 export function RankingsTable({ rankings, currentUserId, tournamentId }: RankingsTableProps) {
