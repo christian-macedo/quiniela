@@ -403,7 +403,7 @@
       "noPredictions": "No predictions have been submitted for this match yet.",
       "multiplierNote": "This match has a {multiplier}x scoring multiplier! Points earned will be multiplied accordingly.",
       "you": "(You)",
-      "hiddenUntilEnd": "Hidden until match ends",
+      "hiddenUntilStart": "Hidden until the match is in progress",
       "anonymous": "Anonymous"
     },
     "management": {
@@ -530,7 +530,7 @@
       "exactMatch": "Exact score match!",
       "correctDifference": "Correct score difference!",
       "correctWinner": "Correct winner!",
-      "predictionHidden": "Prediction hidden",
+      "predictionHidden": "Hidden until the match is in progress",
       "pointsEarned": "{points} points earned"
     }
   },

@@ -189,7 +189,8 @@ function PredictionRow({
       .slice(0, 2);
   };
 
-  const showPrediction = isCompleted || isCancelled || isCurrentUser;
+  const isLive = match.status === "in_progress";
+  const showPrediction = isLive || isCompleted || isCancelled || isCurrentUser;
   const showBreakdown =
     showPrediction && isCompleted && !isCancelled && prediction.points_earned > 0;
 
@@ -245,7 +246,7 @@ function PredictionRow({
             </>
           ) : (
             <div className="text-center">
-              <span className="text-muted-foreground italic text-sm">{t("hiddenUntilEnd")}</span>
+              <span className="text-muted-foreground italic text-sm">{t("hiddenUntilStart")}</span>
             </div>
           )}
         </div>

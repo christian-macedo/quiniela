@@ -51,7 +51,9 @@ export function TournamentDashboard({
   const t = useTranslations("tournaments");
   const tCommon = useTranslations("common");
 
-  const upcomingMatches = matches.filter((m) => m.status === "scheduled").slice(0, 5);
+  const upcomingMatches = matches
+    .filter((m) => m.status === "scheduled" || m.status === "in_progress")
+    .slice(0, 5);
   const recentMatches = matches
     .filter((m) => m.status === "completed")
     .slice(-5)
