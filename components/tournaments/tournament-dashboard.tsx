@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Tournament, MatchWithTeams, RankingWithPublicUser } from "@/types/database";
@@ -26,6 +27,14 @@ interface TournamentDashboardProps {
     participantCount: number;
   };
 }
+
+// Auto-fit leaderboard sizing. ROW_GAP matches the `space-y-2` (0.5rem) between
+// rows; ROW_HEIGHT is the fallback row height (≈ 48px content) used before a row
+// is measured. MIN_ROWS keeps the list from collapsing when the card is short.
+const ROW_GAP = 8;
+const ROW_HEIGHT = 48;
+const MIN_ROWS = 5;
+const DEFAULT_ROWS = 10;
 
 const statusColors: Record<string, string> = {
   upcoming: "bg-info",
@@ -58,7 +67,31 @@ export function TournamentDashboard({
     .filter((m) => m.status === "completed")
     .slice(-5)
     .reverse();
-  const topRankings = rankings.slice(0, 10);
+  // Render as many ranking rows as fit the leaderboard card's available height,
+  // which the grid stretches to match the taller "Upcoming Matches" sibling.
+  const leaderboardRef = useRef<HTMLDivElement>(null);
+  const [fitCount, setFitCount] = useState(DEFAULT_ROWS);
+
+  useLayoutEffect(() => {
+    const container = leaderboardRef.current;
+    if (!container) return;
+
+    const recompute = () => {
+      const height = container.clientHeight;
+      if (height <= 0) return;
+      const firstRow = container.firstElementChild as HTMLElement | null;
+      const rowHeight = firstRow?.offsetHeight || ROW_HEIGHT;
+      const count = Math.floor((height + ROW_GAP) / (rowHeight + ROW_GAP));
+      setFitCount(Math.max(MIN_ROWS, count));
+    };
+
+    recompute();
+    const observer = new ResizeObserver(recompute);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [rankings.length]);
+
+  const topRankings = rankings.slice(0, fitCount);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -148,7 +181,7 @@ export function TournamentDashboard({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Leaderboard */}
-        <Card>
+        <Card className="flex flex-col h-full">
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center gap-2">
@@ -162,11 +195,11 @@ export function TournamentDashboard({
               </Link>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col flex-1 min-h-0">
             {topRankings.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">{t("dashboard.noRankings")}</p>
             ) : (
-              <div className="space-y-2">
+              <div ref={leaderboardRef} className="flex-1 min-h-0 space-y-2 overflow-hidden">
                 {topRankings.map((ranking, index) => {
                   const isCurrentUser = ranking.user_id === currentUserId;
                   const podiumBorder =
