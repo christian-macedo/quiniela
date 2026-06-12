@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { TournamentDashboard } from "@/components/tournaments/tournament-dashboard";
+import { getPublicUserDisplay } from "@/lib/utils/privacy";
 import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
@@ -50,6 +51,15 @@ export default async function TournamentPage({
     .eq("tournament_id", tournamentId)
     .order("rank", { ascending: true });
 
+  // Sort: highest points -> alphabetical by display name (deterministic tie-break)
+  const sortedRankings = (rankings || [])
+    .slice()
+    .sort(
+      (a, b) =>
+        b.total_points - a.total_points ||
+        getPublicUserDisplay(a.user).localeCompare(getPublicUserDisplay(b.user))
+    );
+
   // Get user stats
   const userRanking = rankings?.find((r) => r.user_id === user?.id);
 
@@ -88,7 +98,7 @@ export default async function TournamentPage({
       <TournamentDashboard
         tournament={tournament}
         matches={matches || []}
-        rankings={rankings || []}
+        rankings={sortedRankings}
         currentUserId={user?.id ?? ""}
         userStats={userStats}
         tournamentStats={tournamentStats}

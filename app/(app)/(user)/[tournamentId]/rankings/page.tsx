@@ -41,6 +41,15 @@ export default async function RankingsPage({
     .eq("tournament_id", tournamentId)
     .order("rank", { ascending: true });
 
+  // Sort: highest points -> alphabetical by display name (deterministic tie-break)
+  const sortedRankings = ((rankings || []) as RankingWithPublicUser[])
+    .slice()
+    .sort(
+      (a, b) =>
+        b.total_points - a.total_points ||
+        getPublicUserDisplay(a.user).localeCompare(getPublicUserDisplay(b.user))
+    );
+
   const { data: breakdownData } = await supabase
     .from("tournament_prediction_breakdown")
     .select(
@@ -79,7 +88,7 @@ export default async function RankingsPage({
         </div>
       </div>
       <RankingsTabs
-        rankings={(rankings || []) as RankingWithPublicUser[]}
+        rankings={sortedRankings}
         breakdown={breakdown}
         currentUserId={user?.id}
         tournamentId={tournamentId}
