@@ -643,6 +643,7 @@
       "tournaments": "Tournaments",
       "predictions": "Predictions",
       "totalPoints": "Total Points",
+      "email": "Email",
       "joined": "Joined",
       "grantAdmin": "Grant Admin",
       "revokeAdmin": "Revoke Admin",
