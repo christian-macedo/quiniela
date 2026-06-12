@@ -92,10 +92,12 @@ export default async function TournamentDetailPage({ params }: TournamentDetailP
     rank: rankingsMap[user.id]?.rank || null,
   }));
 
-  // Fetch all users for the dropdown (admin page - will be masked in component)
+  // Fetch all active users for the dropdown (admin page - will be masked in component)
+  // Deactivated accounts are excluded so they can't be added as participants.
   const { data: allUsers } = await supabase
     .from("users")
     .select("id, screen_name, avatar_url, email, is_admin")
+    .eq("status", "active")
     .order("screen_name");
 
   return (

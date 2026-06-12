@@ -131,11 +131,11 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
           key={user.id}
           className="border rounded-lg p-4 flex items-center justify-between gap-4"
         >
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div>
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="md:col-span-2">
               <p className="font-medium">{getPublicUserDisplay(user)}</p>
             </div>
-            <div>
+            <div className="flex items-center justify-center md:col-span-1">
               {user.is_admin ? (
                 <Badge variant="default" className="gap-1">
                   <Shield className="h-3 w-3" />
@@ -150,19 +150,19 @@ export function UserManagementList({ initialUsers }: UserManagementListProps) {
                 </Badge>
               )}
             </div>
-            <div className="text-sm">
+            <div className="text-sm text-center md:col-span-3">
+              <p className="text-muted-foreground">{t("users.email")}</p>
+              <p className="font-medium break-all">{user.email}</p>
+            </div>
+            <div className="text-sm text-center md:col-span-2">
               <p className="text-muted-foreground">{t("users.tournaments")}</p>
               <p className="font-medium">{user.stats.tournament_count}</p>
             </div>
-            <div className="text-sm">
+            <div className="text-sm text-center md:col-span-2">
               <p className="text-muted-foreground">{t("users.predictions")}</p>
               <p className="font-medium">{user.stats.prediction_count}</p>
             </div>
-            <div className="text-sm">
-              <p className="text-muted-foreground">{t("users.totalPoints")}</p>
-              <p className="font-medium">{user.stats.total_points}</p>
-            </div>
-            <div className="text-sm">
+            <div className="text-sm md:col-span-2">
               <p className="text-muted-foreground">{t("users.joined")}</p>
               <p className="font-medium">{formatLocalDate(user.created_at)}</p>
             </div>
