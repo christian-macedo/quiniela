@@ -1,4 +1,73 @@
 {
+  "insights": {
+    "title": "Análisis del Torneo",
+    "subtitle": "Cómo le va a la afición en todo el torneo",
+    "breadcrumb": "Análisis",
+    "predictions": "{count, plural, =1 {# pronóstico} other {# pronósticos}}",
+    "matchesCount": "{count, plural, =1 {# partido} other {# partidos}}",
+    "empty": {
+      "title": "Aún no hay análisis",
+      "description": "El análisis aparece cuando se hayan jugado y puntuado partidos."
+    },
+    "kpi": {
+      "participants": "Jugadores",
+      "predictions": "Pronósticos",
+      "matchesScored": "Partidos puntuados",
+      "totalPoints": "Puntos otorgados",
+      "avgPoints": "Pts / pronóstico",
+      "exactRate": "Tasa de acierto exacto"
+    },
+    "tabs": {
+      "accuracy": "Precisión",
+      "results": "Resultados",
+      "matches": "Partidos",
+      "awards": "Premios"
+    },
+    "accuracy": {
+      "exact": "Resultado exacto",
+      "winnerDiff": "Ganador + diferencia",
+      "winnerOnly": "Solo ganador",
+      "miss": "Fallado",
+      "crowdCalled": "La afición acertó {called} de {total} resultados ({percentage}%)."
+    },
+    "results": {
+      "actualTitle": "Resultados reales",
+      "predictedTitle": "Lo que pronosticó la afición",
+      "home": "Gana local",
+      "draw": "Empates",
+      "away": "Gana visitante",
+      "avgGoalsTitle": "Goles por partido",
+      "goalsHome": "Local",
+      "goalsAway": "Visitante",
+      "goalsTotal": "Total",
+      "predicted": "Pronosticado",
+      "actual": "Real",
+      "scorelinesTitle": "Marcadores más comunes",
+      "scoreline": "Marcador",
+      "count": "Partidos",
+      "share": "Porcentaje",
+      "mostCommon": "Más común",
+      "other": "Otros",
+      "chartLabel": "Distribución de los marcadores reales",
+      "totalShort": "partidos"
+    },
+    "matches": {
+      "upsetsTitle": "Mayores sorpresas",
+      "hardestTitle": "Más difíciles de predecir",
+      "bestCalledTitle": "Mejor acertados",
+      "avgPointsLabel": "{points} pts promedio",
+      "crowdFavored": "{team} {percentage}%",
+      "none": "Nada que mostrar todavía."
+    },
+    "awards": {
+      "leader": "Líder",
+      "mostExact": "Más resultados exactos",
+      "highestAccuracy": "Mejor tasa de acierto",
+      "mostPredictions": "Más pronósticos",
+      "pointsValue": "{points} pts",
+      "exactValue": "{count, plural, =1 {# exacto} other {# exactos}}"
+    }
+  },
   "common": {
     "appName": "Quiniela",
     "vs": "vs",
@@ -279,6 +348,7 @@
       "myPredictions": "Mis pronósticos",
       "fullRankings": "Clasificación Completa",
       "allMatches": "Todos los Partidos",
+      "insights": "Análisis",
       "yourRank": "Tu Posición",
       "totalPoints": "Puntos Totales",
       "predictions": "pronósticos",

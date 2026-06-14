@@ -1,4 +1,73 @@
 {
+  "insights": {
+    "title": "Tournament Insights",
+    "subtitle": "How the crowd is doing across the whole tournament",
+    "breadcrumb": "Insights",
+    "predictions": "{count, plural, =1 {# prediction} other {# predictions}}",
+    "matchesCount": "{count, plural, =1 {# match} other {# matches}}",
+    "empty": {
+      "title": "No insights yet",
+      "description": "Insights appear once matches have been played and scored."
+    },
+    "kpi": {
+      "participants": "Players",
+      "predictions": "Predictions",
+      "matchesScored": "Matches scored",
+      "totalPoints": "Points awarded",
+      "avgPoints": "Avg pts / prediction",
+      "exactRate": "Exact-score rate"
+    },
+    "tabs": {
+      "accuracy": "Accuracy",
+      "results": "Results",
+      "matches": "Matches",
+      "awards": "Awards"
+    },
+    "accuracy": {
+      "exact": "Exact score",
+      "winnerDiff": "Winner + difference",
+      "winnerOnly": "Winner only",
+      "miss": "Missed",
+      "crowdCalled": "The crowd called {called} of {total} results correctly ({percentage}%)."
+    },
+    "results": {
+      "actualTitle": "Actual results",
+      "predictedTitle": "What the crowd predicted",
+      "home": "Home wins",
+      "draw": "Draws",
+      "away": "Away wins",
+      "avgGoalsTitle": "Goals per match",
+      "goalsHome": "Home",
+      "goalsAway": "Away",
+      "goalsTotal": "Total",
+      "predicted": "Predicted",
+      "actual": "Actual",
+      "scorelinesTitle": "Most common scorelines",
+      "scoreline": "Scoreline",
+      "count": "Matches",
+      "share": "Share",
+      "mostCommon": "Most common",
+      "other": "Other",
+      "chartLabel": "Distribution of actual scorelines",
+      "totalShort": "matches"
+    },
+    "matches": {
+      "upsetsTitle": "Biggest upsets",
+      "hardestTitle": "Toughest to predict",
+      "bestCalledTitle": "Best called",
+      "avgPointsLabel": "{points} avg pts",
+      "crowdFavored": "{team} {percentage}%",
+      "none": "Nothing to show yet."
+    },
+    "awards": {
+      "leader": "Leader",
+      "mostExact": "Most exact scores",
+      "highestAccuracy": "Best hit rate",
+      "mostPredictions": "Most predictions",
+      "pointsValue": "{points} pts",
+      "exactValue": "{count, plural, =1 {# exact} other {# exact}}"
+    }
+  },
   "common": {
     "appName": "Quiniela",
     "vs": "vs",
@@ -279,6 +348,7 @@
       "myPredictions": "My Predictions",
       "fullRankings": "Full Rankings",
       "allMatches": "All Matches",
+      "insights": "Insights",
       "yourRank": "Your Rank",
       "totalPoints": "Total Points",
       "predictions": "Predictions",

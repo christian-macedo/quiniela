@@ -80,6 +80,7 @@ export interface TournamentRanking {
   user_id: string;
   tournament_id: string;
   total_points: number;
+  predictions_count: number;
   rank: number;
   // Note: This is now a computed view, not a table
   // created_at and updated_at are not available
