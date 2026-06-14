@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import {
-  MatchWithTeams,
-  RankingWithPublicUser,
-  BreakdownWithPublicUser,
-  PublicUserProfile,
-} from "@/types/database";
+import { MatchWithTeams, RankingWithPublicUser, BreakdownWithPublicUser } from "@/types/database";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +20,7 @@ import {
   type MatchStatGroup,
 } from "@/lib/utils/tournament-stats";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
-import { BarChart3, Crown, Target, Percent, ListChecks, CheckCircle2 } from "lucide-react";
+import { BarChart3, Crown, TrendingDown, Eye, Coins, CheckCircle2, Info } from "lucide-react";
 
 type Group = MatchStatGroup<MatchWithTeams>;
 
@@ -56,6 +51,7 @@ export function TournamentInsights({
   if (completed.length === 0) {
     return (
       <div className="space-y-8">
+        <ScopeNote t={t} />
         <KpiRow kpis={kpis} t={t} />
         <Card>
           <CardContent className="py-12 text-center">
@@ -73,6 +69,7 @@ export function TournamentInsights({
 
   return (
     <div className="space-y-8">
+      <ScopeNote t={t} />
       <KpiRow kpis={kpis} t={t} />
 
       <Card>
@@ -105,6 +102,17 @@ export function TournamentInsights({
 }
 
 type T = ReturnType<typeof useTranslations>;
+
+/* -------------------------------- Scope note ------------------------------ */
+
+function ScopeNote({ t }: { t: T }) {
+  return (
+    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+      <Info className="h-4 w-4 shrink-0" aria-hidden="true" />
+      {t("scopeNote")}
+    </p>
+  );
+}
 
 /* --------------------------------- KPI row -------------------------------- */
 
@@ -472,15 +480,23 @@ function AwardsTab({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm text-muted-foreground">{a.title}</p>
-            <div className="mt-1 flex items-center gap-2">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={a.avatarUrl ?? undefined} />
-                <AvatarFallback>{a.initials}</AvatarFallback>
-              </Avatar>
-              <span className="truncate font-medium">{a.name}</span>
-            </div>
+            {a.player ? (
+              <div className="mt-1 flex items-center gap-2">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={a.player.avatarUrl ?? undefined} />
+                  <AvatarFallback>{a.player.initials}</AvatarFallback>
+                </Avatar>
+                <span className="truncate font-medium">{a.player.name}</span>
+              </div>
+            ) : (
+              <p className="mt-1 font-medium italic text-muted-foreground">
+                {t("awards.stillAtPlay")}
+              </p>
+            )}
           </div>
-          <span className="shrink-0 font-display text-xl font-bold tabular-nums">{a.value}</span>
+          {a.player && a.value && (
+            <span className="shrink-0 font-display text-xl font-bold tabular-nums">{a.value}</span>
+          )}
         </div>
       ))}
     </div>
@@ -491,10 +507,10 @@ interface Award {
   key: string;
   icon: React.ReactNode;
   title: string;
-  name: string;
-  initials: string;
-  avatarUrl: string | null;
-  value: string;
+  /** Resolved recipient, or null when the standing is tied / undecided. */
+  player: { name: string; initials: string; avatarUrl: string | null } | null;
+  /** Stat shown on the right; hidden when the award is undecided. */
+  value?: string;
 }
 
 function computeAwards(
@@ -502,104 +518,85 @@ function computeAwards(
   breakdown: BreakdownWithPublicUser[],
   t: T
 ): Award[] {
-  const awards: Award[] = [];
-
-  const pickRanking = (
-    pool: RankingWithPublicUser[],
-    score: (r: RankingWithPublicUser) => number
-  ) =>
-    pool.length === 0
-      ? null
-      : pool.reduce((best, r) => (score(r) > score(best) ? r : best), pool[0]);
-
-  const pickBreakdown = (
-    pool: BreakdownWithPublicUser[],
-    score: (r: BreakdownWithPublicUser) => number
-  ) =>
-    pool.length === 0
-      ? null
-      : pool.reduce((best, r) => (score(r) > score(best) ? r : best), pool[0]);
-
-  const toAward = (
-    key: string,
-    icon: React.ReactNode,
-    title: string,
-    user: PublicUserProfile,
-    value: string
-  ): Award => ({
-    key,
-    icon,
-    title,
-    name: getPublicUserDisplay(user),
-    initials: getPublicUserInitials(user),
-    avatarUrl: user.avatar_url,
-    value,
+  // Join each ranked player with their prediction breakdown counts.
+  const countsByUser = new Map(breakdown.map((b) => [b.user_id, b]));
+  const players = rankings.map((r) => {
+    const b = countsByUser.get(r.user_id);
+    const exact = b?.exact_count ?? 0;
+    const goalDiff = b?.goal_diff_count ?? 0;
+    const winner = b?.winner_count ?? 0;
+    return {
+      user: r.user,
+      points: r.total_points,
+      exact,
+      goalDiff,
+      winner,
+      correct: exact + goalDiff + winner,
+      avgPoints: r.predictions_count > 0 ? r.total_points / r.predictions_count : 0,
+    };
   });
 
-  // Leader — highest total points.
-  const leader = pickRanking(rankings, (r) => r.total_points);
-  if (leader && leader.total_points > 0) {
-    awards.push(
-      toAward(
-        "leader",
-        <Crown className="h-5 w-5" aria-hidden="true" />,
-        t("awards.leader"),
-        leader.user,
-        t("awards.pointsValue", { points: leader.total_points })
-      )
-    );
-  }
+  if (players.length === 0) return [];
 
-  // Specialist — most exact scorelines.
-  const specialist = pickBreakdown(breakdown, (r) => r.exact_count);
-  if (specialist && specialist.exact_count > 0) {
-    awards.push(
-      toAward(
-        "specialist",
-        <Target className="h-5 w-5" aria-hidden="true" />,
-        t("awards.mostExact"),
-        specialist.user,
-        t("awards.exactValue", { count: specialist.exact_count })
-      )
-    );
-  }
+  type P = (typeof players)[number];
 
-  // Sharpshooter — highest hit rate (points-earning predictions / predictions made).
-  const countsByUser = new Map(breakdown.map((b) => [b.user_id, b]));
-  let sharp: { user: RankingWithPublicUser["user"]; rate: number } | null = null;
-  for (const r of rankings) {
-    if (r.predictions_count <= 0) continue;
-    const b = countsByUser.get(r.user_id);
-    if (!b) continue;
-    const hits = b.exact_count + b.goal_diff_count + b.winner_count;
-    const rate = hits / r.predictions_count;
-    if (!sharp || rate > sharp.rate) sharp = { user: r.user, rate };
-  }
-  if (sharp && sharp.rate > 0) {
-    awards.push(
-      toAward(
-        "sharpshooter",
-        <Percent className="h-5 w-5" aria-hidden="true" />,
-        t("awards.highestAccuracy"),
-        sharp.user,
-        `${Math.round(sharp.rate * 100)}%`
-      )
-    );
-  }
+  // Leaderboard order: points, then exact, then winner+difference, then winner.
+  const byStanding = (a: P, b: P) =>
+    b.points - a.points || b.exact - a.exact || b.goalDiff - a.goalDiff || b.winner - a.winner;
 
-  // Most active — most predictions submitted.
-  const active = pickRanking(rankings, (r) => r.predictions_count);
-  if (active && active.predictions_count > 0) {
-    awards.push(
-      toAward(
-        "active",
-        <ListChecks className="h-5 w-5" aria-hidden="true" />,
-        t("awards.mostPredictions"),
-        active.user,
-        String(active.predictions_count)
-      )
-    );
-  }
+  // The unique extreme under cmp, or null when the top two are perfectly tied.
+  const pickUnique = (cmp: (a: P, b: P) => number): P | null => {
+    const sorted = [...players].sort(cmp);
+    if (sorted.length > 1 && cmp(sorted[0], sorted[1]) === 0) return null;
+    return sorted[0];
+  };
 
-  return awards;
+  const toPlayer = (p: P | null) =>
+    p
+      ? {
+          name: getPublicUserDisplay(p.user),
+          initials: getPublicUserInitials(p.user),
+          avatarUrl: p.user.avatar_url,
+        }
+      : null;
+
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+
+  const leader = pickUnique(byStanding);
+  const bottom = pickUnique((a, b) => byStanding(b, a)); // exact opposite of the leader
+  const clairvoyant = pickUnique((a, b) => b.correct - a.correct);
+  const highEarner = pickUnique((a, b) => b.avgPoints - a.avgPoints);
+
+  return [
+    {
+      key: "leader",
+      icon: <Crown className="h-5 w-5" aria-hidden="true" />,
+      title: t("awards.leader"),
+      player: toPlayer(leader),
+      value: leader ? t("awards.pointsValue", { points: leader.points }) : undefined,
+    },
+    {
+      key: "bottom",
+      icon: <TrendingDown className="h-5 w-5" aria-hidden="true" />,
+      title: t("awards.bottom"),
+      player: toPlayer(bottom),
+      value: bottom ? t("awards.pointsValue", { points: bottom.points }) : undefined,
+    },
+    {
+      key: "clairvoyant",
+      icon: <Eye className="h-5 w-5" aria-hidden="true" />,
+      title: t("awards.clairvoyant"),
+      player: toPlayer(clairvoyant),
+      value: clairvoyant ? t("awards.correctValue", { count: clairvoyant.correct }) : undefined,
+    },
+    {
+      key: "highEarner",
+      icon: <Coins className="h-5 w-5" aria-hidden="true" />,
+      title: t("awards.highEarner"),
+      player: toPlayer(highEarner),
+      value: highEarner
+        ? t("awards.avgValue", { points: round1(highEarner.avgPoints) })
+        : undefined,
+    },
+  ];
 }

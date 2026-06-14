@@ -3,6 +3,7 @@
     "title": "Tournament Insights",
     "subtitle": "How the crowd is doing across the whole tournament",
     "breadcrumb": "Insights",
+    "scopeNote": "All insights are based only on predictions for completed matches.",
     "predictions": "{count, plural, =1 {# prediction} other {# predictions}}",
     "matchesCount": "{count, plural, =1 {# match} other {# matches}}",
     "empty": {
@@ -64,11 +65,13 @@
     },
     "awards": {
       "leader": "Leader",
-      "mostExact": "Most exact scores",
-      "highestAccuracy": "Best hit rate",
-      "mostPredictions": "Most predictions",
+      "bottom": "Bottom of the barrel",
+      "clairvoyant": "Clairvoyant",
+      "highEarner": "High earner",
+      "stillAtPlay": "Still at play",
       "pointsValue": "{points} pts",
-      "exactValue": "{count, plural, =1 {# exact} other {# exact}}"
+      "correctValue": "{count, plural, =1 {# correct} other {# correct}}",
+      "avgValue": "{points} avg pts"
     }
   },
   "common": {
