@@ -120,7 +120,6 @@ export default async function InsightsPage({
         <BackButton fallbackHref={`/${tournamentId}`} />
       </div>
       <TournamentInsights
-        tournamentId={tournamentId}
         completed={completed}
         totals={{
           participantCount: participantCount ?? 0,

@@ -21,7 +21,7 @@
     "tabs": {
       "accuracy": "Precisión",
       "results": "Resultados",
-      "matches": "Partidos",
+      "teams": "Equipos",
       "awards": "Premios"
     },
     "accuracy": {
@@ -55,12 +55,19 @@
       "chartLabel": "Distribución de los marcadores reales",
       "totalShort": "partidos"
     },
-    "matches": {
-      "upsetsTitle": "Mayores sorpresas",
-      "hardestTitle": "Más difíciles de predecir",
-      "bestCalledTitle": "Mejor acertados",
-      "avgPointsLabel": "{points} pts promedio",
-      "crowdFavored": "{team} {percentage}%",
+    "teams": {
+      "underdogsTitle": "Cenicientas",
+      "underdogsDescription": "Equipos a los que la mayoría dio por perdedores y aun así ganaron.",
+      "safeBetsTitle": "Apuestas seguras",
+      "safeBetsDescription": "Equipos cuyos partidos la afición predijo con mayor precisión.",
+      "topScorersTitle": "Máximos goleadores",
+      "topScorersDescription": "Equipos que más goles marcaron en los partidos finalizados.",
+      "nappersTitle": "Los dormilones",
+      "nappersDescription": "Equipos con más partidos terminados en empate.",
+      "upsetsValue": "{count, plural, =1 {# sorpresa} other {# sorpresas}}",
+      "accuracyValue": "{percentage}% de acierto",
+      "goalsValue": "{count, plural, =1 {# gol} other {# goles}}",
+      "drawsValue": "{count, plural, =1 {# empate} other {# empates}}",
       "none": "Nada que mostrar todavía."
     },
     "awards": {
