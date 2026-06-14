@@ -59,6 +59,15 @@
     --chart-4: 202 100% 16%; /* #003554 */
     --chart-5: 200 75% 8%; /* #051923 */
 
+    /* Categorical chart palette - distinct hues for pie/donut slices (light) */
+    --chart-cat-1: 200 100% 45%; /* cerulean */
+    --chart-cat-2: 168 76% 38%; /* teal */
+    --chart-cat-3: 38 92% 48%; /* amber */
+    --chart-cat-4: 268 55% 56%; /* violet */
+    --chart-cat-5: 340 72% 52%; /* rose */
+    --chart-cat-6: 142 55% 42%; /* green */
+    --chart-cat-other: 210 14% 53%; /* neutral grey for grouped remainder */
+
     /* Semantic status colors - Light Mode */
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
@@ -113,6 +122,15 @@
     --chart-3: 199 100% 42%;
     --chart-4: 202 100% 32%;
     --chart-5: 200 75% 22%;
+
+    /* Categorical chart palette - distinct hues for pie/donut slices (dark) */
+    --chart-cat-1: 200 100% 60%; /* cerulean */
+    --chart-cat-2: 168 70% 52%; /* teal */
+    --chart-cat-3: 38 92% 58%; /* amber */
+    --chart-cat-4: 268 70% 70%; /* violet */
+    --chart-cat-5: 340 80% 66%; /* rose */
+    --chart-cat-6: 142 58% 52%; /* green */
+    --chart-cat-other: 210 14% 63%; /* neutral grey for grouped remainder */
 
     /* Semantic status colors - Dark Mode */
     --success: 142 71% 45%;

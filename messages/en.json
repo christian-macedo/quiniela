@@ -406,6 +406,42 @@
       "hiddenUntilStart": "Hidden until the match is in progress",
       "anonymous": "Anonymous"
     },
+    "statistics": {
+      "title": "Match Statistics",
+      "predictions": "{count, plural, =1 {# prediction} other {# predictions}}",
+      "tabs": {
+        "odds": "Odds",
+        "distribution": "Distribution",
+        "consensus": "Consensus",
+        "accuracy": "Accuracy"
+      },
+      "outcome": {
+        "homeWins": "{team} wins",
+        "draw": "Draw",
+        "awayWins": "{team} wins"
+      },
+      "distribution": {
+        "scoreline": "Scoreline",
+        "count": "Predictions",
+        "share": "Share",
+        "mostCommon": "Most common",
+        "other": "Other",
+        "chartLabel": "Distribution of predicted scorelines",
+        "totalShort": "predictions"
+      },
+      "consensus": {
+        "crowdPredicts": "The crowd predicts",
+        "avgTotalGoals": "{goals} goals per match on average",
+        "calledIt": "The crowd called the result correctly.",
+        "gotItWrong": "The crowd got the result wrong."
+      },
+      "accuracy": {
+        "exact": "Exact score",
+        "winnerDiff": "Winner + difference",
+        "winnerOnly": "Winner only",
+        "miss": "Missed"
+      }
+    },
     "management": {
       "title": "Manage Matches",
       "createNew": "Create New Match",

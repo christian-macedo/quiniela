@@ -3,6 +3,7 @@
 import { MatchWithTeams, Prediction, User } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TeamBadge } from "@/components/teams/team-badge";
+import { MatchStatisticsCard } from "@/components/matches/match-statistics-card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDateTime } from "@/lib/utils/date";
@@ -118,6 +119,11 @@ export function MatchDetailView({ match, predictions, currentUserId }: MatchDeta
           </div>
         </CardContent>
       </Card>
+
+      {/* Statistics Card — aggregate insights, shown once predictions are revealed */}
+      {(isLive || isCompleted) && predictions.length > 0 && (
+        <MatchStatisticsCard match={match} predictions={predictions} />
+      )}
 
       {/* Predictions Card */}
       <Card>
