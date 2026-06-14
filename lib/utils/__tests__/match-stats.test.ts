@@ -6,12 +6,34 @@ import {
   computeConsensus,
   computeAccuracyBreakdown,
   getConsensusOutcome,
+  distributePercentages,
   type PredictionLike,
 } from "../match-stats";
 
 function p(home: number, away: number): PredictionLike {
   return { predicted_home_score: home, predicted_away_score: away };
 }
+
+describe("distributePercentages", () => {
+  it("returns all zeros when the values sum to zero", () => {
+    expect(distributePercentages([0, 0, 0])).toEqual([0, 0, 0]);
+  });
+
+  it("always sums to exactly 100", () => {
+    expect(distributePercentages([1, 1, 1]).reduce((a, b) => a + b, 0)).toBe(100);
+    expect(distributePercentages([1, 2, 3, 4]).reduce((a, b) => a + b, 0)).toBe(100);
+    expect(distributePercentages([5, 0, 1, 1]).reduce((a, b) => a + b, 0)).toBe(100);
+  });
+
+  it("assigns leftover units to the largest remainders first", () => {
+    // 1/3 each → 33.33; the two largest remainders are tied, first two get the +1.
+    expect(distributePercentages([1, 1, 1])).toEqual([34, 33, 33]);
+  });
+
+  it("gives 100 to a single non-zero bucket", () => {
+    expect(distributePercentages([0, 4, 0])).toEqual([0, 100, 0]);
+  });
+});
 
 describe("outcomeOf", () => {
   it("classifies home win, away win, and draw", () => {

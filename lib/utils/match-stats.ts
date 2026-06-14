@@ -38,10 +38,11 @@ export function outcomeOf(home: number, away: number): Outcome {
 }
 
 /**
- * Round a set of fractional values (summing to `total`) to integer percentages
- * that sum to exactly 100, using the largest-remainder (Hamilton) method.
+ * Round a set of counts into integer percentages that sum to exactly 100,
+ * using the largest-remainder (Hamilton) method. Returns all-zero when the
+ * values sum to zero.
  */
-function largestRemainderPercentages(values: number[]): number[] {
+export function distributePercentages(values: number[]): number[] {
   const total = values.reduce((sum, v) => sum + v, 0);
   if (total <= 0) return values.map(() => 0);
 
@@ -69,7 +70,7 @@ export function computeOutcomeOdds(predictions: PredictionLike[]): OutcomeOdds {
     counts[outcomeOf(p.predicted_home_score, p.predicted_away_score)] += 1;
   }
 
-  const [home, draw, away] = largestRemainderPercentages([counts.home, counts.draw, counts.away]);
+  const [home, draw, away] = distributePercentages([counts.home, counts.draw, counts.away]);
 
   return {
     counts,
