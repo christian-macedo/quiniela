@@ -3,6 +3,7 @@
     "title": "Análisis del Torneo",
     "subtitle": "Cómo le va a la afición en todo el torneo",
     "breadcrumb": "Análisis",
+    "scopeNote": "Todos los análisis se basan únicamente en pronósticos de partidos finalizados.",
     "predictions": "{count, plural, =1 {# pronóstico} other {# pronósticos}}",
     "matchesCount": "{count, plural, =1 {# partido} other {# partidos}}",
     "empty": {
@@ -64,11 +65,13 @@
     },
     "awards": {
       "leader": "Líder",
-      "mostExact": "Más resultados exactos",
-      "highestAccuracy": "Mejor tasa de acierto",
-      "mostPredictions": "Más pronósticos",
+      "bottom": "Farolillo rojo",
+      "clairvoyant": "Vidente",
+      "highEarner": "Más rentable",
+      "stillAtPlay": "Aún en juego",
       "pointsValue": "{points} pts",
-      "exactValue": "{count, plural, =1 {# exacto} other {# exactos}}"
+      "correctValue": "{count, plural, =1 {# acierto} other {# aciertos}}",
+      "avgValue": "{points} pts promedio"
     }
   },
   "common": {
