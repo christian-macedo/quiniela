@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { TournamentDashboard } from "@/components/tournaments/tournament-dashboard";
-import { getPublicUserDisplay } from "@/lib/utils/privacy";
+import { buildLeaderboard } from "@/lib/utils/leaderboard";
+import { BreakdownWithPublicUser, RankingWithPublicUser } from "@/types/database";
 import { notFound } from "next/navigation";
 
 export default async function TournamentPage({
@@ -48,20 +49,28 @@ export default async function TournamentPage({
       user:users(*)
     `
     )
-    .eq("tournament_id", tournamentId)
-    .order("rank", { ascending: true });
+    .eq("tournament_id", tournamentId);
 
-  // Sort: highest points -> alphabetical by display name (deterministic tie-break)
-  const sortedRankings = (rankings || [])
-    .slice()
-    .sort(
-      (a, b) =>
-        b.total_points - a.total_points ||
-        getPublicUserDisplay(a.user).localeCompare(getPublicUserDisplay(b.user))
-    );
+  // Accuracy breakdown powers the shared leaderboard tie-breakers.
+  const { data: breakdownData } = await supabase
+    .from("tournament_prediction_breakdown")
+    .select(
+      `
+      *,
+      user:users(id, screen_name, avatar_url, created_at, updated_at)
+    `
+    )
+    .eq("tournament_id", tournamentId);
 
-  // Get user stats
-  const userRanking = rankings?.find((r) => r.user_id === user?.id);
+  // Sort consistently with the rankings page: points -> exact -> winner+goal
+  // diff -> winner, with tied participants sharing a rank.
+  const { rankings: sortedRankings } = buildLeaderboard(
+    (rankings || []) as RankingWithPublicUser[],
+    (breakdownData || []) as BreakdownWithPublicUser[]
+  );
+
+  // Get user stats from the consistently-ranked standings
+  const userRanking = sortedRankings.find((r) => r.user_id === user?.id);
 
   // Count user's predictions for this tournament
   const matchIds = matches?.map((m) => m.id) || [];
