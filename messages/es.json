@@ -406,6 +406,42 @@
       "hiddenUntilStart": "Oculto hasta que el partido esté en juego",
       "anonymous": "Anónimo"
     },
+    "statistics": {
+      "title": "Estadísticas del Partido",
+      "predictions": "{count, plural, =1 {# pronóstico} other {# pronósticos}}",
+      "tabs": {
+        "odds": "Probabilidades",
+        "distribution": "Distribución",
+        "consensus": "Consenso",
+        "accuracy": "Precisión"
+      },
+      "outcome": {
+        "homeWins": "Gana {team}",
+        "draw": "Empate",
+        "awayWins": "Gana {team}"
+      },
+      "distribution": {
+        "scoreline": "Marcador",
+        "count": "Pronósticos",
+        "share": "Proporción",
+        "mostCommon": "Más común",
+        "other": "Otros",
+        "chartLabel": "Distribución de marcadores pronosticados",
+        "totalShort": "pronósticos"
+      },
+      "consensus": {
+        "crowdPredicts": "El público pronostica",
+        "avgTotalGoals": "{goals} goles por partido en promedio",
+        "calledIt": "El público acertó el resultado.",
+        "gotItWrong": "El público falló el resultado."
+      },
+      "accuracy": {
+        "exact": "Marcador exacto",
+        "winnerDiff": "Ganador + diferencia",
+        "winnerOnly": "Solo ganador",
+        "miss": "Fallado"
+      }
+    },
     "management": {
       "title": "Gestionar Partidos",
       "createNew": "Crear Nuevo Partido",
