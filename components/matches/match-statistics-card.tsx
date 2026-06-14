@@ -11,6 +11,8 @@ import {
   computeAccuracyBreakdown,
   getConsensusOutcome,
   outcomeOf,
+  distributePercentages,
+  type AccuracyBreakdown,
 } from "@/lib/utils/match-stats";
 import { BarChart3, CheckCircle2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -50,13 +52,30 @@ export function MatchStatisticsCard({ match, predictions }: MatchStatisticsCardP
 
           {/* Outcome odds */}
           <TabsContent value="odds" className="pt-4">
-            <OddsView
-              odds={odds}
-              labels={{
-                home: t("outcome.homeWins", { team: match.home_team.name }),
-                draw: t("outcome.draw"),
-                away: t("outcome.awayWins", { team: match.away_team.name }),
-              }}
+            <ShareBreakdown
+              items={[
+                {
+                  key: "home",
+                  label: t("outcome.homeWins", { team: match.home_team.name }),
+                  colorClass: "bg-success",
+                  percentage: odds.percentages.home,
+                  count: odds.counts.home,
+                },
+                {
+                  key: "draw",
+                  label: t("outcome.draw"),
+                  colorClass: "bg-muted-foreground",
+                  percentage: odds.percentages.draw,
+                  count: odds.counts.draw,
+                },
+                {
+                  key: "away",
+                  label: t("outcome.awayWins", { team: match.away_team.name }),
+                  colorClass: "bg-accent",
+                  percentage: odds.percentages.away,
+                  count: odds.counts.away,
+                },
+              ]}
               predictionsLabel={(n) => t("predictions", { count: n })}
             />
           </TabsContent>
@@ -93,15 +112,14 @@ export function MatchStatisticsCard({ match, predictions }: MatchStatisticsCardP
           {/* Accuracy breakdown (completed only) */}
           {accuracy && (
             <TabsContent value="accuracy" className="pt-4">
-              <AccuracyView
-                accuracy={accuracy}
-                total={predictions.length}
-                labels={{
+              <ShareBreakdown
+                items={buildAccuracyItems(accuracy, {
                   exact: t("accuracy.exact"),
                   winnerDiff: t("accuracy.winnerDiff"),
                   winnerOnly: t("accuracy.winnerOnly"),
                   miss: t("accuracy.miss"),
-                }}
+                })}
+                predictionsLabel={(n) => t("predictions", { count: n })}
               />
             </TabsContent>
           )}
@@ -111,39 +129,41 @@ export function MatchStatisticsCard({ match, predictions }: MatchStatisticsCardP
   );
 }
 
-/* ----------------------------- Outcome odds ----------------------------- */
+/* --------------------- Shared stacked-bar breakdown --------------------- */
 
-const OUTCOME_COLORS = {
-  home: "bg-success",
-  draw: "bg-muted-foreground",
-  away: "bg-accent",
-} as const;
+interface ShareItem {
+  key: string;
+  /** Legend label for this segment. */
+  label: string;
+  /** Tailwind background class for the bar/swatch color. */
+  colorClass: string;
+  /** Integer percentage of the total (segments should sum to 100). */
+  percentage: number;
+  /** Raw number of predictions in this segment. */
+  count: number;
+}
 
-function OddsView({
-  odds,
-  labels,
+/**
+ * A stacked proportion bar followed by a legend showing each segment's label,
+ * percentage, and prediction count. Shared by the Odds and Accuracy views.
+ */
+function ShareBreakdown({
+  items,
   predictionsLabel,
 }: {
-  odds: ReturnType<typeof computeOutcomeOdds>;
-  labels: { home: string; draw: string; away: string };
+  items: ShareItem[];
   predictionsLabel: (n: number) => string;
 }) {
-  const rows = [
-    { key: "home" as const, name: labels.home },
-    { key: "draw" as const, name: labels.draw },
-    { key: "away" as const, name: labels.away },
-  ];
-
   return (
     <div className="space-y-4">
       {/* Stacked bar */}
       <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true">
-        {rows.map((row) =>
-          odds.percentages[row.key] > 0 ? (
+        {items.map((item) =>
+          item.percentage > 0 ? (
             <div
-              key={row.key}
-              className={OUTCOME_COLORS[row.key]}
-              style={{ width: `${odds.percentages[row.key]}%` }}
+              key={item.key}
+              className={item.colorClass}
+              style={{ width: `${item.percentage}%` }}
             />
           ) : null
         )}
@@ -151,24 +171,59 @@ function OddsView({
 
       {/* Legend */}
       <ul className="space-y-2">
-        {rows.map((row) => (
-          <li key={row.key} className="flex items-center gap-3">
-            <span
-              className={`h-3 w-3 shrink-0 rounded-sm ${OUTCOME_COLORS[row.key]}`}
-              aria-hidden="true"
-            />
-            <span className="flex-1 truncate">{row.name}</span>
-            <span className="font-display font-bold tabular-nums">
-              {odds.percentages[row.key]}%
-            </span>
+        {items.map((item) => (
+          <li key={item.key} className="flex items-center gap-3">
+            <span className={`h-3 w-3 shrink-0 rounded-sm ${item.colorClass}`} aria-hidden="true" />
+            <span className="flex-1 truncate">{item.label}</span>
+            <span className="font-display font-bold tabular-nums">{item.percentage}%</span>
             <span className="w-28 text-right text-sm text-muted-foreground tabular-nums">
-              {predictionsLabel(odds.counts[row.key])}
+              {predictionsLabel(item.count)}
             </span>
           </li>
         ))}
       </ul>
     </div>
   );
+}
+
+/** Build the Accuracy view segments, with percentages that sum to exactly 100. */
+function buildAccuracyItems(
+  accuracy: AccuracyBreakdown,
+  labels: { exact: string; winnerDiff: string; winnerOnly: string; miss: string }
+): ShareItem[] {
+  const counts = [accuracy.exact, accuracy.winnerDiff, accuracy.winnerOnly, accuracy.miss];
+  const [exactPct, winnerDiffPct, winnerOnlyPct, missPct] = distributePercentages(counts);
+
+  return [
+    {
+      key: "exact",
+      label: labels.exact,
+      colorClass: "bg-success",
+      percentage: exactPct,
+      count: accuracy.exact,
+    },
+    {
+      key: "winnerDiff",
+      label: labels.winnerDiff,
+      colorClass: "bg-info",
+      percentage: winnerDiffPct,
+      count: accuracy.winnerDiff,
+    },
+    {
+      key: "winnerOnly",
+      label: labels.winnerOnly,
+      colorClass: "bg-warning",
+      percentage: winnerOnlyPct,
+      count: accuracy.winnerOnly,
+    },
+    {
+      key: "miss",
+      label: labels.miss,
+      colorClass: "bg-muted-foreground",
+      percentage: missPct,
+      count: accuracy.miss,
+    },
+  ];
 }
 
 /* --------------------------- Score distribution -------------------------- */
@@ -443,46 +498,5 @@ function ConsensusView({
         </div>
       )}
     </div>
-  );
-}
-
-/* --------------------------- Accuracy breakdown -------------------------- */
-
-function AccuracyView({
-  accuracy,
-  total,
-  labels,
-}: {
-  accuracy: NonNullable<ReturnType<typeof computeAccuracyBreakdown>>;
-  total: number;
-  labels: { exact: string; winnerDiff: string; winnerOnly: string; miss: string };
-}) {
-  const rows = [
-    { key: "exact", label: labels.exact, count: accuracy.exact, color: "bg-success" },
-    { key: "winnerDiff", label: labels.winnerDiff, count: accuracy.winnerDiff, color: "bg-info" },
-    {
-      key: "winnerOnly",
-      label: labels.winnerOnly,
-      count: accuracy.winnerOnly,
-      color: "bg-warning",
-    },
-    { key: "miss", label: labels.miss, count: accuracy.miss, color: "bg-muted-foreground" },
-  ];
-
-  return (
-    <ul className="space-y-3">
-      {rows.map((row) => (
-        <li key={row.key} className="flex items-center gap-3">
-          <span className="w-32 shrink-0 text-sm">{row.label}</span>
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted" aria-hidden="true">
-            <div
-              className={`h-full rounded-full ${row.color}`}
-              style={{ width: `${total > 0 ? (row.count / total) * 100 : 0}%` }}
-            />
-          </div>
-          <span className="w-8 text-right font-display font-bold tabular-nums">{row.count}</span>
-        </li>
-      ))}
-    </ul>
   );
 }
