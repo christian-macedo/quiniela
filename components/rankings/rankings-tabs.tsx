@@ -4,11 +4,12 @@ import { useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RankingsTable } from "@/components/rankings/rankings-table";
 import { BreakdownTable } from "@/components/rankings/breakdown-table";
-import { BreakdownWithPublicUser, RankingWithPublicUser } from "@/types/database";
+import { RankingWithPublicUser } from "@/types/database";
+import { RankedBreakdown } from "@/lib/utils/leaderboard";
 
 interface RankingsTabsProps {
   rankings: RankingWithPublicUser[];
-  breakdown: BreakdownWithPublicUser[];
+  breakdown: RankedBreakdown[];
   currentUserId?: string;
   tournamentId: string;
 }

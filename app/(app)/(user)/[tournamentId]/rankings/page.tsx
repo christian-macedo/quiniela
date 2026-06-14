@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { RankingsTabs } from "@/components/rankings/rankings-tabs";
 import { BreakdownWithPublicUser, RankingWithPublicUser } from "@/types/database";
-import { getPublicUserDisplay } from "@/lib/utils/privacy";
+import { buildLeaderboard } from "@/lib/utils/leaderboard";
 import { BackButton } from "@/components/layout/back-button";
 import { TournamentBreadcrumbs } from "@/components/layout/tournament-breadcrumbs";
 import { getTranslations } from "next-intl/server";
@@ -38,17 +38,7 @@ export default async function RankingsPage({
       user:users(id, screen_name, avatar_url, created_at, updated_at)
     `
     )
-    .eq("tournament_id", tournamentId)
-    .order("rank", { ascending: true });
-
-  // Sort: highest points -> alphabetical by display name (deterministic tie-break)
-  const sortedRankings = ((rankings || []) as RankingWithPublicUser[])
-    .slice()
-    .sort(
-      (a, b) =>
-        b.total_points - a.total_points ||
-        getPublicUserDisplay(a.user).localeCompare(getPublicUserDisplay(b.user))
-    );
+    .eq("tournament_id", tournamentId);
 
   const { data: breakdownData } = await supabase
     .from("tournament_prediction_breakdown")
@@ -60,16 +50,12 @@ export default async function RankingsPage({
     )
     .eq("tournament_id", tournamentId);
 
-  // Sort: most exact -> most goal-diff -> most winner -> alphabetical by display name
-  const breakdown = ((breakdownData || []) as BreakdownWithPublicUser[])
-    .slice()
-    .sort(
-      (a, b) =>
-        b.exact_count - a.exact_count ||
-        b.goal_diff_count - a.goal_diff_count ||
-        b.winner_count - a.winner_count ||
-        getPublicUserDisplay(a.user).localeCompare(getPublicUserDisplay(b.user))
-    );
+  // Sort both cards consistently: points -> exact -> winner+goal diff -> winner,
+  // with tied participants sharing a rank.
+  const { rankings: sortedRankings, breakdown } = buildLeaderboard(
+    (rankings || []) as RankingWithPublicUser[],
+    (breakdownData || []) as BreakdownWithPublicUser[]
+  );
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">

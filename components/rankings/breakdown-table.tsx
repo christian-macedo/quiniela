@@ -3,15 +3,15 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { BreakdownWithPublicUser } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import { getPodiumStyle, getRankColor } from "@/components/rankings/podium";
+import { RankedBreakdown } from "@/lib/utils/leaderboard";
 
 interface BreakdownTableProps {
-  breakdown: BreakdownWithPublicUser[];
+  breakdown: RankedBreakdown[];
   currentUserId?: string;
   tournamentId: string;
 }
@@ -60,9 +60,9 @@ export function BreakdownTable({ breakdown, currentUserId, tournamentId }: Break
               </tr>
             </thead>
             <tbody>
-              {breakdown.map((row, index) => {
+              {breakdown.map((row) => {
                 const isCurrentUser = row.user_id === currentUserId;
-                const position = index + 1;
+                const position = row.rank;
                 const href = `/${tournamentId}/rankings/${row.user_id}`;
 
                 return (
