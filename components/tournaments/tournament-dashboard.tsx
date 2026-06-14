@@ -154,7 +154,7 @@ export function TournamentDashboard({
           </Button>
         </Link>
         <Link href={`/${tournament.id}/insights`}>
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" className="animate-pulse-glow">
             <BarChart3 className="h-4 w-4 mr-2" aria-hidden="true" />
             {t("dashboard.insights")}
           </Button>

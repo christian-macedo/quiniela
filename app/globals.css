@@ -202,6 +202,11 @@
     animation: pulse-live 2s ease-in-out infinite;
   }
 
+  /* Gentle accent glow to draw attention without filling the element */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
   /* Stagger delays for cascading entrance */
   .stagger-1 {
     animation-delay: 0.05s;
@@ -272,6 +277,27 @@
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+/* Soft accent ring that breathes in and out (uses --accent for light/dark parity) */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--accent) / 0);
+    border-color: hsl(var(--accent) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px hsl(var(--accent) / 0.22);
+    border-color: hsl(var(--accent) / 0.85);
+  }
+}
+
+/* Respect users who prefer reduced motion: disable looping animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-live,
+  .animate-pulse-glow {
+    animation: none;
   }
 }
 
