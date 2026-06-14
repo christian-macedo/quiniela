@@ -666,6 +666,11 @@
     "empty": "No rankings available yet.",
     "noRankings": "No rankings available yet.",
     "you": "You",
+    "positionChange": {
+      "up": "Moved up since the latest match",
+      "down": "Moved down since the latest match",
+      "same": "No change since the latest match"
+    },
     "breakdown": {
       "tabLeaderboard": "Leaderboard",
       "tabBreakdown": "Breakdown",

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { TournamentDashboard } from "@/components/tournaments/tournament-dashboard";
 import { buildLeaderboard } from "@/lib/utils/leaderboard";
+import { comparePosition, type PositionChange } from "@/lib/utils/position-change";
 import { BreakdownWithPublicUser, RankingWithPublicUser } from "@/types/database";
 import { notFound } from "next/navigation";
 
@@ -69,6 +70,35 @@ export default async function TournamentPage({
     (breakdownData || []) as BreakdownWithPublicUser[]
   );
 
+  // Position change vs. the single most recently completed match. The
+  // "_previous" views recompute each standing while excluding that match; run
+  // the same buildLeaderboard over them so ranks are comparable, then diff.
+  const hasLatestResult = (matches || []).some((m) => m.status === "completed");
+
+  const { data: previousRankingsData } = await supabase
+    .from("tournament_rankings_previous")
+    .select(`*, user:users(*)`)
+    .eq("tournament_id", tournamentId);
+
+  const { data: previousBreakdownData } = await supabase
+    .from("tournament_prediction_breakdown_previous")
+    .select(`*, user:users(id, screen_name, avatar_url, created_at, updated_at)`)
+    .eq("tournament_id", tournamentId);
+
+  const { rankings: previousRankings } = buildLeaderboard(
+    (previousRankingsData || []) as RankingWithPublicUser[],
+    (previousBreakdownData || []) as BreakdownWithPublicUser[]
+  );
+
+  const previousRankByUser = new Map(previousRankings.map((r) => [r.user_id, r.rank]));
+  const rankingChanges: Record<string, PositionChange> = {};
+  sortedRankings.forEach((ranking) => {
+    rankingChanges[ranking.user_id] = comparePosition(
+      previousRankByUser.get(ranking.user_id),
+      ranking.rank
+    );
+  });
+
   // Get user stats from the consistently-ranked standings
   const userRanking = sortedRankings.find((r) => r.user_id === user?.id);
 
@@ -111,6 +141,8 @@ export default async function TournamentPage({
         currentUserId={user?.id ?? ""}
         userStats={userStats}
         tournamentStats={tournamentStats}
+        rankingChanges={rankingChanges}
+        hasLatestResult={hasLatestResult}
       />
     </div>
   );

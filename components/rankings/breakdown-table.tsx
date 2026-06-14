@@ -8,15 +8,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import { getPodiumStyle, getRankColor } from "@/components/rankings/podium";
+import {
+  PositionChangeIndicator,
+  type PositionChange,
+} from "@/components/rankings/position-change-indicator";
 import { RankedBreakdown } from "@/lib/utils/leaderboard";
 
 interface BreakdownTableProps {
   breakdown: RankedBreakdown[];
   currentUserId?: string;
   tournamentId: string;
+  positionChanges: Record<string, PositionChange>;
+  hasLatestResult: boolean;
 }
 
-export function BreakdownTable({ breakdown, currentUserId, tournamentId }: BreakdownTableProps) {
+export function BreakdownTable({
+  breakdown,
+  currentUserId,
+  tournamentId,
+  positionChanges,
+  hasLatestResult,
+}: BreakdownTableProps) {
   const t = useTranslations("rankings");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -77,9 +89,18 @@ export function BreakdownTable({ breakdown, currentUserId, tournamentId }: Break
                   >
                     {/* Position */}
                     <td className="w-8 px-2 py-3 text-center">
-                      <span className={`font-display text-xl font-bold ${getRankColor(position)}`}>
-                        {position}
-                      </span>
+                      <div className="flex items-center justify-center gap-1">
+                        <span
+                          className={`font-display text-xl font-bold ${getRankColor(position)}`}
+                        >
+                          {position}
+                        </span>
+                        {hasLatestResult && (
+                          <PositionChangeIndicator
+                            change={positionChanges[row.user_id] ?? "same"}
+                          />
+                        )}
+                      </div>
                     </td>
 
                     {/* Player */}
