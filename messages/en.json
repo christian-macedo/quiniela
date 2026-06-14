@@ -31,8 +31,11 @@
       "crowdCalled": "The crowd called {called} of {total} results correctly ({percentage}%)."
     },
     "results": {
+      "outcomesTitle": "Match outcomes",
+      "outcome": "Outcome",
       "actualTitle": "Actual results",
       "predictedTitle": "What the crowd predicted",
+      "predictionsShort": "predictions",
       "home": "Home wins",
       "draw": "Draws",
       "away": "Away wins",

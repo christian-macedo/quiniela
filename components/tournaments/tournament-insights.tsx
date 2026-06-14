@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ShareBreakdown, type ShareItem } from "@/components/stats/share-breakdown";
 import { DistributionView } from "@/components/stats/distribution-view";
+import { DonutChart, type DonutSegment } from "@/components/stats/donut-chart";
 import { distributePercentages, type Outcome } from "@/lib/utils/match-stats";
 import {
   computeOverviewKpis,
@@ -198,43 +199,88 @@ function AccuracyTab({ completed, t }: { completed: Group[]; t: T }) {
 
 /* -------------------------------- Results tab ----------------------------- */
 
+// Consistent home/draw/away colors, shared by both donuts and the legend.
+const OUTCOMES: Outcome[] = ["home", "draw", "away"];
 const OUTCOME_COLORS: Record<Outcome, string> = {
-  home: "bg-success",
-  draw: "bg-muted-foreground",
-  away: "bg-accent",
+  home: "hsl(var(--success))",
+  draw: "hsl(var(--muted-foreground))",
+  away: "hsl(var(--accent))",
 };
 
 function ResultsTab({ completed, t }: { completed: Group[]; t: T }) {
   const bias = computeOutcomeBias(completed);
 
-  const outcomeItems = (
-    counts: Record<Outcome, number>,
-    percentages: Record<Outcome, number>
-  ): ShareItem[] =>
-    (["home", "draw", "away"] as Outcome[]).map((o) => ({
-      key: o,
-      label: t(`results.${o}`),
-      colorClass: OUTCOME_COLORS[o],
-      percentage: percentages[o],
-      count: counts[o],
-    }));
+  const donutSegments = (counts: Record<Outcome, number>): DonutSegment[] =>
+    OUTCOMES.map((o) => ({ label: o, count: counts[o], color: OUTCOME_COLORS[o] }));
 
   return (
     <div className="space-y-8">
-      <section className="space-y-3">
-        <h3 className="font-display text-lg font-bold">{t("results.actualTitle")}</h3>
-        <ShareBreakdown
-          items={outcomeItems(bias.actual.counts, bias.actual.percentages)}
-          predictionsLabel={(n) => t("matchesCount", { count: n })}
-        />
-      </section>
+      <section className="space-y-4">
+        <h3 className="font-display text-lg font-bold">{t("results.outcomesTitle")}</h3>
 
-      <section className="space-y-3">
-        <h3 className="font-display text-lg font-bold">{t("results.predictedTitle")}</h3>
-        <ShareBreakdown
-          items={outcomeItems(bias.predicted.counts, bias.predicted.percentages)}
-          predictionsLabel={(n) => t("predictions", { count: n })}
-        />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <figure className="flex flex-col items-center gap-2">
+            <figcaption className="text-sm font-medium text-muted-foreground">
+              {t("results.actualTitle")}
+            </figcaption>
+            <DonutChart
+              segments={donutSegments(bias.actual.counts)}
+              total={bias.actual.total}
+              centerLabel={t("results.totalShort")}
+              ariaLabel={t("results.actualTitle")}
+            />
+          </figure>
+          <figure className="flex flex-col items-center gap-2">
+            <figcaption className="text-sm font-medium text-muted-foreground">
+              {t("results.predictedTitle")}
+            </figcaption>
+            <DonutChart
+              segments={donutSegments(bias.predicted.counts)}
+              total={bias.predicted.total}
+              centerLabel={t("results.predictionsShort")}
+              ariaLabel={t("results.predictedTitle")}
+            />
+          </figure>
+        </div>
+
+        {/* Single shared legend, doubling as an actual-vs-predicted comparison. */}
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b text-muted-foreground">
+              <th scope="col" className="py-2 text-left font-medium">
+                {t("results.outcome")}
+              </th>
+              <th scope="col" className="py-2 text-right font-medium">
+                {t("results.actual")}
+              </th>
+              <th scope="col" className="py-2 pr-1 text-right font-medium">
+                {t("results.predicted")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {OUTCOMES.map((o) => (
+              <tr key={o} className="border-b last:border-0">
+                <th scope="row" className="py-2 text-left font-normal">
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="h-3 w-3 shrink-0 rounded-sm"
+                      style={{ backgroundColor: OUTCOME_COLORS[o] }}
+                      aria-hidden="true"
+                    />
+                    {t(`results.${o}`)}
+                  </span>
+                </th>
+                <td className="py-2 text-right tabular-nums">
+                  {bias.actual.counts[o]} ({bias.actual.percentages[o]}%)
+                </td>
+                <td className="py-2 pr-1 text-right tabular-nums">
+                  {bias.predicted.counts[o]} ({bias.predicted.percentages[o]}%)
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
       <section className="space-y-3">

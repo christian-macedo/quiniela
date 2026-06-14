@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { DonutChart } from "@/components/stats/donut-chart";
 import type { ScoreDistributionEntry } from "@/lib/utils/match-stats";
 
 // Distinct slice colors (defined in globals.css for both light & dark themes).
@@ -139,76 +140,6 @@ export function DistributionView({
           ))}
         </tbody>
       </table>
-    </div>
-  );
-}
-
-function DonutChart({
-  segments,
-  total,
-  centerLabel,
-  ariaLabel,
-}: {
-  segments: DistributionSegment[];
-  total: number;
-  centerLabel: string;
-  ariaLabel: string;
-}) {
-  const size = 168;
-  const stroke = 30;
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const center = size / 2;
-  // Hairline gap (in user units) between adjacent slices for legibility.
-  const gap = segments.length > 1 ? 2 : 0;
-
-  let offset = 0;
-
-  return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg
-        viewBox={`0 0 ${size} ${size}`}
-        width={size}
-        height={size}
-        role="img"
-        aria-label={ariaLabel}
-        // Rotate so the first slice starts at 12 o'clock.
-        style={{ transform: "rotate(-90deg)" }}
-      >
-        {/* Track */}
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill="none"
-          stroke="hsl(var(--muted))"
-          strokeWidth={stroke}
-        />
-        {segments.map((seg) => {
-          const fraction = total > 0 ? seg.count / total : 0;
-          const dash = Math.max(fraction * circumference - gap, 0);
-          const circle = (
-            <circle
-              key={seg.label}
-              cx={center}
-              cy={center}
-              r={radius}
-              fill="none"
-              stroke={seg.color}
-              strokeWidth={stroke}
-              strokeDasharray={`${dash} ${circumference - dash}`}
-              strokeDashoffset={-offset}
-            />
-          );
-          offset += fraction * circumference;
-          return circle;
-        })}
-      </svg>
-      {/* Center readout */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-3xl font-bold tabular-nums">{total}</span>
-        <span className="text-xs text-muted-foreground">{centerLabel}</span>
-      </div>
     </div>
   );
 }

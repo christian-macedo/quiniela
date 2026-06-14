@@ -31,8 +31,11 @@
       "crowdCalled": "La afición acertó {called} de {total} resultados ({percentage}%)."
     },
     "results": {
+      "outcomesTitle": "Desenlace de los partidos",
+      "outcome": "Desenlace",
       "actualTitle": "Resultados reales",
       "predictedTitle": "Lo que pronosticó la afición",
+      "predictionsShort": "pronósticos",
       "home": "Gana local",
       "draw": "Empates",
       "away": "Gana visitante",
