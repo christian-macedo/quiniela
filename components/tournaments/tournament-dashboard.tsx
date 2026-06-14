@@ -11,6 +11,10 @@ import { MatchCard } from "@/components/matches/match-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDate } from "@/lib/utils/date";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
+import {
+  PositionChangeIndicator,
+  type PositionChange,
+} from "@/components/rankings/position-change-indicator";
 import { Calendar, Trophy, UserCircle, Target, BarChart3 } from "lucide-react";
 
 interface TournamentDashboardProps {
@@ -26,6 +30,8 @@ interface TournamentDashboardProps {
   tournamentStats?: {
     participantCount: number;
   };
+  rankingChanges?: Record<string, PositionChange>;
+  hasLatestResult?: boolean;
 }
 
 // Auto-fit leaderboard sizing. ROW_GAP matches the `space-y-2` (0.5rem) between
@@ -56,6 +62,8 @@ export function TournamentDashboard({
   currentUserId,
   userStats,
   tournamentStats,
+  rankingChanges,
+  hasLatestResult,
 }: TournamentDashboardProps) {
   const t = useTranslations("tournaments");
   const tCommon = useTranslations("common");
@@ -232,6 +240,15 @@ export function TournamentDashboard({
                           {ranking.rank}
                         </span>
                       </div>
+
+                      {/* Position change */}
+                      {hasLatestResult && (
+                        <div className="w-4 flex justify-center">
+                          <PositionChangeIndicator
+                            change={rankingChanges?.[ranking.user_id] ?? "same"}
+                          />
+                        </div>
+                      )}
 
                       {/* Avatar */}
                       <Avatar className="h-8 w-8">

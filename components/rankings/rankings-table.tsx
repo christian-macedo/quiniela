@@ -7,15 +7,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import { getPodiumStyle, getRankColor } from "@/components/rankings/podium";
+import {
+  PositionChangeIndicator,
+  type PositionChange,
+} from "@/components/rankings/position-change-indicator";
 import Link from "next/link";
 
 interface RankingsTableProps {
   rankings: RankingWithPublicUser[];
   currentUserId?: string;
   tournamentId: string;
+  positionChanges: Record<string, PositionChange>;
+  hasLatestResult: boolean;
 }
 
-export function RankingsTable({ rankings, currentUserId, tournamentId }: RankingsTableProps) {
+export function RankingsTable({
+  rankings,
+  currentUserId,
+  tournamentId,
+  positionChanges,
+  hasLatestResult,
+}: RankingsTableProps) {
   const t = useTranslations("rankings");
   const tCommon = useTranslations("common");
 
@@ -36,6 +48,7 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
         {/* Column Headers */}
         <div className="flex items-center gap-4 px-3 pb-3 mb-2 border-b text-xs uppercase tracking-wider text-muted-foreground font-medium">
           <div className="w-8 text-center">{tCommon("labels.rank")}</div>
+          {hasLatestResult && <div className="w-4" />}
           <div className="w-10" />
           <div className="flex-1">{tCommon("labels.name")}</div>
           <div>{tCommon("labels.points")}</div>
@@ -65,6 +78,13 @@ export function RankingsTable({ rankings, currentUserId, tournamentId }: Ranking
                       {displayRank}
                     </span>
                   </div>
+
+                  {/* Position change */}
+                  {hasLatestResult && (
+                    <div className="w-4 flex justify-center">
+                      <PositionChangeIndicator change={positionChanges[ranking.user_id] ?? "same"} />
+                    </div>
+                  )}
 
                   {/* Avatar */}
                   <Avatar className="h-10 w-10">

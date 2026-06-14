@@ -6,12 +6,16 @@ import { RankingsTable } from "@/components/rankings/rankings-table";
 import { BreakdownTable } from "@/components/rankings/breakdown-table";
 import { RankingWithPublicUser } from "@/types/database";
 import { RankedBreakdown } from "@/lib/utils/leaderboard";
+import type { PositionChange } from "@/components/rankings/position-change-indicator";
 
 interface RankingsTabsProps {
   rankings: RankingWithPublicUser[];
   breakdown: RankedBreakdown[];
   currentUserId?: string;
   tournamentId: string;
+  rankingChanges: Record<string, PositionChange>;
+  breakdownChanges: Record<string, PositionChange>;
+  hasLatestResult: boolean;
 }
 
 export function RankingsTabs({
@@ -19,6 +23,9 @@ export function RankingsTabs({
   breakdown,
   currentUserId,
   tournamentId,
+  rankingChanges,
+  breakdownChanges,
+  hasLatestResult,
 }: RankingsTabsProps) {
   const t = useTranslations("rankings");
 
@@ -33,6 +40,8 @@ export function RankingsTabs({
           rankings={rankings}
           currentUserId={currentUserId}
           tournamentId={tournamentId}
+          positionChanges={rankingChanges}
+          hasLatestResult={hasLatestResult}
         />
       </TabsContent>
       <TabsContent value="breakdown">
@@ -40,6 +49,8 @@ export function RankingsTabs({
           breakdown={breakdown}
           currentUserId={currentUserId}
           tournamentId={tournamentId}
+          positionChanges={breakdownChanges}
+          hasLatestResult={hasLatestResult}
         />
       </TabsContent>
     </Tabs>

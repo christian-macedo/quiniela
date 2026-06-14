@@ -666,6 +666,11 @@
     "empty": "Aún no hay clasificaciones disponibles.",
     "noRankings": "Aún no hay clasificaciones disponibles.",
     "you": "Tú",
+    "positionChange": {
+      "up": "Subió desde el último partido",
+      "down": "Bajó desde el último partido",
+      "same": "Sin cambios desde el último partido"
+    },
     "breakdown": {
       "tabLeaderboard": "Clasificación",
       "tabBreakdown": "Desglose",
