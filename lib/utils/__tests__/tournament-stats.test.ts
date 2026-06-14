@@ -4,13 +4,38 @@ import {
   computeTournamentAccuracy,
   computeCrowdCalledRate,
   computeOutcomeBias,
-  computeMatchSuperlatives,
+  computeTeamSuperlatives,
   type MatchStatGroup,
 } from "../tournament-stats";
-import type { PredictionLike } from "../match-stats";
+import type { MatchResultLike, PredictionLike } from "../match-stats";
 
 function p(home: number, away: number): PredictionLike {
   return { predicted_home_score: home, predicted_away_score: away };
+}
+
+interface TeamRef {
+  id: string;
+}
+
+type TeamMatchGroup = MatchStatGroup<MatchResultLike & { home_team: TeamRef; away_team: TeamRef }>;
+
+/** A completed match between two teams, with the crowd's predictions for it. */
+function teamGroup(
+  homeId: string,
+  awayId: string,
+  home: number | null,
+  away: number | null,
+  predictions: PredictionLike[]
+): TeamMatchGroup {
+  return {
+    match: {
+      home_score: home,
+      away_score: away,
+      home_team: { id: homeId },
+      away_team: { id: awayId },
+    },
+    predictions,
+  };
 }
 
 /** A minimal completed-match group with an id for superlative assertions. */
@@ -139,41 +164,51 @@ describe("computeOutcomeBias", () => {
   });
 });
 
-describe("computeMatchSuperlatives", () => {
-  it("ranks hardest, best-called, and upset matches", () => {
-    // easy 2-1: both nail exact (avg 3); consensus home = result, no upset.
-    // hard 0-2 (away): both predicted home (avg 0); consensus home 100% -> upset.
-    // mild 0-1 (away): 2/3 favoured home (avg 1); consensus home 67% -> upset.
-    const groups = [
-      group("easy", 2, 1, [p(2, 1), p(2, 1)]),
-      group("hard", 0, 2, [p(3, 0), p(2, 0)]),
-      group("mild", 0, 1, [p(1, 0), p(2, 1), p(0, 1)]),
-    ];
-    const result = computeMatchSuperlatives(groups, 3);
+describe("computeTeamSuperlatives", () => {
+  it("tallies goals and draws across home and away appearances", () => {
+    // A: home 3-1 vs B (A 3, B 1), then away 0-0 vs C (A 0, C 0).
+    const groups = [teamGroup("A", "B", 3, 1, [p(1, 1)]), teamGroup("C", "A", 0, 0, [p(1, 1)])];
+    const { topScorers, nappers } = computeTeamSuperlatives(groups);
 
-    expect(result.bestCalled[0].match.id).toBe("easy");
-    expect(result.bestCalled[0].avgPoints).toBe(3);
-    expect(result.hardest[0].match.id).toBe("hard");
-    expect(result.hardest[0].avgPoints).toBe(0);
-
-    // Both wrong-consensus matches surface, strongest wrong lean first.
-    expect(result.upsets).toHaveLength(2);
-    expect(result.upsets[0].match.id).toBe("hard");
-    expect(result.upsets[0].consensusOutcome).toBe("home");
-    expect(result.upsets[0].actualOutcome).toBe("away");
-    expect(result.upsets[0].consensusPercentage).toBe(100);
-    expect(result.upsets[1].match.id).toBe("mild");
+    expect(topScorers[0]).toEqual({ team: { id: "A" }, value: 3 });
+    // The 0-0 draw counts for both teams in that match.
+    expect(nappers.map((n) => n.team.id).sort()).toEqual(["A", "C"]);
+    expect(nappers.every((n) => n.value === 1)).toBe(true);
   });
 
-  it("respects the limit and skips empty/unfinished matches", () => {
+  it("surfaces underdog winners the crowd's majority backed to lose", () => {
+    // Crowd heavily favours B (away win), but A (home) wins -> A is the underdog.
+    const groups = [teamGroup("A", "B", 2, 0, [p(0, 2), p(0, 1), p(1, 0)])];
+    const { underdogs } = computeTeamSuperlatives(groups);
+
+    expect(underdogs).toHaveLength(1);
+    expect(underdogs[0].team.id).toBe("A");
+    expect(underdogs[0].value).toBe(1);
+  });
+
+  it("ranks safe bets by crowd accuracy as a share of possible points", () => {
+    // Match X 2-1: both nail the exact score -> 100% accuracy for X1 and X2.
+    // Match Y 1-0: both miss entirely -> 0% accuracy for Y1 and Y2.
     const groups = [
-      group("a", 1, 0, [p(1, 0)]),
-      group("b", 2, 0, [p(2, 0)]),
-      group("c", 0, 0, []),
-      group("d", null, null, [p(1, 1)]),
+      teamGroup("X1", "X2", 2, 1, [p(2, 1), p(2, 1)]),
+      teamGroup("Y1", "Y2", 1, 0, [p(0, 3)]),
     ];
-    const result = computeMatchSuperlatives(groups, 1);
-    expect(result.hardest).toHaveLength(1);
-    expect(result.bestCalled).toHaveLength(1);
+    const { safeBets } = computeTeamSuperlatives(groups, 4);
+
+    expect(safeBets[0].value).toBe(100);
+    expect(safeBets[0].team.id).toMatch(/X/);
+    expect(safeBets.find((s) => s.team.id === "Y1")?.value).toBe(0);
+  });
+
+  it("respects the limit and ignores unfinished matches", () => {
+    const groups = [
+      teamGroup("A", "B", 5, 0, [p(1, 0)]),
+      teamGroup("C", "D", 4, 0, [p(1, 0)]),
+      teamGroup("E", "F", 3, 0, [p(1, 0)]),
+      teamGroup("G", "H", null, null, [p(1, 0)]),
+    ];
+    const { topScorers } = computeTeamSuperlatives(groups, 2);
+    expect(topScorers).toHaveLength(2);
+    expect(topScorers.map((t) => t.team.id)).toEqual(["A", "C"]);
   });
 });

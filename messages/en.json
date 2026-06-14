@@ -21,7 +21,7 @@
     "tabs": {
       "accuracy": "Accuracy",
       "results": "Results",
-      "matches": "Matches",
+      "teams": "Teams",
       "awards": "Awards"
     },
     "accuracy": {
@@ -55,12 +55,19 @@
       "chartLabel": "Distribution of actual scorelines",
       "totalShort": "matches"
     },
-    "matches": {
-      "upsetsTitle": "Biggest upsets",
-      "hardestTitle": "Toughest to predict",
-      "bestCalledTitle": "Best called",
-      "avgPointsLabel": "{points} avg pts",
-      "crowdFavored": "{team} {percentage}%",
+    "teams": {
+      "underdogsTitle": "Underdogs",
+      "underdogsDescription": "Teams the crowd's majority predicted to lose, who won anyway.",
+      "safeBetsTitle": "Safe bets",
+      "safeBetsDescription": "Teams whose matches the crowd predicted most accurately.",
+      "topScorersTitle": "Top scorers",
+      "topScorersDescription": "Teams that scored the most goals across completed matches.",
+      "nappersTitle": "The nappers",
+      "nappersDescription": "Teams with the most matches ending in a draw.",
+      "upsetsValue": "{count, plural, =1 {# upset win} other {# upset wins}}",
+      "accuracyValue": "{percentage}% accuracy",
+      "goalsValue": "{count, plural, =1 {# goal} other {# goals}}",
+      "drawsValue": "{count, plural, =1 {# draw} other {# draws}}",
       "none": "Nothing to show yet."
     },
     "awards": {

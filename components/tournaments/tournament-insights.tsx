@@ -1,12 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { MatchWithTeams, RankingWithPublicUser, BreakdownWithPublicUser } from "@/types/database";
+import {
+  MatchWithTeams,
+  Team,
+  RankingWithPublicUser,
+  BreakdownWithPublicUser,
+} from "@/types/database";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TeamBadge } from "@/components/teams/team-badge";
 import { ShareBreakdown, type ShareItem } from "@/components/stats/share-breakdown";
 import { DistributionView } from "@/components/stats/distribution-view";
 import { DonutChart, type DonutSegment } from "@/components/stats/donut-chart";
@@ -16,8 +21,9 @@ import {
   computeTournamentAccuracy,
   computeCrowdCalledRate,
   computeOutcomeBias,
-  computeMatchSuperlatives,
+  computeTeamSuperlatives,
   type MatchStatGroup,
+  type TeamStat,
 } from "@/lib/utils/tournament-stats";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import { BarChart3, Crown, TrendingDown, Eye, Coins, CheckCircle2, Info } from "lucide-react";
@@ -25,7 +31,6 @@ import { BarChart3, Crown, TrendingDown, Eye, Coins, CheckCircle2, Info } from "
 type Group = MatchStatGroup<MatchWithTeams>;
 
 interface TournamentInsightsProps {
-  tournamentId: string;
   completed: Group[];
   totals: {
     participantCount: number;
@@ -38,7 +43,6 @@ interface TournamentInsightsProps {
 }
 
 export function TournamentInsights({
-  tournamentId,
   completed,
   totals,
   rankings,
@@ -78,7 +82,7 @@ export function TournamentInsights({
             <TabsList className="flex-wrap h-auto">
               <TabsTrigger value="accuracy">{t("tabs.accuracy")}</TabsTrigger>
               <TabsTrigger value="results">{t("tabs.results")}</TabsTrigger>
-              <TabsTrigger value="matches">{t("tabs.matches")}</TabsTrigger>
+              <TabsTrigger value="teams">{t("tabs.teams")}</TabsTrigger>
               <TabsTrigger value="awards">{t("tabs.awards")}</TabsTrigger>
             </TabsList>
 
@@ -88,8 +92,8 @@ export function TournamentInsights({
             <TabsContent value="results" className="pt-6">
               <ResultsTab completed={completed} t={t} />
             </TabsContent>
-            <TabsContent value="matches" className="pt-6">
-              <MatchesTab completed={completed} tournamentId={tournamentId} t={t} />
+            <TabsContent value="teams" className="pt-6">
+              <TeamsTab completed={completed} t={t} />
             </TabsContent>
             <TabsContent value="awards" className="pt-6">
               <AwardsTab rankings={rankings} breakdown={breakdown} t={t} />
@@ -360,91 +364,87 @@ function AvgGoalCell({
   );
 }
 
-/* -------------------------------- Matches tab ----------------------------- */
+/* --------------------------------- Teams tab ------------------------------ */
 
-function MatchesTab({
-  completed,
-  tournamentId,
-  t,
-}: {
-  completed: Group[];
-  tournamentId: string;
-  t: T;
-}) {
-  const { hardest, bestCalled, upsets } = computeMatchSuperlatives(completed);
+function TeamsTab({ completed, t }: { completed: Group[]; t: T }) {
+  const { underdogs, safeBets, topScorers, nappers } = computeTeamSuperlatives(completed);
 
-  const matchLabel = (m: MatchWithTeams) =>
-    `${m.home_team.short_name} ${m.home_score}–${m.away_score} ${m.away_team.short_name}`;
+  const sections: {
+    key: string;
+    title: string;
+    description: string;
+    teams: TeamStat<Team>[];
+    format: (value: number) => string;
+  }[] = [
+    {
+      key: "underdogs",
+      title: t("teams.underdogsTitle"),
+      description: t("teams.underdogsDescription"),
+      teams: underdogs,
+      format: (value) => t("teams.upsetsValue", { count: value }),
+    },
+    {
+      key: "safeBets",
+      title: t("teams.safeBetsTitle"),
+      description: t("teams.safeBetsDescription"),
+      teams: safeBets,
+      format: (value) => t("teams.accuracyValue", { percentage: value }),
+    },
+    {
+      key: "topScorers",
+      title: t("teams.topScorersTitle"),
+      description: t("teams.topScorersDescription"),
+      teams: topScorers,
+      format: (value) => t("teams.goalsValue", { count: value }),
+    },
+    {
+      key: "nappers",
+      title: t("teams.nappersTitle"),
+      description: t("teams.nappersDescription"),
+      teams: nappers,
+      format: (value) => t("teams.drawsValue", { count: value }),
+    },
+  ];
 
   return (
     <div className="space-y-8">
-      <MatchList title={t("matches.upsetsTitle")}>
-        {upsets.length === 0 ? (
-          <EmptyRow label={t("matches.none")} />
-        ) : (
-          upsets.map((u) => {
-            const favored =
-              u.consensusOutcome === "home"
-                ? u.match.home_team.short_name
-                : u.consensusOutcome === "away"
-                  ? u.match.away_team.short_name
-                  : t("results.draw");
-            return (
-              <MatchRow key={u.match.id} href={`/${tournamentId}/matches/${u.match.id}`}>
-                <span className="flex-1 truncate font-medium">{matchLabel(u.match)}</span>
+      {sections.map((section) => (
+        <TeamList key={section.key} title={section.title} description={section.description}>
+          {section.teams.length === 0 ? (
+            <EmptyRow label={t("teams.none")} />
+          ) : (
+            section.teams.map((entry) => (
+              <li key={entry.team.id} className="flex items-center gap-3 rounded-lg border p-3">
+                <TeamBadge team={entry.team} size="sm" className="flex-1" />
                 <Badge variant="secondary" className="shrink-0">
-                  {t("matches.crowdFavored", { team: favored, percentage: u.consensusPercentage })}
+                  {section.format(entry.value)}
                 </Badge>
-              </MatchRow>
-            );
-          })
-        )}
-      </MatchList>
-
-      <MatchList title={t("matches.hardestTitle")}>
-        {hardest.map((m) => (
-          <MatchRow key={m.match.id} href={`/${tournamentId}/matches/${m.match.id}`}>
-            <span className="flex-1 truncate font-medium">{matchLabel(m.match)}</span>
-            <Badge variant="secondary" className="shrink-0">
-              {t("matches.avgPointsLabel", { points: m.avgPoints })}
-            </Badge>
-          </MatchRow>
-        ))}
-      </MatchList>
-
-      <MatchList title={t("matches.bestCalledTitle")}>
-        {bestCalled.map((m) => (
-          <MatchRow key={m.match.id} href={`/${tournamentId}/matches/${m.match.id}`}>
-            <span className="flex-1 truncate font-medium">{matchLabel(m.match)}</span>
-            <Badge variant="secondary" className="shrink-0">
-              {t("matches.avgPointsLabel", { points: m.avgPoints })}
-            </Badge>
-          </MatchRow>
-        ))}
-      </MatchList>
+              </li>
+            ))
+          )}
+        </TeamList>
+      ))}
     </div>
   );
 }
 
-function MatchList({ title, children }: { title: string; children: React.ReactNode }) {
+function TeamList({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="space-y-3">
-      <h3 className="font-display text-lg font-bold">{title}</h3>
+      <div className="space-y-1">
+        <h3 className="font-display text-lg font-bold">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
       <ul className="space-y-2">{children}</ul>
     </section>
-  );
-}
-
-function MatchRow({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <li>
-      <Link
-        href={href}
-        className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
-      >
-        {children}
-      </Link>
-    </li>
   );
 }
 
@@ -468,7 +468,7 @@ function AwardsTab({
   const awards = computeAwards(rankings, breakdown, t);
 
   if (awards.length === 0) {
-    return <p className="py-6 text-center text-sm text-muted-foreground">{t("matches.none")}</p>;
+    return <p className="py-6 text-center text-sm text-muted-foreground">{t("teams.none")}</p>;
   }
 
   return (

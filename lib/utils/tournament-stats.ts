@@ -232,75 +232,135 @@ export function computeOutcomeBias<M extends MatchResultLike>(
   };
 }
 
-/* ----------------------------- Match superlatives -------------------------- */
+/* ------------------------------ Team superlatives -------------------------- */
 
-export interface MatchMetric<M> {
-  match: M;
-  /** Average base points (0-3, no multiplier) the crowd earned on this match. */
-  avgPoints: number;
-  predictionCount: number;
+/** A completed match carrying both teams, the minimum needed for team stats. */
+type TeamMatch<TeamT> = MatchResultLike & { home_team: TeamT; away_team: TeamT };
+
+export interface TeamStat<TeamT> {
+  team: TeamT;
+  /** The metric's headline figure (goals, draws, upset wins, or accuracy %). */
+  value: number;
 }
 
-export interface UpsetMetric<M> {
-  match: M;
-  consensusOutcome: Outcome;
-  actualOutcome: Outcome;
-  /** The crowd's share (integer %) on the outcome they wrongly favoured. */
-  consensusPercentage: number;
+export interface TeamSuperlatives<TeamT> {
+  /** Most wins after the crowd's majority backed their opponent. */
+  underdogs: TeamStat<TeamT>[];
+  /** Highest crowd accuracy (% of possible base points) on their matches. */
+  safeBets: TeamStat<TeamT>[];
+  /** Most goals scored across completed matches. */
+  topScorers: TeamStat<TeamT>[];
+  /** Most matches ending in a draw. */
+  nappers: TeamStat<TeamT>[];
 }
 
-export interface MatchSuperlatives<M> {
-  /** Lowest average points first — the matches the crowd struggled with most. */
-  hardest: MatchMetric<M>[];
-  /** Highest average points first — the matches the crowd nailed. */
-  bestCalled: MatchMetric<M>[];
-  /** Strongest wrong consensus first — surfaces underdog wins. */
-  upsets: UpsetMetric<M>[];
-}
-
-export function computeMatchSuperlatives<M extends MatchResultLike>(
-  groups: MatchStatGroup<M>[],
+/**
+ * Team-level superlatives aggregated across completed matches. Each team is
+ * keyed by id, so a team appearing as both home and away accumulates correctly.
+ * Predictions feed the accuracy-based "safe bets" and upset detection; the goal
+ * and draw tallies are purely result-driven.
+ */
+export function computeTeamSuperlatives<TeamT extends { id: string }>(
+  groups: MatchStatGroup<TeamMatch<TeamT>>[],
   limit = 3
-): MatchSuperlatives<M> {
-  const metrics: MatchMetric<M>[] = [];
-  const upsets: UpsetMetric<M>[] = [];
+): TeamSuperlatives<TeamT> {
+  interface Acc {
+    team: TeamT;
+    goals: number;
+    draws: number;
+    upsetWins: number;
+    /** Sum of consensus % overcome, breaking ties between equal upset counts. */
+    upsetMargin: number;
+    basePoints: number;
+    predictions: number;
+  }
+
+  const accs = new Map<string, Acc>();
+  const accFor = (team: TeamT): Acc => {
+    let acc = accs.get(team.id);
+    if (!acc) {
+      acc = {
+        team,
+        goals: 0,
+        draws: 0,
+        upsetWins: 0,
+        upsetMargin: 0,
+        basePoints: 0,
+        predictions: 0,
+      };
+      accs.set(team.id, acc);
+    }
+    return acc;
+  };
 
   for (const { match, predictions } of groups) {
-    if (!hasResult(match) || predictions.length === 0) continue;
+    if (!hasResult(match)) continue;
+    const home = match.home_score;
+    const away = match.away_score;
+    const homeAcc = accFor(match.home_team);
+    const awayAcc = accFor(match.away_team);
 
-    const totalBase = predictions.reduce(
-      (sum, p) =>
-        sum +
-        getBasePoints(
-          p.predicted_home_score,
-          p.predicted_away_score,
-          match.home_score,
-          match.away_score
-        ),
-      0
-    );
-    metrics.push({
-      match,
-      avgPoints: round1(totalBase / predictions.length),
-      predictionCount: predictions.length,
-    });
+    homeAcc.goals += home;
+    awayAcc.goals += away;
 
-    const odds = computeOutcomeOdds(predictions);
-    const consensusOutcome = getConsensusOutcome(odds);
-    const actualOutcome = outcomeOf(match.home_score, match.away_score);
-    if (consensusOutcome !== null && consensusOutcome !== actualOutcome) {
-      upsets.push({
-        match,
-        consensusOutcome,
-        actualOutcome,
-        consensusPercentage: odds.percentages[consensusOutcome],
-      });
+    const actual = outcomeOf(home, away);
+    if (actual === "draw") {
+      homeAcc.draws += 1;
+      awayAcc.draws += 1;
+    }
+
+    for (const p of predictions) {
+      const base = getBasePoints(p.predicted_home_score, p.predicted_away_score, home, away);
+      homeAcc.basePoints += base;
+      homeAcc.predictions += 1;
+      awayAcc.basePoints += base;
+      awayAcc.predictions += 1;
+    }
+
+    if (predictions.length > 0) {
+      const odds = computeOutcomeOdds(predictions);
+      const consensus = getConsensusOutcome(odds);
+      // An underdog winner is a team that won after the crowd backed its opponent.
+      if (consensus === "away" && actual === "home") {
+        homeAcc.upsetWins += 1;
+        homeAcc.upsetMargin += odds.percentages.away;
+      } else if (consensus === "home" && actual === "away") {
+        awayAcc.upsetWins += 1;
+        awayAcc.upsetMargin += odds.percentages.home;
+      }
     }
   }
 
-  const hardest = [...metrics].sort((a, b) => a.avgPoints - b.avgPoints).slice(0, limit);
-  const bestCalled = [...metrics].sort((a, b) => b.avgPoints - a.avgPoints).slice(0, limit);
-  upsets.sort((a, b) => b.consensusPercentage - a.consensusPercentage);
+  const all = [...accs.values()];
 
-  return { hardest, bestCalled, upsets: upsets.slice(0, limit) };
+  const underdogs = all
+    .filter((a) => a.upsetWins > 0)
+    .sort((a, b) => b.upsetWins - a.upsetWins || b.upsetMargin - a.upsetMargin)
+    .slice(0, limit)
+    .map((a) => ({ team: a.team, value: a.upsetWins }));
+
+  const safeBets = all
+    .filter((a) => a.predictions > 0)
+    .map((a) => ({
+      team: a.team,
+      value: Math.round((a.basePoints / (a.predictions * 3)) * 100),
+      predictions: a.predictions,
+    }))
+    .sort((a, b) => b.value - a.value || b.predictions - a.predictions)
+    .slice(0, limit)
+    .map(({ team, value }) => ({ team, value }));
+
+  const topScorers = all
+    .filter((a) => a.goals > 0)
+    .sort((a, b) => b.goals - a.goals)
+    .slice(0, limit)
+    .map((a) => ({ team: a.team, value: a.goals }));
+
+  const nappers = all
+    .filter((a) => a.draws > 0)
+    .sort((a, b) => b.draws - a.draws)
+    .slice(0, limit)
+    .map((a) => ({ team: a.team, value: a.draws }));
+
+  return { underdogs, safeBets, topScorers, nappers };
 }
