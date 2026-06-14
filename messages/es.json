@@ -1,8 +1,8 @@
 {
   "insights": {
-    "title": "Análisis del Torneo",
+    "title": "Estadísticas del Torneo",
     "subtitle": "Cómo le va a la afición en todo el torneo",
-    "breadcrumb": "Análisis",
+    "breadcrumb": "Estadísticas",
     "scopeNote": "Todos los análisis se basan únicamente en pronósticos de partidos finalizados.",
     "predictions": "{count, plural, =1 {# pronóstico} other {# pronósticos}}",
     "matchesCount": "{count, plural, =1 {# partido} other {# partidos}}",
@@ -72,7 +72,7 @@
     },
     "awards": {
       "leader": "Líder",
-      "bottom": "Farolillo rojo",
+      "bottom": "Fondo del barril",
       "clairvoyant": "Vidente",
       "highEarner": "Más rentable",
       "stillAtPlay": "Aún en juego",
@@ -361,7 +361,7 @@
       "myPredictions": "Mis pronósticos",
       "fullRankings": "Clasificación Completa",
       "allMatches": "Todos los Partidos",
-      "insights": "Análisis",
+      "insights": "Estadísticas",
       "yourRank": "Tu Posición",
       "totalPoints": "Puntos Totales",
       "predictions": "pronósticos",
