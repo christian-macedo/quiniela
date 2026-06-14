@@ -11,7 +11,7 @@ import { MatchCard } from "@/components/matches/match-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDate } from "@/lib/utils/date";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
-import { Calendar, Trophy, UserCircle, Target } from "lucide-react";
+import { Calendar, Trophy, UserCircle, Target, BarChart3 } from "lucide-react";
 
 interface TournamentDashboardProps {
   tournament: Tournament;
@@ -151,6 +151,12 @@ export function TournamentDashboard({
           <Button variant="outline" size="lg">
             <Calendar className="h-4 w-4 mr-2" />
             {t("dashboard.allMatches")}
+          </Button>
+        </Link>
+        <Link href={`/${tournament.id}/insights`}>
+          <Button variant="outline" size="lg">
+            <BarChart3 className="h-4 w-4 mr-2" aria-hidden="true" />
+            {t("dashboard.insights")}
           </Button>
         </Link>
       </div>
