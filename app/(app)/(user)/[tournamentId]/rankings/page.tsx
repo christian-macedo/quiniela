@@ -6,6 +6,9 @@ import { buildLeaderboard } from "@/lib/utils/leaderboard";
 import { comparePosition, type PositionChange } from "@/lib/utils/position-change";
 import { BackButton } from "@/components/layout/back-button";
 import { TournamentBreadcrumbs } from "@/components/layout/tournament-breadcrumbs";
+import { Button } from "@/components/ui/button";
+import { GitCompareArrows } from "lucide-react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 export default async function RankingsPage({
@@ -124,7 +127,13 @@ export default async function RankingsPage({
           <h1 className="text-4xl font-bold mb-2">{tournament?.name}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
+          <Link href={`/${tournamentId}/rankings/compare`}>
+            <Button variant="outline" className="animate-pulse-glow">
+              <GitCompareArrows className="h-4 w-4" aria-hidden="true" />
+              {t("compare.title")}
+            </Button>
+          </Link>
           <BackButton fallbackHref={`/${tournamentId}`} />
         </div>
       </div>
