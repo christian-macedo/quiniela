@@ -687,6 +687,29 @@
       "pending": "Pendientes",
       "avgPointsPerMatch": "Promedio Puntos/Partido",
       "noPredictions": "Aún no se han enviado pronósticos."
+    },
+    "compare": {
+      "title": "Comparar",
+      "breadcrumb": "Comparar",
+      "subtitle": "Mira cómo te comparas con otro jugador",
+      "you": "Tú",
+      "selectLabel": "Comparar con",
+      "selectPlaceholder": "Selecciona un jugador",
+      "noOpponents": "Aún no hay otros jugadores con quien comparar.",
+      "prompt": "Selecciona un jugador arriba para ver la comparación.",
+      "headToHead": {
+        "title": "Mano a mano",
+        "youWon": "Vas por delante",
+        "ties": "Empates",
+        "opponentWon": "Va por delante",
+        "empty": "Aún no hay partidos completados pronosticados por ambos jugadores."
+      },
+      "matchByMatch": {
+        "title": "Partido por partido",
+        "match": "Partido",
+        "result": "Resultado",
+        "empty": "Aún no hay partidos completados para comparar."
+      }
     }
   },
   "profile": {

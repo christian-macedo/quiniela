@@ -687,6 +687,29 @@
       "pending": "Pending",
       "avgPointsPerMatch": "Avg Points/Match",
       "noPredictions": "No predictions have been submitted yet."
+    },
+    "compare": {
+      "title": "Compare",
+      "breadcrumb": "Compare",
+      "subtitle": "See how you stack up against another player",
+      "you": "You",
+      "selectLabel": "Compare against",
+      "selectPlaceholder": "Select a player",
+      "noOpponents": "There are no other players to compare with yet.",
+      "prompt": "Select a player above to see how you compare.",
+      "headToHead": {
+        "title": "Head-to-head",
+        "youWon": "You ahead",
+        "ties": "Ties",
+        "opponentWon": "They ahead",
+        "empty": "No completed matches predicted by both players yet."
+      },
+      "matchByMatch": {
+        "title": "Match by match",
+        "match": "Match",
+        "result": "Result",
+        "empty": "No completed matches to compare yet."
+      }
     }
   },
   "profile": {
