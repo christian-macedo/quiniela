@@ -33,6 +33,7 @@ export function CompareSelector({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("rankings.compare");
+  const tCommon = useTranslations("common");
 
   const opponents = participants.filter((p) => p.user_id !== currentUserId);
 
@@ -52,7 +53,13 @@ export function CompareSelector({
         <SelectContent>
           {opponents.map((opponent) => (
             <SelectItem key={opponent.user_id} value={opponent.user_id}>
-              {getPublicUserDisplay(opponent.user)}
+              <span className="flex w-full items-center gap-2">
+                <span className="tabular-nums text-muted-foreground">#{opponent.rank}</span>
+                <span className="flex-1 truncate">{getPublicUserDisplay(opponent.user)}</span>
+                <span className="tabular-nums text-muted-foreground">
+                  {opponent.total_points} {tCommon("labels.pts")}
+                </span>
+              </span>
             </SelectItem>
           ))}
         </SelectContent>
