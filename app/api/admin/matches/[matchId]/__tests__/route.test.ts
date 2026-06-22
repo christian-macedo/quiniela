@@ -5,49 +5,56 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockCheckAdminPermission = vi.hoisted(() => vi.fn());
 
-const { mockSupabase, matchesQb, matchesResult, tournamentTeamsQb, ttResult, predictionsQb, predictionsResult } =
-  vi.hoisted(() => {
-    function makeQb() {
-      const result = { data: null as unknown, error: null as unknown };
-      const qb: Record<string, ReturnType<typeof vi.fn>> = {
-        select: vi.fn(),
-        insert: vi.fn(),
-        update: vi.fn(),
-        delete: vi.fn(),
-        eq: vi.fn(),
-        neq: vi.fn(),
-        in: vi.fn(),
-        single: vi.fn(),
-        maybeSingle: vi.fn(),
-        limit: vi.fn(),
-        order: vi.fn(),
-      };
-      for (const key of Object.keys(qb)) {
-        if (key === "single" || key === "maybeSingle")
-          qb[key].mockImplementation(() => Promise.resolve(result));
-        else qb[key].mockReturnValue(qb);
-      }
-      Object.defineProperty(qb, "then", {
-        get: () => (resolve: (v: unknown) => void) => resolve(result),
-        configurable: true,
-      });
-      return { qb, result };
-    }
-
-    const { qb: matchesQb, result: matchesResult } = makeQb();
-    const { qb: tournamentTeamsQb, result: ttResult } = makeQb();
-    const { qb: predictionsQb, result: predictionsResult } = makeQb();
-
-    return {
-      mockSupabase: { from: vi.fn() },
-      matchesQb,
-      matchesResult,
-      tournamentTeamsQb,
-      ttResult,
-      predictionsQb,
-      predictionsResult,
+const {
+  mockSupabase,
+  matchesQb,
+  matchesResult,
+  tournamentTeamsQb,
+  ttResult,
+  predictionsQb,
+  predictionsResult,
+} = vi.hoisted(() => {
+  function makeQb() {
+    const result = { data: null as unknown, error: null as unknown };
+    const qb: Record<string, ReturnType<typeof vi.fn>> = {
+      select: vi.fn(),
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      eq: vi.fn(),
+      neq: vi.fn(),
+      in: vi.fn(),
+      single: vi.fn(),
+      maybeSingle: vi.fn(),
+      limit: vi.fn(),
+      order: vi.fn(),
     };
-  });
+    for (const key of Object.keys(qb)) {
+      if (key === "single" || key === "maybeSingle")
+        qb[key].mockImplementation(() => Promise.resolve(result));
+      else qb[key].mockReturnValue(qb);
+    }
+    Object.defineProperty(qb, "then", {
+      get: () => (resolve: (v: unknown) => void) => resolve(result),
+      configurable: true,
+    });
+    return { qb, result };
+  }
+
+  const { qb: matchesQb, result: matchesResult } = makeQb();
+  const { qb: tournamentTeamsQb, result: ttResult } = makeQb();
+  const { qb: predictionsQb, result: predictionsResult } = makeQb();
+
+  return {
+    mockSupabase: { from: vi.fn() },
+    matchesQb,
+    matchesResult,
+    tournamentTeamsQb,
+    ttResult,
+    predictionsQb,
+    predictionsResult,
+  };
+});
 
 vi.mock("@/lib/middleware/admin-check", () => ({
   checkAdminPermission: mockCheckAdminPermission,
@@ -125,6 +132,14 @@ describe("PUT /api/admin/matches/[matchId]", () => {
     expect(response.status).toBe(400);
     const body = await response.json();
     expect(body.error).toContain("different");
+  });
+
+  it("returns 400 when status is in_progress (deprecated, derived-only)", async () => {
+    const response = await PUT(makeRequest({ ...validBody, status: "in_progress" }), matchParams);
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("Status must be one of");
   });
 
   it("returns 400 for invalid multiplier", async () => {

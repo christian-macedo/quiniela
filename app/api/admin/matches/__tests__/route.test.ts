@@ -130,6 +130,20 @@ describe("POST /api/admin/matches", () => {
     expect(body.error).toContain("Multiplier");
   });
 
+  it("returns 400 when status is in_progress (deprecated, derived-only)", async () => {
+    const response = await POST(makeRequest({ ...validBody, status: "in_progress" }));
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("Status must be one of");
+  });
+
+  it("returns 400 for an unknown status value", async () => {
+    const response = await POST(makeRequest({ ...validBody, status: "bogus" }));
+
+    expect(response.status).toBe(400);
+  });
+
   it("returns 400 when teams are not both in the tournament", async () => {
     ttResult.data = [{ team_id: "team-1" }]; // only 1 of 2 found
 

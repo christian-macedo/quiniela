@@ -112,7 +112,6 @@ export function MatchManagementList({ matches }: MatchManagementListProps) {
             <SelectContent>
               <SelectItem value="all">{tCommon("filters.allStatuses")}</SelectItem>
               <SelectItem value="scheduled">{t("status.scheduled")}</SelectItem>
-              <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
               <SelectItem value="completed">{t("status.completed")}</SelectItem>
               <SelectItem value="cancelled">{t("status.cancelled")}</SelectItem>
             </SelectContent>

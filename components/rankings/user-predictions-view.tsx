@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import { getEffectiveMatchStatus } from "@/lib/utils/match-status";
 import { getPublicUserDisplay, getPublicUserInitials } from "@/lib/utils/privacy";
 import Link from "next/link";
 
@@ -134,7 +135,9 @@ export function UserPredictionsView({
                 <PredictionRow
                   key={prediction.id}
                   prediction={prediction}
-                  showDetails={isCurrentUser || prediction.match.status !== "scheduled"}
+                  showDetails={
+                    isCurrentUser || getEffectiveMatchStatus(prediction.match) !== "scheduled"
+                  }
                 />
               ))}
             </div>
@@ -165,9 +168,10 @@ function PredictionRow({ prediction, showDetails }: PredictionRowProps) {
   const tCommon = useTranslations("common");
 
   const match = prediction.match;
-  const isCompleted = match.status === "completed";
-  const isLive = match.status === "in_progress";
-  const isCancelled = match.status === "cancelled";
+  const status = getEffectiveMatchStatus(match);
+  const isCompleted = status === "completed";
+  const isLive = status === "in_progress";
+  const isCancelled = status === "cancelled";
 
   const getStatusBadge = () => {
     if (isCompleted) {

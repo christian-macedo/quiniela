@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TeamBadge } from "@/components/teams/team-badge";
 import { Badge } from "@/components/ui/badge";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import { getEffectiveMatchStatus } from "@/lib/utils/match-status";
 import { Zap } from "lucide-react";
 import Link from "next/link";
 
@@ -16,8 +17,9 @@ interface MatchCardProps {
 export function MatchCard({ match }: MatchCardProps) {
   const t = useTranslations("matches.status");
   const tCommon = useTranslations("common");
-  const isCompleted = match.status === "completed";
-  const isLive = match.status === "in_progress";
+  const status = getEffectiveMatchStatus(match);
+  const isCompleted = status === "completed";
+  const isLive = status === "in_progress";
 
   const homeWins =
     isCompleted &&
@@ -56,14 +58,7 @@ export function MatchCard({ match }: MatchCardProps) {
                 variant={isLive ? "default" : "outline"}
                 className={isLive ? "bg-success animate-pulse-live" : ""}
               >
-                {t(
-                  match.status as
-                    | "scheduled"
-                    | "in_progress"
-                    | "completed"
-                    | "postponed"
-                    | "cancelled"
-                )}
+                {t(status)}
               </Badge>
             </div>
 

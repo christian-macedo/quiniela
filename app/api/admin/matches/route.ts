@@ -30,6 +30,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Home and away teams must be different" }, { status: 400 });
     }
 
+    // Validate status — "in_progress" is a derived, display-only state and cannot be stored
+    if (!["scheduled", "completed", "cancelled"].includes(status)) {
+      return NextResponse.json(
+        { error: "Status must be one of: scheduled, completed, cancelled" },
+        { status: 400 }
+      );
+    }
+
     // Validate multiplier
     const multiplierNum = parseInt(multiplier);
     if (isNaN(multiplierNum) || multiplierNum < 1 || multiplierNum > 3) {

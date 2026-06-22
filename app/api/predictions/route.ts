@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUTC } from "@/lib/utils/date";
+import { getCurrentUTC, isPastDate } from "@/lib/utils/date";
 import { checkUserActive } from "@/lib/middleware/user-status-check";
 
 export async function POST(request: NextRequest) {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     // Get the match to find the tournament_id and check it is open for predictions
     const { data: match, error: matchError } = await supabase
       .from("matches")
-      .select("tournament_id, status")
+      .select("tournament_id, status, match_date")
       .eq("id", match_id)
       .single();
 
@@ -52,11 +52,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
 
-    if (match.status === "completed" || match.status === "cancelled") {
-      return NextResponse.json(
-        { error: "Predictions are closed for this match" },
-        { status: 422 }
-      );
+    // Predictions close once the match is finished/cancelled or its start time has passed.
+    // The time check is the server-side counterpart to the client lock and the source of
+    // truth for the derived "in_progress" state (status stays "scheduled" until scored).
+    if (
+      match.status === "completed" ||
+      match.status === "cancelled" ||
+      isPastDate(match.match_date)
+    ) {
+      return NextResponse.json({ error: "Predictions are closed for this match" }, { status: 422 });
     }
 
     // Check if user is a participant in this tournament
