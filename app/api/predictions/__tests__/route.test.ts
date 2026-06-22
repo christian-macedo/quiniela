@@ -5,6 +5,7 @@ import { createMockAuthUser } from "@/__tests__/helpers/supabase-mock";
 // ── Hoisted mocks ──────────────────────────────────────────────────────────────
 
 const mockCheckUserActive = vi.hoisted(() => vi.fn());
+const mockIsPastDate = vi.hoisted(() => vi.fn(() => false));
 
 const {
   mockSupabase,
@@ -78,6 +79,7 @@ vi.mock("@/lib/supabase/server", () => ({
 
 vi.mock("@/lib/utils/date", () => ({
   getCurrentUTC: vi.fn(() => "2026-04-11T00:00:00.000Z"),
+  isPastDate: mockIsPastDate,
 }));
 
 // Import after mocking
@@ -108,6 +110,7 @@ describe("POST /api/predictions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCheckUserActive.mockResolvedValue(null);
+    mockIsPastDate.mockReturnValue(false);
     mockAuth.getUser.mockResolvedValue({
       data: { user: createMockAuthUser({ id: USER_ID }) },
       error: null,
@@ -117,7 +120,11 @@ describe("POST /api/predictions", () => {
       if (table === "tournament_participants") return participantsQb;
       return predictionsQb;
     });
-    matchesResult.data = { tournament_id: TOURNAMENT_ID, status: "scheduled" };
+    matchesResult.data = {
+      tournament_id: TOURNAMENT_ID,
+      status: "scheduled",
+      match_date: "2026-12-01T00:00:00.000Z",
+    };
     matchesResult.error = null;
     participantsResult.data = { user_id: USER_ID };
     participantsResult.error = null;
@@ -134,9 +141,7 @@ describe("POST /api/predictions", () => {
   // ── Input validation ───────────────────────────────────────────────────────
 
   it("returns 400 when match_id is missing", async () => {
-    const response = await POST(
-      makeRequest({ predicted_home_score: 1, predicted_away_score: 0 })
-    );
+    const response = await POST(makeRequest({ predicted_home_score: 1, predicted_away_score: 0 }));
     expect(response.status).toBe(400);
     const body = await response.json();
     expect(body.error).toContain("match_id");
@@ -219,6 +224,16 @@ describe("POST /api/predictions", () => {
 
     const response = await POST(makeRequest(validBody));
     expect(response.status).toBe(422);
+  });
+
+  it("returns 422 when the match start time has passed (server-side time lock)", async () => {
+    // Status is still "scheduled" (never auto-advanced), but kickoff has passed.
+    mockIsPastDate.mockReturnValue(true);
+
+    const response = await POST(makeRequest(validBody));
+    expect(response.status).toBe(422);
+    const body = await response.json();
+    expect(body.error).toContain("Predictions are closed");
   });
 
   it("returns 403 when user is not a tournament participant", async () => {

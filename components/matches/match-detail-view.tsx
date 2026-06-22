@@ -7,6 +7,7 @@ import { MatchStatisticsCard } from "@/components/matches/match-statistics-card"
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatLocalDateTime } from "@/lib/utils/date";
+import { getEffectiveMatchStatus } from "@/lib/utils/match-status";
 import { Zap, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -23,12 +24,13 @@ interface MatchDetailViewProps {
 export function MatchDetailView({ match, predictions, currentUserId }: MatchDetailViewProps) {
   const t = useTranslations("matches");
   const tCommon = useTranslations("common");
-  const isCompleted = match.status === "completed";
-  const isLive = match.status === "in_progress";
-  const isCancelled = match.status === "cancelled";
+  const status = getEffectiveMatchStatus(match);
+  const isCompleted = status === "completed";
+  const isLive = status === "in_progress";
+  const isCancelled = status === "cancelled";
 
   const getStatusColor = () => {
-    switch (match.status) {
+    switch (status) {
       case "completed":
         return "bg-info";
       case "in_progress":
@@ -61,7 +63,7 @@ export function MatchDetailView({ match, predictions, currentUserId }: MatchDeta
               variant={isLive || isCompleted ? "default" : "outline"}
               className={`${getStatusColor()} ${isLive ? "animate-pulse-live" : ""}`}
             >
-              {t(`status.${match.status}`)}
+              {t(`status.${status}`)}
             </Badge>
           </div>
         </CardHeader>
@@ -195,7 +197,7 @@ function PredictionRow({
       .slice(0, 2);
   };
 
-  const isLive = match.status === "in_progress";
+  const isLive = getEffectiveMatchStatus(match) === "in_progress";
   const showPrediction = isLive || isCompleted || isCancelled || isCurrentUser;
   const showBreakdown =
     showPrediction && isCompleted && !isCancelled && prediction.points_earned > 0;

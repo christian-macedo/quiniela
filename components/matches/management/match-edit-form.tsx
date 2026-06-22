@@ -209,7 +209,6 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="scheduled">{tStatus("scheduled")}</SelectItem>
-                  <SelectItem value="in_progress">{tStatus("inProgress")}</SelectItem>
                   <SelectItem value="completed">{tStatus("completed")}</SelectItem>
                   <SelectItem value="cancelled">{tStatus("cancelled")}</SelectItem>
                 </SelectContent>

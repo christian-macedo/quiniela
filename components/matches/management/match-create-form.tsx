@@ -159,7 +159,6 @@ export function MatchCreateForm({ tournamentId, teams }: MatchCreateFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="scheduled">{tStatus("scheduled")}</SelectItem>
-                  <SelectItem value="in_progress">{tStatus("inProgress")}</SelectItem>
                   <SelectItem value="completed">{tStatus("completed")}</SelectItem>
                   <SelectItem value="cancelled">{tStatus("cancelled")}</SelectItem>
                 </SelectContent>
