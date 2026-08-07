@@ -170,7 +170,7 @@ export function TournamentEditForm({ tournament }: TournamentEditFormProps) {
                 setFormData({ ...formData, status: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger id="status">
                 <SelectValue placeholder={tForm("selectStatus")} />
               </SelectTrigger>
               <SelectContent>

@@ -138,7 +138,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
                 onValueChange={(value) => setFormData({ ...formData, home_team_id: value })}
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger id="home_team_id">
                   <SelectValue placeholder={t("selectHomeTeam")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -158,7 +158,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
                 onValueChange={(value) => setFormData({ ...formData, away_team_id: value })}
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger id="away_team_id">
                   <SelectValue placeholder={t("selectAwayTeam")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -204,7 +204,7 @@ export function MatchEditForm({ match, teams }: MatchEditFormProps) {
                   setFormData({ ...formData, status: value as MatchStatus })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

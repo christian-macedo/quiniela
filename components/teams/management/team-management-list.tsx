@@ -79,7 +79,10 @@ export function TeamManagementList({
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
+              aria-hidden="true"
+            />
             <Input
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
@@ -90,7 +93,10 @@ export function TeamManagementList({
 
           {/* Country Filter */}
           <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger
+              className="w-full sm:w-[180px]"
+              aria-label={tCommon("filters.filterBy", { field: tCommon("filters.country") })}
+            >
               <SelectValue
                 placeholder={tCommon("filters.filterBy", { field: tCommon("filters.country") })}
               />
@@ -107,7 +113,10 @@ export function TeamManagementList({
 
           {/* Tournament Filter */}
           <Select value={selectedTournament} onValueChange={setSelectedTournament}>
-            <SelectTrigger className="w-full sm:w-[220px]">
+            <SelectTrigger
+              className="w-full sm:w-[220px]"
+              aria-label={tCommon("filters.filterBy", { field: tCommon("filters.tournament") })}
+            >
               <SelectValue
                 placeholder={tCommon("filters.filterBy", { field: tCommon("filters.tournament") })}
               />
@@ -135,8 +144,9 @@ export function TeamManagementList({
                 <button
                   onClick={() => setSelectedCountry("all")}
                   className="ml-1 hover:text-destructive"
+                  aria-label={tCommon("actions.clearFilters")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}
@@ -147,8 +157,9 @@ export function TeamManagementList({
                 <button
                   onClick={() => setSelectedTournament("all")}
                   className="ml-1 hover:text-destructive"
+                  aria-label={tCommon("actions.clearFilters")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3 w-3" aria-hidden="true" />
                 </button>
               </Badge>
             )}
