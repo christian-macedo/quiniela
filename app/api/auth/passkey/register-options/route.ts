@@ -42,11 +42,6 @@ export async function POST() {
     return NextResponse.json(options);
   } catch (error) {
     console.error("Error generating registration options:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Failed to generate registration options",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to generate registration options" }, { status: 500 });
   }
 }

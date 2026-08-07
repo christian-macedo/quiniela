@@ -11,6 +11,8 @@ The application is built around a **tournament-centric architecture** with these
 5. **users**: User profiles extending Supabase auth.users (screen_name, avatar_url, is_admin, status) — see `docs/AUTHORIZATION.md` (User Status & Deactivation section) for status details
 6. **predictions**: User predictions for matches (predicted scores, points_earned)
 7. **tournament_rankings**: Database VIEW that dynamically calculates rankings from predictions (total_points, rank) — filters out deactivated users
+8. **webauthn_credentials**: Registered passkeys per user (credential_id, public_key, counter, transports, device_type, failed_attempts, last_used_at)
+9. **webauthn_challenges**: Temporary single-use challenge tokens for registration and authentication flows
 
 ## Key Relationships
 
@@ -18,6 +20,8 @@ The application is built around a **tournament-centric architecture** with these
 - Matches belong to one tournament and reference two teams (home/away)
 - Predictions link users to matches (one prediction per user per match)
 - Rankings are scoped per user per tournament
+- Users can have multiple passkeys (`users → webauthn_credentials`, one-to-many)
+- Challenges are short-lived, single-use, and linked to a user during registration or login
 
 ## Schema Locations
 

@@ -282,142 +282,82 @@ ON CONFLICT (tournament_id, user_id) DO NOTHING;
 -- ============================================================================
 
 -- Insert some example matches for Group Stage
-WITH
-  tournament AS (SELECT id FROM tournaments WHERE name = 'FIFA World Cup 2026'),
-  arg AS (SELECT id FROM teams WHERE short_name = 'ARG'),
-  mex AS (SELECT id FROM teams WHERE short_name = 'MEX'),
-  bra AS (SELECT id FROM teams WHERE short_name = 'BRA'),
-  ger AS (SELECT id FROM teams WHERE short_name = 'GER'),
-  fra AS (SELECT id FROM teams WHERE short_name = 'FRA'),
-  eng AS (SELECT id FROM teams WHERE short_name = 'ENG'),
-  esp AS (SELECT id FROM teams WHERE short_name = 'ESP'),
-  ned AS (SELECT id FROM teams WHERE short_name = 'NED')
-INSERT INTO matches (tournament_id, home_team_id, away_team_id, match_date, round, status, home_score, away_score, multiplier)
-VALUES
-  -- COMPLETED MATCH (for testing scoring)
-  (
-    (SELECT id FROM tournament),
-    (SELECT id FROM arg),
-    (SELECT id FROM mex),
-    '2026-06-11 16:00:00+00'::timestamptz,
-    'Group Stage - Group A',
-    'completed',
-    2,  -- Argentina won 2-1
-    1,
-    1   -- Standard multiplier
-  ),
-  -- SCHEDULED MATCHES
-  (
-    (SELECT id FROM tournament),
-    (SELECT id FROM bra),
-    (SELECT id FROM ger),
-    '2026-06-12 19:00:00+00'::timestamptz,
-    'Group Stage - Group B',
-    'scheduled',
-    NULL,
-    NULL,
-    1
-  ),
-  (
-    (SELECT id FROM tournament),
-    (SELECT id FROM fra),
-    (SELECT id FROM eng),
-    '2026-06-13 16:00:00+00'::timestamptz,
-    'Group Stage - Group C',
-    'scheduled',
-    NULL,
-    NULL,
-    1
-  ),
-  (
-    (SELECT id FROM tournament),
-    (SELECT id FROM esp),
-    (SELECT id FROM ned),
-    '2026-06-14 19:00:00+00'::timestamptz,
-    'Group Stage - Group D',
-    'scheduled',
-    NULL,
-    NULL,
-    2   -- Important match, 2x multiplier
-  );
+INSERT INTO matches (tournament_id, home_team_id, away_team_id, match_date, round, status, home_score, away_score, multiplier) SELECT t.id, h.id, a.id, m.dt, m.round, m.status, m.hscore, m.ascore, m.mult FROM (VALUES ('2026-06-11 16:00:00+00'::timestamptz, 'Group Stage - Group A','completed',2,1, 'ARG','MEX',1), ('2026-06-12 19:00:00+00'::timestamptz, 'Group Stage - Group B','scheduled',NULL,NULL, 'BRA','GER',1), ('2026-06-13 16:00:00+00'::timestamptz, 'Group Stage - Group C','scheduled',NULL,NULL, 'FRA','ENG',1), ('2026-06-14 19:00:00+00'::timestamptz, 'Group Stage - Group D','scheduled',NULL,NULL, 'ESP','NED',2) ) AS m(dt, round, status, hscore, ascore, home_short, away_short, mult) CROSS JOIN (SELECT id FROM tournaments WHERE name = 'FIFA World Cup 2026' LIMIT 1) t JOIN teams h ON h.short_name = m.home_short JOIN teams a ON a.short_name = m.away_short;
 
 -- ============================================================================
 -- SAMPLE PREDICTIONS
 -- ============================================================================
 -- Create predictions for all test users on all matches
-
-WITH
-  tournament AS (SELECT id FROM tournaments WHERE name = 'FIFA World Cup 2026'),
-  admin_user AS (SELECT id FROM public.users WHERE email = 'admin@quiniela.test'),
-  player1 AS (SELECT id FROM public.users WHERE email = 'player1@quiniela.test'),
-  player2 AS (SELECT id FROM public.users WHERE email = 'player2@quiniela.test'),
-  matches AS (
-    SELECT id, home_team_id, away_team_id, round
-    FROM matches
-    WHERE tournament_id = (SELECT id FROM tournament)
-    ORDER BY match_date
+WITH tournament AS (
+  SELECT id FROM tournaments WHERE name = 'FIFA World Cup 2026' LIMIT 1
+),
+matches AS (
+  SELECT id, home_team_id, away_team_id, round
+  FROM matches
+  WHERE tournament_id = (SELECT id FROM tournament)
+  ORDER BY match_date
+),
+users AS (
+  SELECT id, email
+  FROM public.users
+  WHERE email IN (
+    'admin@quiniela.test','player1@quiniela.test','player2@quiniela.test'
   )
+)
 INSERT INTO predictions (user_id, match_id, predicted_home_score, predicted_away_score, created_at)
-SELECT user_id, match_id, home_score, away_score, now()
-FROM (
-  -- Admin User predictions (optimistic)
+SELECT u.id AS user_id, m.id AS match_id, s.home_score, s.away_score, now()
+FROM matches m
+CROSS JOIN users u
+CROSS JOIN LATERAL (
+  -- choose prediction per user email
   SELECT
-    (SELECT id FROM admin_user) as user_id,
-    m.id as match_id,
-    CASE m.round
-      WHEN 'Group Stage - Group A' THEN 2  -- Argentina 2-1 Mexico
-      WHEN 'Group Stage - Group B' THEN 3  -- Brazil 3-2 Germany
-      WHEN 'Group Stage - Group C' THEN 1  -- France 1-1 England
-      WHEN 'Group Stage - Group D' THEN 2  -- Spain 2-0 Netherlands
-    END as home_score,
-    CASE m.round
-      WHEN 'Group Stage - Group A' THEN 1
-      WHEN 'Group Stage - Group B' THEN 2
-      WHEN 'Group Stage - Group C' THEN 1
-      WHEN 'Group Stage - Group D' THEN 0
-    END as away_score
-  FROM matches m
-
-  UNION ALL
-
-  -- Player 1 predictions (conservative)
-  SELECT
-    (SELECT id FROM player1) as user_id,
-    m.id as match_id,
-    CASE m.round
-      WHEN 'Group Stage - Group A' THEN 1  -- Argentina 1-0 Mexico
-      WHEN 'Group Stage - Group B' THEN 2  -- Brazil 2-1 Germany
-      WHEN 'Group Stage - Group C' THEN 0  -- France 0-0 England
-      WHEN 'Group Stage - Group D' THEN 1  -- Spain 1-1 Netherlands
-    END as home_score,
-    CASE m.round
-      WHEN 'Group Stage - Group A' THEN 0
-      WHEN 'Group Stage - Group B' THEN 1
-      WHEN 'Group Stage - Group C' THEN 0
-      WHEN 'Group Stage - Group D' THEN 1
-    END as away_score
-  FROM matches m
-
-  UNION ALL
-
-  -- Player 2 predictions (high-scoring)
-  SELECT
-    (SELECT id FROM player2) as user_id,
-    m.id as match_id,
-    CASE m.round
-      WHEN 'Group Stage - Group A' THEN 3  -- Argentina 3-2 Mexico
-      WHEN 'Group Stage - Group B' THEN 4  -- Brazil 4-3 Germany
-      WHEN 'Group Stage - Group C' THEN 2  -- France 2-1 England
-      WHEN 'Group Stage - Group D' THEN 3  -- Spain 3-1 Netherlands
-    END as home_score,
-    CASE m.round
-      WHEN 'Group Stage - Group A' THEN 2
-      WHEN 'Group Stage - Group B' THEN 3
-      WHEN 'Group Stage - Group C' THEN 1
-      WHEN 'Group Stage - Group D' THEN 1
-    END as away_score
-  FROM matches m
-) all_predictions
+    CASE u.email
+      WHEN 'admin@quiniela.test' THEN
+        CASE m.round
+          WHEN 'Group Stage - Group A' THEN 2
+          WHEN 'Group Stage - Group B' THEN 3
+          WHEN 'Group Stage - Group C' THEN 1
+          WHEN 'Group Stage - Group D' THEN 2
+        END
+      WHEN 'player1@quiniela.test' THEN
+        CASE m.round
+          WHEN 'Group Stage - Group A' THEN 1
+          WHEN 'Group Stage - Group B' THEN 2
+          WHEN 'Group Stage - Group C' THEN 0
+          WHEN 'Group Stage - Group D' THEN 1
+        END
+      WHEN 'player2@quiniela.test' THEN
+        CASE m.round
+          WHEN 'Group Stage - Group A' THEN 3
+          WHEN 'Group Stage - Group B' THEN 4
+          WHEN 'Group Stage - Group C' THEN 2
+          WHEN 'Group Stage - Group D' THEN 3
+        END
+    END AS home_score,
+    CASE u.email
+      WHEN 'admin@quiniela.test' THEN
+        CASE m.round
+          WHEN 'Group Stage - Group A' THEN 1
+          WHEN 'Group Stage - Group B' THEN 2
+          WHEN 'Group Stage - Group C' THEN 1
+          WHEN 'Group Stage - Group D' THEN 0
+        END
+      WHEN 'player1@quiniela.test' THEN
+        CASE m.round
+          WHEN 'Group Stage - Group A' THEN 0
+          WHEN 'Group Stage - Group B' THEN 1
+          WHEN 'Group Stage - Group C' THEN 0
+          WHEN 'Group Stage - Group D' THEN 1
+        END
+      WHEN 'player2@quiniela.test' THEN
+        CASE m.round
+          WHEN 'Group Stage - Group A' THEN 2
+          WHEN 'Group Stage - Group B' THEN 3
+          WHEN 'Group Stage - Group C' THEN 1
+          WHEN 'Group Stage - Group D' THEN 1
+        END
+    END AS away_score
+) s
 ON CONFLICT (user_id, match_id) DO NOTHING;
 
 -- ============================================================================
